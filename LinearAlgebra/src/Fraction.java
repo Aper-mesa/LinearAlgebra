@@ -96,27 +96,29 @@ public class Fraction {
             this.denominator = BigDecimal.ONE;
             return;
         } else if (numerator.compareTo(denominator) == 0) {
-            this.numerator=BigDecimal.ONE;
-            this.denominator=BigDecimal.ONE;
+            this.numerator = BigDecimal.ONE;
+            this.denominator = BigDecimal.ONE;
             return;
         }
-        ArrayList<BigDecimal> nuArr = new ArrayList<>();
-        ArrayList<BigDecimal> deArr = new ArrayList<>();
-        findFactor(numerator, nuArr);
-        findFactor(denominator, deArr);
-        //用第三个集合存储公因数
-        HashSet<BigDecimal> common = new HashSet<>();
-        for (BigDecimal nu : nuArr) for (BigDecimal de : deArr) if (nu.compareTo(de) == 0) common.add(de);
-        if (!common.isEmpty()) {
-            for (int i = 0; i <= common.size(); i++) {
-                //接着找到最大的公因数
-                BigDecimal max = common.iterator().next();
-                for (BigDecimal divisor : common) if (divisor.compareTo(max) > 0) max = divisor;
-                //分子分母同时除以最大公因数
-                numerator = numerator.divide(max, RoundingMode.HALF_DOWN);
-                denominator = denominator.divide(max, RoundingMode.HALF_DOWN);
-                common.remove(max);
+        boolean loop = true;
+        while (loop) {
+            ArrayList<BigDecimal> nuArr = new ArrayList<>();
+            ArrayList<BigDecimal> deArr = new ArrayList<>();
+            findFactor(numerator, nuArr);
+            findFactor(denominator, deArr);
+            //用第三个集合存储公因数
+            HashSet<BigDecimal> common = new HashSet<>();
+            for (BigDecimal nu : nuArr) for (BigDecimal de : deArr) if (nu.compareTo(de) == 0) common.add(de);
+            if (common.isEmpty()) {
+                loop = false;
+                continue;
             }
+            //接着找到最大的公因数
+            BigDecimal max = common.iterator().next();
+            for (BigDecimal divisor : common) if (divisor.compareTo(max) > 0) max = divisor;
+            //分子分母同时除以最大公因数
+            numerator = numerator.divide(max, RoundingMode.HALF_DOWN);
+            denominator = denominator.divide(max, RoundingMode.HALF_DOWN);
         }
         this.setNumerator(new BigDecimal(numerator.stripTrailingZeros().toPlainString()));
         this.setDenominator(new BigDecimal(denominator.stripTrailingZeros().toPlainString()));
@@ -130,7 +132,7 @@ public class Fraction {
                 arr.add(num.divide(new BigDecimal(i), RoundingMode.HALF_DOWN));
             }
         }
-        arr.remove(0);
+        if (!arr.isEmpty()) arr.remove(0);
     }
 
     ///通分
@@ -181,7 +183,8 @@ public class Fraction {
         fraction.setNumerator(new BigDecimal(fraction.numerator.toPlainString()));
         fraction.setDenominator(new BigDecimal(fraction.denominator.toPlainString()));
         //如果拿同一个对象进行除法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(fraction)) fraction = new Fraction(fraction.numerator, new BigDecimal(fraction.denominator.toPlainString()), fraction.sign);
+        if (this.equals(fraction))
+            fraction = new Fraction(fraction.numerator, new BigDecimal(fraction.denominator.toPlainString()), fraction.sign);
         if (fraction.numerator.compareTo(BigDecimal.ZERO) == 0) {
             System.out.println("0不可作除数");
             System.exit(0);
