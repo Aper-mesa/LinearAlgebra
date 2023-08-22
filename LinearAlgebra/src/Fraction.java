@@ -196,9 +196,19 @@ public class Fraction {
         return this;
     }
 
-    ///输出
+    ///输出分数形式的字符串
     @Override
     public String toString() {
         return (numerator.compareTo(BigDecimal.ZERO) == 0 ? "" : (sign > 0 ? "" : "-")) + numerator.toPlainString() + (denominator.equals(BigDecimal.ONE) ? "" : "/") + (denominator.equals(BigDecimal.ONE) ? "" : denominator.toPlainString());
+    }
+
+    ///输出小数形式的字符串
+    public String toDecimalString() {
+        return (sign > 0 ? "" : "-") + numerator.divide(denominator, RoundingMode.HALF_DOWN);
+    }
+
+    ///输出小数
+    public double toDecimal() {
+        return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
     }
 }
