@@ -222,7 +222,9 @@ public class Fraction {
     }
 
     ///判断两个分数是否在数值上相同
-    public boolean equals(Fraction fraction) {
-        return this.subtract(fraction).numerator.compareTo(BigDecimal.ZERO) == 0;
+    @Override
+    public boolean equals(Object fraction) {
+        if (!(fraction instanceof Fraction)) return false;
+        return this.subtract((Fraction) fraction).numerator.compareTo(BigDecimal.ZERO) == 0;
     }
 }
