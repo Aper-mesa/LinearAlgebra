@@ -2,7 +2,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 
 /*分数类，支持用户输入整数、小数以及指定格式的分数
         支持整数、小数以及分数之间的四则运算
@@ -69,6 +68,9 @@ public class Fraction {
     public Fraction(BigDecimal numerator) {
         this(numerator, new BigDecimal(1), 1);
     }
+
+    ///静态的数值为0的分数
+    public static final Fraction ZERO = new Fraction("0");
 
     ///整数化
     private void integerize() {
@@ -194,6 +196,12 @@ public class Fraction {
         denominator = denominator.multiply(fraction.numerator);
         sign = sign == fraction.sign ? 1 : -1;
         simplify();
+        return this;
+    }
+
+    ///变为相反数的方法
+    public Fraction negate() {
+        sign *= -1;
         return this;
     }
 
