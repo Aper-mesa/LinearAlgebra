@@ -2,10 +2,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 
 /*分数类，支持用户输入整数、小数以及指定格式的分数
         支持整数、小数以及分数之间的四则运算
-        支持数据无损无精度问题，支持小数以分数形式输出。*/
+        支持数据无损无精度问题，支持小数以分数或小数形式输出。*/
 
 public class Fraction {
     //分子
@@ -210,5 +211,10 @@ public class Fraction {
     ///输出小数
     public double toDecimal() {
         return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
+    }
+
+    ///判断两个分数是否在数值上相同
+    public boolean equals(Fraction fraction) {
+        return this.subtract(fraction).numerator.compareTo(BigDecimal.ZERO) == 0;
     }
 }
