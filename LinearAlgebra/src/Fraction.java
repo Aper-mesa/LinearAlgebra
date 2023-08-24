@@ -72,6 +72,9 @@ public class Fraction {
     ///静态的数值为0的分数
     public static final Fraction ZERO = new Fraction("0");
 
+    ///静态的数值为1的分数
+    public static final Fraction ONE = new Fraction("1");
+
     ///整数化
     private void integerize() {
         //nu和de分别表示分子和分母的小数位数
