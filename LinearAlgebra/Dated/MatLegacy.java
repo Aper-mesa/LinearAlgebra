@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 //此程序用于进行矩阵的相关运算
 
-public class Mat {
+public class MatLegacy {
     private static final Scanner input = new Scanner(System.in);
     //矩阵的行数和列数
     private static int row1;
@@ -11,9 +11,9 @@ public class Mat {
     private static int row2;
     private static int col2;
     //计算时用到的矩阵
-    private static Fraction[][] mat1;
-    private static Fraction[][] mat2;
-    private static Fraction[][] result;
+    private static double[][] mat1;
+    private static double[][] mat2;
+    private static double[][] result;
 
     public static void main(String[] args) {
         while (true) {
@@ -40,12 +40,23 @@ public class Mat {
     }
 
     ///打印矩阵
-    private static void print(Fraction[][] mat) {
-        for (Fraction[] row : mat) System.out.println(Arrays.toString(row));
+    private static void print(double[][] mat) {
+        for (double[] row : mat) System.out.println(Arrays.toString(row));
+    }
+
+    ///解决精度问题：若元素绝对值小于0.000000000000001，则此元素看作是0
+    private static void format(double[][] mat) {
+        for (double[] row : mat) {
+            for (int i = 0; i < row.length; i++) {
+                if (Math.abs(row[i]) < 0.00000000000001) row[i] = 0;
+                else if (Math.abs(row[i] - Math.floor(row[i])) < 0.00000000000001) row[i] = Math.floor(row[i]);
+                else if (row[i] == -0) row[i] = 0;
+            }
+        }
     }
 
     ///传递一个二维数组变量用于存储一个矩阵,参数记录矩阵需要记录的次数，加减乘为1和2，幂运算为0
-    public static Fraction[][] input(int order) {
+    public static double[][] input(int order) {
         System.out.println("输入矩阵的行数和列数，数字之间用一个空格隔开");
         String[] shape = input.nextLine().split(" ");
         int actualRow, actualCol;
@@ -62,32 +73,31 @@ public class Mat {
         }
         //临时数组存储用户输入的行列式的某一行的所有元素
         String[] tempRowArr;
-        Fraction[][] mat = new Fraction[actualRow][actualCol];
+        double[][] mat = new double[actualRow][actualCol];
         for (int i = 0; i < actualRow; i++) {
             System.out.println("输入矩阵第" + (i + 1) + "行的所有元素，元素之间用一个空格隔开");
             tempRowArr = input.nextLine().split(" ");
-            for (int j = 0; j < actualCol; j++) mat[i][j] = new Fraction(tempRowArr[j]);
+            for (int j = 0; j < actualCol; j++) mat[i][j] = Double.parseDouble(tempRowArr[j]);
         }
         return mat;
     }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
-    public static Fraction[][] addSub(int sign) {
+    public static double[][] addSub(int sign) {
         mat1 = input(1);
         mat2 = input(2);
         if (row1 != row2 || col1 != col2) {
             System.out.println("两个矩阵不同型，无法计算\n");
             main(null);
         }
-        Fraction[][] result = new Fraction[mat1.length][mat1[0].length];
+        double[][] result = new double[mat1.length][mat1[0].length];
         for (int i = 0; i < result.length; i++)
-            for (int j = 0; j < result.length; j++)
-                result[i][j] = mat1[i][j].multiply(mat2[i][j].multiply(new Fraction(sign + "")));
+            for (int j = 0; j < result.length; j++) result[i][j] = mat1[i][j] + sign * mat2[i][j];
         return result;
     }
 
     ///乘法框架
-    public static Fraction[][] multiplication() {
+    public static double[][] multiplication() {
         mat1 = input(1);
         mat2 = input(2);
         if (col1 != row2) {
@@ -98,16 +108,16 @@ public class Mat {
     }
 
     ///乘法算法核心
-    private static Fraction[][] multiplicationAlgorithm(Fraction[][] left, Fraction[][] right) {
-        Fraction[][] result = new Fraction[left.length][right[0].length];
+    private static double[][] multiplicationAlgorithm(double[][] left, double[][] right) {
+        double[][] result = new double[left.length][right[0].length];
         //临时记录积的某个元素的值
-        Fraction temp;
+        double temp;
         int leftRow, leftCol, rightCol;
         for (leftRow = 0; leftRow < left.length; leftRow++) {
             for (rightCol = 0; rightCol < right[0].length; rightCol++) {
-                temp = Fraction.ZERO;
+                temp = 0;
                 for (leftCol = 0; leftCol < left[0].length; leftCol++)
-                    temp = temp.add(left[leftRow][leftCol].multiply(right[leftCol][rightCol]));
+                    temp = temp + left[leftRow][leftCol] * right[leftCol][rightCol];
                 result[leftRow][rightCol] = temp;
             }
         }
@@ -115,14 +125,14 @@ public class Mat {
     }
 
     ///方幂
-    public static Fraction[][] exponentiation() {
+    public static double[][] exponentiation() {
         mat1 = input(1);
         System.out.println("输入指数");
         int exponent = Integer.parseInt(input.nextLine());
         //指数为0，结果为同阶单位矩阵
         if (exponent == 0) {
-            for (Fraction[] row : mat1) Arrays.fill(row, Fraction.ZERO);
-            for (int i = 0; i < mat1.length; i++) mat1[i][i] = Fraction.ONE;
+            for (double[] row : mat1) Arrays.fill(row, 0);
+            for (int i = 0; i < mat1.length; i++) mat1[i][i] = 1;
             return mat1;
         }
         result = mat1;
@@ -131,48 +141,47 @@ public class Mat {
     }
 
     ///数乘
-    public static Fraction[][] scalar() {
+    public static double[][] scalar() {
         mat1 = input(1);
         System.out.println("输入所乘数字");
-        Fraction k = new Fraction(input.nextLine());
+        double k = Double.parseDouble(input.nextLine());
         result = mat1;
-        for (int i = 0; i < mat1.length; i++)
-            for (int j = 0; j < mat1[0].length; j++) result[i][j] = k.multiply(result[i][j]);
+        for (int i = 0; i < mat1.length; i++) for (int j = 0; j < mat1[0].length; j++) result[i][j] *= k;
         return result;
     }
 
     ///转置
-    public static Fraction[][] transpose() {
+    public static double[][] transpose() {
         mat1 = input(1);
-        Fraction[][] result = new Fraction[mat1[0].length][mat1.length];
+        double[][] result = new double[mat1[0].length][mat1.length];
         for (int row = 0; row < mat1.length; row++)
             for (int col = 0; col < mat1[0].length; col++) result[col][row] = mat1[row][col];
         return result;
     }
 
     ///求秩框架
-    public static Fraction[][] rank() {
+    public static double[][] rank() {
         mat1 = input(1);
         System.out.println("秩为" + rankAlgorithm(mat1));
         return mat1;
     }
 
     ///求秩算法核心
-    private static int rankAlgorithm(Fraction[][] mat) {
+    private static int rankAlgorithm(double[][] mat) {
         int firstNonZeroRow;
         //找到第一个非零行
         outer:
         for (firstNonZeroRow = 0; firstNonZeroRow < mat.length; firstNonZeroRow++)
-            for (Fraction e : mat[firstNonZeroRow]) if (!e.equals(Fraction.ZERO)) break outer;
+            for (double e : mat[firstNonZeroRow]) if (e != 0) break outer;
         int row;
         while (true) {
             //找到第一个非零行的第一个非零元素下面的第一个非零行并执行行变换
             //先将左边的所有第一个数字为0的非零行进行交换。先找到第一个非零列
             for (int l = 0; l < Math.min(mat.length, mat[0].length); l++) {
-                if (mat[l][l].equals(Fraction.ZERO)) {
+                if (mat[l][l] == 0) {
                     for (int i = l; i < mat.length - 1; i++) {
-                        if (!mat[i + 1][l].equals(Fraction.ZERO)) {
-                            Fraction[] temp = mat[i + 1];
+                        if (mat[i + 1][l] != 0) {
+                            double[] temp = mat[i + 1];
                             mat[i + 1] = mat[l];
                             mat[l] = temp;
                             break;
@@ -187,18 +196,18 @@ public class Mat {
             for (row = firstNonZeroRow; row < mat.length; row++) {
                 //先判断此矩阵是否已经为阶梯矩阵：找到每一行的第一个非零元素
                 for (firstNonZeroElement = 0; firstNonZeroElement < mat[row].length; firstNonZeroElement++)
-                    if (!mat[row][firstNonZeroElement].equals(Fraction.ZERO)) break;
+                    if (mat[row][firstNonZeroElement] != 0) break;
                 //找到第一个非零元素之后，检查它左边的每一列是否全部非零
                 for (int i = 0; i < firstNonZeroElement; i++)
-                    for (Fraction[] fractions : mat) if (!fractions[i].equals(Fraction.ZERO)) break flag;
+                    for (double[] doubles : mat) if (doubles[i] != 0) break flag;
                 //接着检查每一行的第一个非零元素下面是否有非零元素
                 for (int col = 0; col < mat[0].length; col++) {
                     inner:
                     for (int firstNonZero = 0; firstNonZero < mat.length; firstNonZero++) {
-                        for (int i = 0; i < col; i++) if (!mat[firstNonZero][i].equals(Fraction.ZERO)) continue inner;
-                        if (!mat[firstNonZero][col].equals(Fraction.ZERO))
+                        for (int i = 0; i < col; i++) if (mat[firstNonZero][i] != 0) continue inner;
+                        if (mat[firstNonZero][col] != 0)
                             for (int bottom = firstNonZero + 1; bottom < mat.length; bottom++)
-                                if (!mat[bottom][col].equals(Fraction.ZERO)) break flag;
+                                if (mat[bottom][col] != 0) break flag;
                     }
                 }
                 echelon = true;
@@ -208,7 +217,7 @@ public class Mat {
                 int rank = 0;
                 for (int i = firstNonZeroRow; i < mat.length; i++) {
                     for (int e = 0; e < mat[i].length; e++) {
-                        if (!mat[i][e].equals(Fraction.ZERO)) {
+                        if (mat[i][e] != 0) {
                             rank++;
                             break;
                         }
@@ -223,10 +232,10 @@ public class Mat {
             for (col = 0; col < mat[0].length; col++) {
                 inner:
                 for (firstNonZero = 0; firstNonZero < mat.length; firstNonZero++) {
-                    for (int i = 0; i < col; i++) if (!mat[firstNonZero][i].equals(Fraction.ZERO)) continue inner;
-                    if (!mat[firstNonZero][col].equals(Fraction.ZERO)) {
+                    for (int i = 0; i < col; i++) if (mat[firstNonZero][i] != 0) continue inner;
+                    if (mat[firstNonZero][col] != 0) {
                         for (bottom = firstNonZero + 1; bottom < mat.length; bottom++) {
-                            if (!mat[bottom][col].equals(Fraction.ZERO)) {
+                            if (mat[bottom][col] != 0) {
                                 changer = bottom;
                                 break outer;
                             }
@@ -235,24 +244,25 @@ public class Mat {
                 }
             }
             //计算两行之间的比例
-            Fraction ratio = (mat[changer][col].negate().divide(mat[firstNonZero][col]));
+            double ratio = (-mat[changer][col] / mat[firstNonZero][col]);
             //用临时数组存储乘以比例之后的行
-            Fraction[] temp = new Fraction[mat[0].length];
-            for (int j = 0; j < mat[0].length; j++) temp[j] = ratio.multiply(mat[firstNonZero][j]);
+            double[] temp = new double[mat[0].length];
+            for (int j = 0; j < mat[0].length; j++) temp[j] = ratio * mat[firstNonZero][j];
             //将临时数组中的数据依次加到要变成0的那一行中
-            for (int j = 0; j < mat[0].length; j++) mat[changer][j] = mat[changer][j].add(temp[j]);
+            for (int j = 0; j < mat[0].length; j++) mat[changer][j] += temp[j];
+            format(mat);
         }
     }
 
     ///求逆
-    public static Fraction[][] inverse() {
+    public static double[][] inverse() {
         mat1 = input(1);
         if (row1 != col1) {
             System.out.println("只有方阵才有逆矩阵\n");
             main(null);
         }
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
-        Fraction[][] test = new Fraction[mat1.length][mat1.length];
+        double[][] test = new double[mat1.length][mat1.length];
         for (int i = 0; i < mat1.length; i++) test[i] = Arrays.copyOf(mat1[i], mat1.length);
         //调用求秩方法判断方阵是否满秩
         if (mat1.length != rankAlgorithm(test)) {
@@ -260,17 +270,17 @@ public class Mat {
             main(null);
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
-        Fraction[][] identity = new Fraction[mat1.length][mat1.length];
-        for (int i = 0; i < identity.length; i++) identity[i][i] = Fraction.ONE;
+        double[][] identity = new double[mat1.length][mat1.length];
+        for (int i = 0; i < identity.length; i++) identity[i][i] = 1;
         boolean zero = true;
         //此循环将方阵变为上三角
         for (int dia = 0; dia < mat1.length; dia++) {
-            Fraction[] tempRow, tempRow2;
+            double[] tempRow, tempRow2;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (mat1[dia][dia].equals(Fraction.ZERO)) {
+            if (mat1[dia][dia] == 0) {
                 int i;
                 for (i = dia + 1; i < mat1.length; i++) {
-                    if (!mat1[i][dia].equals(Fraction.ZERO)) {
+                    if (mat1[i][dia] != 0) {
                         zero = false;
                         break;
                     }
@@ -289,7 +299,7 @@ public class Mat {
                 boolean has = false;
                 //找到第一个不是0的数字的行的索引
                 for (i = dia + 1; i < mat1.length; i++) {
-                    if (!mat1[i][dia].equals(Fraction.ZERO)) {
+                    if (mat1[i][dia] != 0) {
                         has = true;
                         break;
                     }
@@ -305,7 +315,7 @@ public class Mat {
                 boolean has = false;
                 //找到对角线数上第一个非0数字
                 for (i = dia - 1; i >= 0; i--) {
-                    if (!mat1[i][dia].equals(Fraction.ZERO)) {
+                    if (mat1[i][dia] != 0) {
                         has = true;
                         break;
                     }
@@ -315,11 +325,11 @@ public class Mat {
         }
         //最后将对角线数都化为1
         for (int i = 0; i < mat1.length; i++) {
-            if (!mat1[i][i].equals(Fraction.ONE)) {
-                Fraction ratio = Fraction.ONE.divide(mat1[i][i]);
+            if (mat1[i][i] != 1) {
+                double ratio = 1 / mat1[i][i];
                 for (int j = 0; j < mat1.length; j++) {
-                    mat1[i][j] = mat1[i][j].multiply(ratio);
-                    identity[i][j] = identity[i][j].multiply(ratio);
+                    mat1[i][j] *= ratio;
+                    identity[i][j] *= ratio;
                 }
             }
         }
@@ -327,20 +337,20 @@ public class Mat {
     }
 
     ///矩阵加K倍操作
-    private static void addK(Fraction[][] identity, boolean has, int i, int dia) {
+    private static void addK(double[][] identity, boolean has, int i, int dia) {
         if (has) {
             //计算两行之间的比例
-            Fraction ratio = mat1[i][dia].negate().divide(mat1[dia][dia]);
+            double ratio = (-mat1[i][dia] / mat1[dia][dia]);
             //用临时数组存储乘以比例之后的对角线行
-            Fraction[] temp = new Fraction[mat1.length], temp2 = new Fraction[mat1.length];
+            double[] temp = new double[mat1.length], temp2 = new double[mat1.length];
             for (int j = 0; j < mat1.length; j++) {
-                temp[j] = ratio.multiply(mat1[dia][j]);
-                temp2[j] = ratio.multiply(identity[dia][j]);
+                temp[j] = ratio * mat1[dia][j];
+                temp2[j] = ratio * identity[dia][j];
             }
             //将临时数组中的数据依次加到要变成0的那一行中
             for (int j = 0; j < mat1.length; j++) {
-                mat1[i][j] = mat1[i][j].add(temp[j]);
-                identity[i][j] = identity[i][j].add(temp2[j]);
+                mat1[i][j] += temp[j];
+                identity[i][j] += temp2[j];
             }
         }
     }
