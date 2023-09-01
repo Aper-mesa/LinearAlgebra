@@ -9,7 +9,6 @@ public class Det {
 
     public static Fraction getValue(Fraction[][] det) {
         if (zero(det)) return Fraction.ZERO;
-        System.out.println("good here");
         int order = det.length;
         //行列式的结果
         Fraction result = Fraction.ONE;
