@@ -45,12 +45,16 @@ public class Det {
                 }
                 if (has) {
                     //计算两行之间的比例
-                    Fraction ratio = det[i][dia].negate().divide(det[dia][dia]);
+                    Fraction tempFraction = new Fraction(det[i][dia].toDecimalString());
+                    Fraction ratio = tempFraction.negate().divide(det[dia][dia]);
                     //用临时数组存储乘以比例之后的对角线行
-                    Fraction[] temp = new Fraction[order];
-                    for (int j = 0; j < order; j++) temp[j] = ratio.multiply(det[dia][j]);
+                    Fraction[] tempArr = new Fraction[order];
+                    for (int j = 0; j < order; j++) {
+                        Fraction temp = new Fraction(det[dia][j].toDecimalString());
+                        tempArr[j] = temp.multiply(ratio);
+                    }
                     //将临时数组中的数据依次加到要变成0的那一行中
-                    for (int j = 0; j < order; j++) det[i][j] = det[i][j].add(temp[j]);
+                    for (int j = 0; j < order; j++) det[i][j] = det[i][j].add(tempArr[j]);
                 }
             }
         }

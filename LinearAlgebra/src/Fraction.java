@@ -159,9 +159,22 @@ public class Fraction {
         //如果拿同一个对象进行加法操作，需要将除数分配到新的内存空间，否则结果出错
         if (this.equals(fraction)) fraction = new Fraction(fraction.numerator, fraction.denominator, fraction.sign);
         commonize(fraction);
-        BigDecimal newNumerator = (sign > 0 ? numerator : numerator.negate()).add(fraction.sign > 0 ? fraction.numerator : fraction.numerator.negate());
-        numerator = newNumerator;
-        sign = newNumerator.compareTo(BigDecimal.ZERO) > 0 ? 1 : -1;
+        //先统一把符号放到分子上再进行计算
+        if (sign < 0) {
+            sign *= -1;
+            numerator = numerator.negate();
+        }
+        if (fraction.sign < 0) {
+            fraction.sign *= -1;
+            fraction.numerator = fraction.numerator.negate();
+        }
+        //numerator = (sign > 0 ? numerator : numerator.negate()).add(fraction.sign > 0 ? fraction.numerator : fraction.numerator.negate());
+        numerator=numerator.add(fraction.numerator);
+        //如果算出来分子小于0，则符号要移至sign
+        if (numerator.compareTo(BigDecimal.ZERO) < 0) {
+            numerator = numerator.negate();
+            sign *= -1;
+        }
         simplify();
         return this;
     }
@@ -224,12 +237,14 @@ public class Fraction {
         return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
     }
 
-    ///判断两个分数是否在数值上相同。无法使用subtract方法，否则导致递归调用问题
+    ///判断两个分数是否在数值上相同。无法使用subtract方法，否则产生递归调用问题导致栈溢出
     @Override
     public boolean equals(Object fraction) {
         if (!(fraction instanceof Fraction)) return false;
+        else if (numerator.compareTo(BigDecimal.ZERO) == 0 && ((Fraction) fraction).numerator.compareTo(BigDecimal.ZERO) == 0)
+            return true;
         else if (sign - ((Fraction) fraction).sign != 0) return false;
         commonize((Fraction) fraction);
-        return numerator.subtract(((Fraction) fraction).numerator).compareTo(BigDecimal.ZERO)==0;
+        return numerator.subtract(((Fraction) fraction).numerator).compareTo(BigDecimal.ZERO) == 0;
     }
 }
