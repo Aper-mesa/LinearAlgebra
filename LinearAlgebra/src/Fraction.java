@@ -32,7 +32,7 @@ public class Fraction {
         this.numerator = new BigDecimal(numerator.toPlainString());
         this.denominator = new BigDecimal(denominator.toPlainString());
         this.sign = sign;
-        integerize();
+        integerize(this);
     }
 
     ///直接输入字符串的简单粗暴构造方法
@@ -51,7 +51,7 @@ public class Fraction {
             denominator = BigDecimal.ONE;
         }
         this.sign = positive ? 1 : -1;
-        integerize();
+        integerize(this);
     }
 
     ///不输入符号的构造方法，符号默认为正
@@ -76,34 +76,34 @@ public class Fraction {
     public static final Fraction ONE = new Fraction("1");
 
     ///整数化
-    private void integerize() {
+    private void integerize(Fraction fraction) {
         //nu和de分别表示分子和分母的小数位数
         int nu = 0;
         int de = 0;
-        String numeratorStr = numerator.toString();
-        String denominatorStr = denominator.toPlainString();
+        String numeratorStr = fraction.numerator.toString();
+        String denominatorStr = fraction.denominator.toPlainString();
         //不管分子还是分母，必须是小数且小数部分不是全为0才执行整数化操作
         if (numeratorStr.contains(".") && !numeratorStr.split("\\.")[1].matches("0+"))
             nu = numeratorStr.split("\\.")[1].length();
         if (denominatorStr.contains(".") && !denominatorStr.split("\\.")[1].matches("0+"))
             de = denominatorStr.split("\\.")[1].length();
         BigDecimal multiple = BigDecimal.valueOf(Math.pow(10, Math.max(nu, de)));
-        numerator = new BigDecimal(numerator.multiply(multiple).toPlainString());
-        denominator = new BigDecimal(denominator.multiply(multiple).toPlainString());
-        simplify();
+        fraction.numerator = new BigDecimal(fraction.numerator.multiply(multiple).toPlainString());
+        fraction.denominator = new BigDecimal(fraction.denominator.multiply(multiple).toPlainString());
+        simplify(fraction);
     }
 
     ///约分
-    private void simplify() {
-        BigDecimal numerator = this.numerator;
-        BigDecimal denominator = this.denominator;
+    private void simplify(Fraction fraction) {
+        BigDecimal numerator = fraction.numerator;
+        BigDecimal denominator = fraction.denominator;
         //两个集合分别存储分子和分母的除1以外的所有因数
         if (numerator.compareTo(BigDecimal.ZERO) == 0) {
-            this.denominator = BigDecimal.ONE;
+            fraction.denominator = BigDecimal.ONE;
             return;
         } else if (numerator.compareTo(denominator) == 0) {
-            this.numerator = BigDecimal.ONE;
-            this.denominator = BigDecimal.ONE;
+            fraction.numerator = BigDecimal.ONE;
+            fraction.denominator = BigDecimal.ONE;
             return;
         }
         boolean loop = true;
@@ -126,8 +126,8 @@ public class Fraction {
             numerator = numerator.divide(max, RoundingMode.HALF_DOWN);
             denominator = denominator.divide(max, RoundingMode.HALF_DOWN);
         }
-        this.setNumerator(new BigDecimal(numerator.stripTrailingZeros().toPlainString()));
-        this.setDenominator(new BigDecimal(denominator.stripTrailingZeros().toPlainString()));
+        fraction.setNumerator(new BigDecimal(numerator.stripTrailingZeros().toPlainString()));
+        fraction.setDenominator(new BigDecimal(denominator.stripTrailingZeros().toPlainString()));
     }
 
     ///获取一个数字的除1以外的所有因数
@@ -154,71 +154,78 @@ public class Fraction {
 
     ///加法
     public Fraction add(Fraction fraction) {
-        fraction.setNumerator(new BigDecimal(fraction.numerator.toPlainString()));
-        fraction.setDenominator(new BigDecimal(fraction.denominator.toPlainString()));
+        Fraction addend = new Fraction(this.toString());
+        Fraction augend = new Fraction(fraction.toString());
+        augend.setNumerator(new BigDecimal(augend.numerator.toPlainString()));
+        augend.setDenominator(new BigDecimal(augend.denominator.toPlainString()));
         //如果拿同一个对象进行加法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(fraction)) fraction = new Fraction(fraction.numerator, fraction.denominator, fraction.sign);
-        commonize(fraction);
+        if (this.equals(augend)) augend = new Fraction(augend.numerator, augend.denominator, augend.sign);
+        commonize(augend);
         //先统一把符号放到分子上再进行计算
-        if (sign < 0) {
-            sign *= -1;
-            numerator = numerator.negate();
+        if (addend.sign < 0) {
+            addend.sign *= -1;
+            addend.numerator = addend.numerator.negate();
         }
-        if (fraction.sign < 0) {
-            fraction.sign *= -1;
-            fraction.numerator = fraction.numerator.negate();
+        if (augend.sign < 0) {
+            augend.sign *= -1;
+            augend.numerator = augend.numerator.negate();
         }
-        //numerator = (sign > 0 ? numerator : numerator.negate()).add(fraction.sign > 0 ? fraction.numerator : fraction.numerator.negate());
-        numerator=numerator.add(fraction.numerator);
+        addend.numerator = addend.numerator.add(augend.numerator);
         //如果算出来分子小于0，则符号要移至sign
-        if (numerator.compareTo(BigDecimal.ZERO) < 0) {
-            numerator = numerator.negate();
-            sign *= -1;
+        if (addend.numerator.compareTo(BigDecimal.ZERO) < 0) {
+            addend.numerator = addend.numerator.negate();
+            addend.sign *= -1;
         }
-        simplify();
-        return this;
+        simplify(addend);
+        return addend;
     }
 
     ///减法
     public Fraction subtract(Fraction fraction) {
-        if (this.equals(fraction)) fraction = new Fraction(fraction.numerator, fraction.denominator, fraction.sign);
-        fraction.setSign(-1 * fraction.sign);
-        return add(fraction);
+        Fraction subtrahend = new Fraction(fraction.toString());
+        if (this.equals(subtrahend))
+            subtrahend = new Fraction(subtrahend.numerator, subtrahend.denominator, subtrahend.sign);
+        subtrahend.setSign(-1 * subtrahend.sign);
+        return add(subtrahend);
     }
 
     ///乘法
     public Fraction multiply(Fraction fraction) {
+        Fraction multiplicand = new Fraction(this.toString());
+        Fraction multiplier = new Fraction(fraction.toString());
         //如果拿同一个对象进行乘法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(fraction)) fraction = new Fraction(fraction.numerator, fraction.denominator, fraction.sign);
-        numerator = numerator.multiply(fraction.numerator);
-        denominator = denominator.multiply(fraction.denominator);
-        sign = sign == fraction.sign ? 1 : -1;
-        simplify();
-        return this;
+        if (this.equals(multiplier))
+            multiplier = new Fraction(multiplier.numerator, multiplier.denominator, multiplier.sign);
+        multiplicand.numerator = numerator.multiply(multiplier.numerator);
+        multiplicand.denominator = denominator.multiply(multiplier.denominator);
+        multiplicand.sign = sign == multiplier.sign ? 1 : -1;
+        simplify(multiplicand);
+        return multiplicand;
     }
 
     ///除法
     public Fraction divide(Fraction fraction) {
-        fraction.setNumerator(new BigDecimal(fraction.numerator.toPlainString()));
-        fraction.setDenominator(new BigDecimal(fraction.denominator.toPlainString()));
+        Fraction dividend = new Fraction(this.toString());
+        Fraction divisor = new Fraction(fraction.toString());
+        divisor.setNumerator(new BigDecimal(divisor.numerator.toPlainString()));
+        divisor.setDenominator(new BigDecimal(divisor.denominator.toPlainString()));
         //如果拿同一个对象进行除法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(fraction))
-            fraction = new Fraction(fraction.numerator, new BigDecimal(fraction.denominator.toPlainString()), fraction.sign);
-        if (fraction.numerator.compareTo(BigDecimal.ZERO) == 0) {
+        if (this.equals(divisor))
+            divisor = new Fraction(divisor.numerator, new BigDecimal(divisor.denominator.toPlainString()), divisor.sign);
+        if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) {
             System.out.println("0不可作除数");
             System.exit(0);
         }
-        numerator = numerator.multiply(fraction.denominator);
-        denominator = denominator.multiply(fraction.numerator);
-        sign = sign == fraction.sign ? 1 : -1;
-        simplify();
-        return this;
+        dividend.numerator = numerator.multiply(divisor.denominator);
+        dividend.denominator = denominator.multiply(divisor.numerator);
+        dividend.sign = dividend.sign == divisor.sign ? 1 : -1;
+        simplify(dividend);
+        return dividend;
     }
 
     ///变为相反数的方法
     public Fraction negate() {
-        sign *= -1;
-        return this;
+        return new Fraction(this.numerator, this.denominator, sign * -1);
     }
 
     ///输出分数形式的字符串
