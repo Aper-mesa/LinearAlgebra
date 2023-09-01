@@ -2,50 +2,48 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 //此程序用于计算行列式
-//2023.08.24-此类已过时，新行列式计算器已接入分数类。
 public class DetLegacy {
     static Scanner input = new Scanner(System.in);
     //行列式的阶数
     static int order;
     //二维数组存储行列式
-    static double[][] det;
+    static Fraction[][] det;
     //行列式的结果
-    static double result = 1;
+    static Fraction result = new Fraction("1");
 
     public static void main(String[] args) {
         //临时数组存储用户输入的行列式的某一行的所有元素
         String[] tempRowArr;
         System.out.println("输入行列式的阶数");
         order = Integer.parseInt(input.nextLine());
-        det = new double[order][order];
+        det = new Fraction[order][order];
         for (int i = 0; i < order; i++) {
             System.out.println("输入行列式第" + (i + 1) + "行的所有元素，元素之间用一个空格隔开");
             tempRowArr = input.nextLine().split(" ");
-            for (int j = 0; j < order; j++) det[i][j] = Double.parseDouble(tempRowArr[j]);
+            for (int j = 0; j < order; j++) det[i][j] = new Fraction(tempRowArr[j]);
         }
-        if (zero()) result(0);
+        if (zero()) result(Fraction.ZERO);
         compute();
     }
 
     ///打印行列式
     public static void print() {
-        for (double[] row : det) System.out.println(Arrays.toString(row));
+        for (Fraction[] row : det) System.out.println(Arrays.toString(row));
     }
 
     ///展示行列式计算结果，整数手动去掉小数点
-    public static void result(double result) {
-        if ((int) result == result) System.out.println("该" + order + "阶行列式的结果为" + (int) result);
-        else System.out.println("该" + order + "阶行列式的结果为" + result);
+    public static void result(Fraction result) {
+        System.out.println("该" + order + "阶行列式的结果为" + result);
         System.exit(0);
     }
 
     ///判断行列式是否存在元素全为0的某一行或某一列
     public static boolean zero() {
         boolean badOne = false;
-        for (double[] row : det) {
+        for (Fraction[] row : det) {
             badOne = false;
-            for (double e : row) {
-                if (e != 0) {
+            for (Fraction e : row) {
+                if (!e.equals(Fraction.ZERO)) {
                     badOne = true;
                     break;
                 }
@@ -54,8 +52,8 @@ public class DetLegacy {
         }
         for (int i = 0; i < det.length; i++) {
             badOne = false;
-            for (double[] col : det) {
-                if (col[i] != 0) {
+            for (Fraction[] col : det) {
+                if (!col[i].equals(Fraction.ZERO)) {
                     badOne = true;
                     break;
                 }
@@ -71,17 +69,17 @@ public class DetLegacy {
         boolean switched = false;
         boolean zero = true;
         for (int dia = 0; dia < order; dia++) {
-            double[] tempRow;
+            Fraction[] tempRow;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (det[dia][dia] == 0) {
+            if (det[dia][dia].equals(Fraction.ZERO)) {
                 int i;
                 for (i = dia + 1; i < order; i++) {
-                    if (det[i][dia] != 0) {
+                    if (!det[i][dia].equals(Fraction.ZERO)) {
                         zero = false;
                         break;
                     }
                 }
-                if (zero) result(0);
+                if (zero) result(Fraction.ZERO);
                 tempRow = det[dia];
                 det[dia] = det[i];
                 det[i] = tempRow;
@@ -93,26 +91,26 @@ public class DetLegacy {
                 boolean has = false;
                 //找到第一个不是0的数字的行的索引
                 for (i = dia + 1; i < order; i++) {
-                    if (det[i][dia] != 0) {
+                    if (!det[i][dia].equals(Fraction.ZERO)) {
                         has = true;
                         break;
                     }
                 }
                 if (has) {
                     //计算两行之间的比例
-                    double ratio = (-det[i][dia] / det[dia][dia]);
+                    Fraction ratio = det[i][dia].negate().divide(det[dia][dia]);
                     //用临时数组存储乘以比例之后的对角线行
-                    double[] temp = new double[order];
-                    for (int j = 0; j < order; j++) temp[j] = ratio * det[dia][j];
+                    Fraction[] temp = new Fraction[order];
+                    for (int j = 0; j < order; j++) temp[j] = ratio.multiply(det[dia][j]);
                     //将临时数组中的数据依次加到要变成0的那一行中
-                    for (int j = 0; j < order; j++) det[i][j] += temp[j];
+                    for (int j = 0; j < order; j++) det[i][j]= det[i][j].add(temp[j]);
                 }
             }
         }
         print();
         //计算正对角线上的所有元素之积
-        for (int i = 0; i < order; i++) result *= det[i][i];
-        if (switched) result *= -1;
+        for (int i = 0; i < order; i++) result = result.multiply(det[i][i]);
+        if (switched) result.negate();
         result(result);
     }
 }

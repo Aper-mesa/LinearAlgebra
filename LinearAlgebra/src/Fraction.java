@@ -224,10 +224,12 @@ public class Fraction {
         return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
     }
 
-    ///判断两个分数是否在数值上相同
+    ///判断两个分数是否在数值上相同。无法使用subtract方法，否则导致递归调用问题
     @Override
     public boolean equals(Object fraction) {
         if (!(fraction instanceof Fraction)) return false;
-        return this.subtract((Fraction) fraction).numerator.compareTo(BigDecimal.ZERO) == 0;
+        else if (sign - ((Fraction) fraction).sign != 0) return false;
+        commonize((Fraction) fraction);
+        return numerator.subtract(((Fraction) fraction).numerator).compareTo(BigDecimal.ZERO)==0;
     }
 }

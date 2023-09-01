@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 //此程序用于进行矩阵的相关运算
+//2023.08.24-此类已过时，新矩阵计算器已接入分数类。此类采用的伪精度解决方案是愚蠢而有意义的。
 
 public class MatLegacy {
     private static final Scanner input = new Scanner(System.in);
