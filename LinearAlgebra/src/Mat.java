@@ -99,7 +99,11 @@ public class Mat {
     }
 
     ///乘法算法核心
-    private static Fraction[][] multiplicationAlgorithm(Fraction[][] multiplicand, Fraction[][] multiplier) {
+    private static Fraction[][] multiplicationAlgorithm(Fraction[][] left, Fraction[][] right) {
+        Fraction[][] multiplicand = new Fraction[left.length][left[0].length];
+        Fraction[][] multiplier = new Fraction[right.length][right[0].length];
+        deepCopy(left, multiplicand);
+        deepCopy(right, multiplier);
         Fraction[][] result = new Fraction[multiplicand.length][multiplier[0].length];
         //临时记录积的某个元素的值
         Fraction temp;
@@ -119,7 +123,7 @@ public class Mat {
     public static Fraction[][] exponentiate() {
         mat1 = input(1);
         Fraction[][] fraction = new Fraction[mat1.length][mat1[0].length];
-        for (int i = 0; i < fraction.length; i++) fraction[i] = Arrays.copyOf(mat1[i], mat1[0].length);
+        deepCopy(mat1, fraction);
         System.out.println("输入指数");
         int exponent = Integer.parseInt(input.nextLine());
         //指数为0，结果为同阶单位矩阵
@@ -255,7 +259,7 @@ public class Mat {
         }
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
         Fraction[][] test = new Fraction[mat1.length][mat1.length];
-        for (int i = 0; i < mat1.length; i++) test[i] = Arrays.copyOf(mat1[i], mat1[0].length);
+        deepCopy(mat1, test);
         //调用求秩方法判断方阵是否满秩
         if (mat1.length != rankAlgorithm(test)) {
             System.out.println("方阵不满秩\n");
@@ -345,5 +349,10 @@ public class Mat {
                 identity[i][j] = identity[i][j].add(temp2[j]);
             }
         }
+    }
+
+    ///二维数组深复制
+    private static void deepCopy(Fraction[][] origin, Fraction[][] destination) {
+        for (int i = 0; i < destination.length; i++) destination[i] = Arrays.copyOf(origin[i], destination[i].length);
     }
 }
