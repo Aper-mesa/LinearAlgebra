@@ -25,9 +25,9 @@ public class Mat {
                     7. 求秩  8. 求逆
                         0. 退出""");
             switch (input.nextLine()) {
-                case "1" -> result = addSub(1);
-                case "2" -> result = addSub(-1);
-                case "3" -> result = multiplication();
+                case "1" -> result = add(1);
+                case "2" -> result = add(-1);
+                case "3" -> result = multiply();
                 case "4" -> result = exponentiation();
                 case "5" -> result = scalar();
                 case "6" -> result = transpose();
@@ -72,7 +72,7 @@ public class Mat {
     }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
-    public static Fraction[][] addSub(int sign) {
+    public static Fraction[][] add(int sign) {
         mat1 = input(1);
         mat2 = input(2);
         if (row1 != row2 || col1 != col2) {
@@ -88,7 +88,7 @@ public class Mat {
     }
 
     ///乘法框架
-    public static Fraction[][] multiplication() {
+    public static Fraction[][] multiply() {
         mat1 = input(1);
         mat2 = input(2);
         if (col1 != row2) {
@@ -99,16 +99,17 @@ public class Mat {
     }
 
     ///乘法算法核心
-    private static Fraction[][] multiplicationAlgorithm(Fraction[][] left, Fraction[][] right) {
-        Fraction[][] result = new Fraction[left.length][right[0].length];
+    private static Fraction[][] multiplicationAlgorithm(Fraction[][] multiplicand, Fraction[][] multiplier) {
+        Fraction[][] result = new Fraction[multiplicand.length][multiplier[0].length];
         //临时记录积的某个元素的值
         Fraction temp;
         int leftRow, leftCol, rightCol;
-        for (leftRow = 0; leftRow < left.length; leftRow++) {
-            for (rightCol = 0; rightCol < right[0].length; rightCol++) {
+        for (leftRow = 0; leftRow < multiplicand.length; leftRow++) {
+            for (rightCol = 0; rightCol < multiplier[0].length; rightCol++) {
                 temp = Fraction.ZERO;
-                for (leftCol = 0; leftCol < left[0].length; leftCol++)
-                    temp = temp.add(left[leftRow][leftCol].multiply(right[leftCol][rightCol]));
+                for (leftCol = 0; leftCol < multiplicand[0].length; leftCol++) {
+                    temp = temp.add(multiplicand[leftRow][leftCol].multiply(multiplier[leftCol][rightCol]));
+                }
                 result[leftRow][rightCol] = temp;
             }
         }

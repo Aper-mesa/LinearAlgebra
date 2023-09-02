@@ -50,7 +50,7 @@ public class Fraction {
             numerator = new BigDecimal(fraction);
             denominator = BigDecimal.ONE;
         }
-        this.sign = positive ? 1 : -1;
+        sign = positive ? 1 : -1;
         integerize(this);
     }
 
@@ -66,11 +66,11 @@ public class Fraction {
 
     ///不输入分母和符号的构造方法，分母默认为1，符号默认为正
     public Fraction(BigDecimal numerator) {
-        this(numerator, new BigDecimal(1), 1);
+        this(numerator, new BigDecimal(1));
     }
 
     ///静态的数值为0的分数
-    public static final Fraction ZERO = new Fraction("0");
+    public static final Fraction ZERO = new Fraction(new BigDecimal(0));
 
     ///静态的数值为1的分数
     public static final Fraction ONE = new Fraction("1");
@@ -154,13 +154,13 @@ public class Fraction {
 
     ///加法
     public Fraction add(Fraction fraction) {
-        Fraction addend = new Fraction(this.toString());
+        Fraction addend = new Fraction(numerator,denominator,sign);
         Fraction augend = new Fraction(fraction.toString());
         augend.setNumerator(new BigDecimal(augend.numerator.toPlainString()));
         augend.setDenominator(new BigDecimal(augend.denominator.toPlainString()));
         //如果拿同一个对象进行加法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(augend)) augend = new Fraction(augend.numerator, augend.denominator, augend.sign);
-        commonize(augend);
+        if (equals(augend)) augend = new Fraction(augend.numerator, augend.denominator, augend.sign);
+        addend.commonize(augend);
         //先统一把符号放到分子上再进行计算
         if (addend.sign < 0) {
             addend.sign *= -1;
@@ -183,7 +183,7 @@ public class Fraction {
     ///减法
     public Fraction subtract(Fraction fraction) {
         Fraction subtrahend = new Fraction(fraction.toString());
-        if (this.equals(subtrahend))
+        if (equals(subtrahend))
             subtrahend = new Fraction(subtrahend.numerator, subtrahend.denominator, subtrahend.sign);
         subtrahend.setSign(-1 * subtrahend.sign);
         return add(subtrahend);
@@ -191,10 +191,10 @@ public class Fraction {
 
     ///乘法
     public Fraction multiply(Fraction fraction) {
-        Fraction multiplicand = new Fraction(this.toString());
+        Fraction multiplicand = new Fraction(toString());
         Fraction multiplier = new Fraction(fraction.toString());
         //如果拿同一个对象进行乘法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(multiplier))
+        if (equals(multiplier))
             multiplier = new Fraction(multiplier.numerator, multiplier.denominator, multiplier.sign);
         multiplicand.numerator = numerator.multiply(multiplier.numerator);
         multiplicand.denominator = denominator.multiply(multiplier.denominator);
@@ -205,12 +205,12 @@ public class Fraction {
 
     ///除法
     public Fraction divide(Fraction fraction) {
-        Fraction dividend = new Fraction(this.toString());
+        Fraction dividend = new Fraction(toString());
         Fraction divisor = new Fraction(fraction.toString());
         divisor.setNumerator(new BigDecimal(divisor.numerator.toPlainString()));
         divisor.setDenominator(new BigDecimal(divisor.denominator.toPlainString()));
         //如果拿同一个对象进行除法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (this.equals(divisor))
+        if (equals(divisor))
             divisor = new Fraction(divisor.numerator, new BigDecimal(divisor.denominator.toPlainString()), divisor.sign);
         if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) {
             System.out.println("0不可作除数");
@@ -225,7 +225,7 @@ public class Fraction {
 
     ///变为相反数的方法
     public Fraction negate() {
-        return new Fraction(this.numerator, this.denominator, sign * -1);
+        return new Fraction(numerator, denominator, sign * -1);
     }
 
     ///输出分数形式的字符串
