@@ -82,7 +82,8 @@ public class Mat {
         Fraction[][] result = new Fraction[mat1.length][mat1[0].length];
         for (int i = 0; i < result.length; i++)
             for (int j = 0; j < result.length; j++)
-                result[i][j] = mat1[i][j].multiply(mat2[i][j].multiply(new Fraction(sign + "")));
+                //result[i][j] = mat1[i][j].multiply(mat2[i][j].multiply(new Fraction(sign + "")));
+                result[i][j] = mat1[i][j].add(mat2[i][j].multiply(new Fraction(sign + "")));
         return result;
     }
 
@@ -303,7 +304,7 @@ public class Mat {
             //将对角线数以上的数字变为0
             for (int k = 0; k < dia + 1; k++) {
                 boolean has = false;
-                //找到对角线数上第一个非0数字
+                //找到对角线数上第一个非零数字
                 for (i = dia - 1; i >= 0; i--) {
                     if (!mat1[i][dia].equals(Fraction.ZERO)) {
                         has = true;
