@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 //此程序用于计算行列式
@@ -12,7 +11,7 @@ public class Det {
         int order = det.length;
         //行列式的结果
         Fraction result = Fraction.ONE;
-        //记录行列式是否因交换而需要变为原来的相反数
+        //记录行列式是否因交换而需要变为原相反数
         boolean switched = false;
         boolean zero = true;
         for (int dia = 0; dia < order; dia++) {

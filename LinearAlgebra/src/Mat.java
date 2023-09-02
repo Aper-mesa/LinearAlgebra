@@ -28,10 +28,10 @@ public class Mat {
                 case "1" -> result = add(1);
                 case "2" -> result = add(-1);
                 case "3" -> result = multiply();
-                case "4" -> result = exponentiation();
-                case "5" -> result = scalar();
+                case "4" -> result = exponentiate();
+                case "5" -> result = scalarMultiply();
                 case "6" -> result = transpose();
-                case "7" -> result = rank();
+                case "7" -> result = getRank();
                 case "8" -> result = inverse();
                 case "0" -> System.exit(0);
             }
@@ -107,9 +107,8 @@ public class Mat {
         for (leftRow = 0; leftRow < multiplicand.length; leftRow++) {
             for (rightCol = 0; rightCol < multiplier[0].length; rightCol++) {
                 temp = Fraction.ZERO;
-                for (leftCol = 0; leftCol < multiplicand[0].length; leftCol++) {
+                for (leftCol = 0; leftCol < multiplicand[0].length; leftCol++)
                     temp = temp.add(multiplicand[leftRow][leftCol].multiply(multiplier[leftCol][rightCol]));
-                }
                 result[leftRow][rightCol] = temp;
             }
         }
@@ -117,23 +116,24 @@ public class Mat {
     }
 
     ///方幂
-    public static Fraction[][] exponentiation() {
+    public static Fraction[][] exponentiate() {
         mat1 = input(1);
+        Fraction[][] fraction = new Fraction[mat1.length][mat1[0].length];
+        for (int i = 0; i < fraction.length; i++) fraction[i] = Arrays.copyOf(mat1[i], mat1[0].length);
         System.out.println("输入指数");
         int exponent = Integer.parseInt(input.nextLine());
         //指数为0，结果为同阶单位矩阵
         if (exponent == 0) {
             for (Fraction[] row : mat1) Arrays.fill(row, Fraction.ZERO);
-            for (int i = 0; i < mat1.length; i++) mat1[i][i] = Fraction.ONE;
-            return mat1;
+            for (int i = 0; i < mat1.length; i++) fraction[i][i] = Fraction.ONE;
+            return fraction;
         }
-        result = mat1;
-        for (int i = 0; i < exponent; i++) result = multiplicationAlgorithm(mat1, result);
-        return result;
+        for (int i = 1; i < exponent; i++) fraction = multiplicationAlgorithm(fraction, mat1);
+        return fraction;
     }
 
     ///数乘
-    public static Fraction[][] scalar() {
+    public static Fraction[][] scalarMultiply() {
         mat1 = input(1);
         System.out.println("输入所乘数字");
         Fraction k = new Fraction(input.nextLine());
@@ -153,7 +153,7 @@ public class Mat {
     }
 
     ///求秩框架
-    public static Fraction[][] rank() {
+    public static Fraction[][] getRank() {
         mat1 = input(1);
         System.out.println("秩为" + rankAlgorithm(mat1));
         return mat1;
@@ -255,7 +255,7 @@ public class Mat {
         }
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
         Fraction[][] test = new Fraction[mat1.length][mat1.length];
-        for (int i = 0; i < mat1.length; i++) test[i] = Arrays.copyOf(mat1[i], mat1.length);
+        for (int i = 0; i < mat1.length; i++) test[i] = Arrays.copyOf(mat1[i], mat1[0].length);
         //调用求秩方法判断方阵是否满秩
         if (mat1.length != rankAlgorithm(test)) {
             System.out.println("方阵不满秩\n");

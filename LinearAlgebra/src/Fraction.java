@@ -70,7 +70,7 @@ public class Fraction {
     }
 
     ///静态的数值为0的分数
-    public static final Fraction ZERO = new Fraction(new BigDecimal(0));
+    public static final Fraction ZERO = new Fraction("0");
 
     ///静态的数值为1的分数
     public static final Fraction ONE = new Fraction("1");
@@ -154,7 +154,7 @@ public class Fraction {
 
     ///加法
     public Fraction add(Fraction fraction) {
-        Fraction addend = new Fraction(numerator,denominator,sign);
+        Fraction addend = new Fraction(numerator, denominator, sign);
         Fraction augend = new Fraction(fraction.toString());
         augend.setNumerator(new BigDecimal(augend.numerator.toPlainString()));
         augend.setDenominator(new BigDecimal(augend.denominator.toPlainString()));
@@ -231,7 +231,7 @@ public class Fraction {
     ///输出分数形式的字符串
     @Override
     public String toString() {
-        return (numerator.compareTo(BigDecimal.ZERO) == 0 ? "" : (sign > 0 ? "" : "-")) + numerator.toPlainString() + (denominator.equals(BigDecimal.ONE) ? "" : "/") + (denominator.equals(BigDecimal.ONE) ? "" : denominator.toPlainString());
+        return (numerator.compareTo(BigDecimal.ZERO) == 0 ? "" : (sign > 0 ? "" : "-")) + numerator.stripTrailingZeros().toPlainString() + (denominator.equals(BigDecimal.ONE) ? "" : "/") + (denominator.equals(BigDecimal.ONE) ? "" : denominator.stripTrailingZeros().toPlainString());
     }
 
     ///输出小数形式的字符串
