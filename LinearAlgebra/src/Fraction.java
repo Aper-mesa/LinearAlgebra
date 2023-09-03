@@ -1,10 +1,11 @@
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /*分数类，支持用户输入整数、小数以及指定格式的分数
-        支持整数、小数以及分数之间的四则运算
+        支持整数、小数以及分数之间的四则运算和幂运算
         支持数据无损无精度问题，支持小数以分数或小数形式输出。*/
 
 public class Fraction {
@@ -221,6 +222,42 @@ public class Fraction {
         dividend.sign = dividend.sign == divisor.sign ? 1 : -1;
         simplify(dividend);
         return dividend;
+    }
+
+    ///幂运算
+    //FIXME BigDecimal类只提供整数指数的幂运算，根本不够用。需要写一个根式类。
+    public Fraction exponentiate(int exponent) {
+        BigDecimal numerator = this.numerator;
+        BigDecimal denominator = this.denominator;
+        if (sign < 0) {
+            sign *= -1;
+            numerator = numerator.negate();
+        }
+        numerator = numerator.pow(exponent, new MathContext(3));
+        denominator = denominator.pow(exponent, new MathContext(3));
+        if (numerator.compareTo(BigDecimal.ZERO) < 0) {
+            sign *= -1;
+            numerator = numerator.negate();
+        }
+        Fraction result = new Fraction(numerator, denominator, sign);
+        simplify(result);
+        return result;
+    }
+
+    ///开根号
+    //FIXME 此方法为根式类写好前的临时方法，仅用于临时向量模长计算。根式类写好后此类将会与幂运算方法合并。
+    public Fraction squareRoot() {
+        if (sign < 0) {
+            System.out.println("负数无实数平方根");
+            return this;
+        }
+        BigDecimal numerator = this.numerator;
+        BigDecimal denominator = this.denominator;
+        numerator = numerator.sqrt(new MathContext(3));
+        denominator = denominator.sqrt(new MathContext(3));
+        Fraction result = new Fraction(numerator, denominator);
+        simplify(result);
+        return result;
     }
 
     ///变为相反数的方法

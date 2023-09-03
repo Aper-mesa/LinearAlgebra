@@ -6,6 +6,6 @@ public class Test {
     public static void main(String[] args) {
         Fraction f1= Fraction.ZERO;
         Fraction f2= new Fraction("11/5");
-        System.out.println(f1.add(f2));
+        System.out.println(Math.pow(0,0));
     }
 }
