@@ -147,6 +147,7 @@ public class Vec {
         }
         return result.toString();
     }
+
     // 复制向量
     public Vec copy() {
         return new Vec(dimension, data);
@@ -163,22 +164,21 @@ public class Vec {
     }
 
     // 控制台
-    public static void main(String[] src){
+    public static void main(String[] src) {
         Dictionary<String, Vec> var = new Hashtable<>();
         Console console = new Console();
         Scanner scanner = new Scanner(System.in);
         Console.help();
         System.out.print(">>> ");
-        while (console.deal(scanner.nextLine().replace(" ", ""), var)){
+        while (console.deal(scanner.nextLine().replace(" ", ""), var)) {
             System.out.print(">>> ");
-
         }
     }
 }
 
 // 控制台相关逻辑
-class Console{
-    public static void help(){
+class Console {
+    public static void help() {
         System.out.println("""
                 ↓ 优先级 高->低 ↓ 不能嵌套
                 help: 查看帮助
@@ -194,130 +194,131 @@ class Console{
                 Mix(变量名): 混合积
                 """);
     }
-    public boolean deal(String src, Dictionary<String, Vec> var){
-       if(Objects.equals(src, "exit")) return false;
-       if(Objects.equals(src, "C")){
-           System.out.flush();
-           var = new Hashtable<>();
-       }
-       if(Objects.equals(src, "help")){
-           help();
-       }
-       return analyze(src, var);
+
+    public boolean deal(String src, Dictionary<String, Vec> var) {
+        if (Objects.equals(src, "exit")) return false;
+        if (Objects.equals(src, "C")) {
+            System.out.flush();
+            var = new Hashtable<>();
+        }
+        if (Objects.equals(src, "help")) {
+            help();
+        }
+        return analyze(src, var);
     }
 
-    private boolean analyze(String src, Dictionary<String, Vec> var){
-        try{
-            if(src.contains("=")){
-                if(src.contains("+") || src.contains("-") || src.contains("*") || src.contains("^")){
-                    String r = src.substring(src.indexOf("=")+1);
-                    if(src.contains("*")){
+    private boolean analyze(String src, Dictionary<String, Vec> var) {
+        try {
+            if (src.contains("=")) {
+                if (src.contains("+") || src.contains("-") || src.contains("*") || src.contains("^")) {
+                    String r = src.substring(src.indexOf("=") + 1);
+                    if (src.contains("*")) {
                         Fraction a = new Fraction(r.substring(0, r.indexOf("*")));
-                        String b = r.substring(r.indexOf("*")+1);
-                        if(var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = r.substring(r.indexOf("*") + 1);
+                        if (var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.multiply(a, var.get(b));
                         var.put(src.substring(0, src.indexOf("=")), result);
-                        System.out.println(src.substring(0, src.indexOf("=")) + " = " +  result);
+                        System.out.println(src.substring(0, src.indexOf("=")) + " = " + result);
                     }
-                    if(src.contains("+")){
+                    if (src.contains("+")) {
                         String a = r.substring(0, r.indexOf("+"));
-                        String b = r.substring(r.indexOf("+")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = r.substring(r.indexOf("+") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.add(var.get(a), var.get(b));
                         var.put(src.substring(0, src.indexOf("=")), result);
-                        System.out.println(src.substring(0, src.indexOf("=")) + " = " +  result);
+                        System.out.println(src.substring(0, src.indexOf("=")) + " = " + result);
                     }
-                    if(src.contains("-")){
+                    if (src.contains("-")) {
                         String a = r.substring(0, r.indexOf("-"));
-                        String b = r.substring(r.indexOf("-")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = r.substring(r.indexOf("-") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.subtract(var.get(a), var.get(b));
                         var.put(src.substring(0, src.indexOf("=")), result);
-                        System.out.println(src.substring(0, src.indexOf("=")) + " = " +  result);
+                        System.out.println(src.substring(0, src.indexOf("=")) + " = " + result);
                     }
-                    if(src.contains("^")){
+                    if (src.contains("^")) {
                         String a = r.substring(0, r.indexOf("^"));
-                        String b = r.substring(r.indexOf("^")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = r.substring(r.indexOf("^") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.angle(var.get(a), var.get(b));
-                        System.out.println(src.substring(0, src.indexOf("=")) + " = " +  result);
+                        System.out.println(src.substring(0, src.indexOf("=")) + " = " + result);
                     }
                     return true;
                 }
                 String[] data = src.split("=");
                 String name = data[0];
-                String[] value = data[1].substring(1, data[1].length()-1).split(",");
+                String[] value = data[1].substring(1, data[1].length() - 1).split(",");
                 Fraction[] result = new Fraction[value.length];
                 for (int i = 0; i < value.length; i++) {
                     result[i] = new Fraction(value[i]);
                 }
                 var.put(name, new Vec(result.length, result));
                 System.out.println(name + " = " + var.get(name));
-            }else{
-                if(!(src.contains("+") || src.contains("-") || src.contains("*") || src.contains("^") || src.contains(".") || src.contains("|") || src.contains("Angle") || src.contains("Mix"))){
+            } else {
+                if (!(src.contains("+") || src.contains("-") || src.contains("*") || src.contains("^") || src.contains(".") || src.contains("|") || src.contains("Angle") || src.contains("Mix"))) {
                     System.out.println(var.get(src));
-                }
-                else{
-                    if(src.contains("*")){
+                } else {
+                    if (src.contains("*")) {
                         Fraction a = new Fraction(src.substring(0, src.indexOf("*")));
-                        String b = src.substring(src.indexOf("*")+1);
-                        if(var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = src.substring(src.indexOf("*") + 1);
+                        if (var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.multiply(a, var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains("+")){
+                    if (src.contains("+")) {
                         String a = src.substring(0, src.indexOf("+"));
-                        String b = src.substring(src.indexOf("+")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = src.substring(src.indexOf("+") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.add(var.get(a), var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains("-")){
+                    if (src.contains("-")) {
                         String a = src.substring(0, src.indexOf("-"));
-                        String b = src.substring(src.indexOf("-")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = src.substring(src.indexOf("-") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.subtract(var.get(a), var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains("^")){
+                    if (src.contains("^")) {
                         String a = src.substring(0, src.indexOf("^"));
-                        String b = src.substring(src.indexOf("^")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = src.substring(src.indexOf("^") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.angle(var.get(a), var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains(".")){
+                    if (src.contains(".")) {
                         String a = src.substring(0, src.indexOf("."));
-                        String b = src.substring(src.indexOf(".")+1);
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                        String b = src.substring(src.indexOf(".") + 1);
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.dot(var.get(a), var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains("|")){
+                    if (src.contains("|")) {
                         String a = src.substring(1);
-                        if(var.get(a) == null) throw new IllegalArgumentException("变量不存在");
+                        if (var.get(a) == null) throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.length(var.get(a));
                         System.out.println(result);
                     }
-                    if(src.contains("Angle")){
-                        String a = src.substring(src.indexOf("Angle(")+6, src.indexOf(","));
-                        String b = src.substring(src.indexOf(",")+1, src.indexOf(")"));
-                        if(var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
+                    if (src.contains("Angle")) {
+                        String a = src.substring(src.indexOf("Angle(") + 6, src.indexOf(","));
+                        String b = src.substring(src.indexOf(",") + 1, src.indexOf(")"));
+                        if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.angle(var.get(a), var.get(b));
                         System.out.println(result);
                     }
-                    if(src.contains("Mix")){
+                    if (src.contains("Mix")) {
                         String[] s = src.split(",");
-                        String a = s[0].substring(s[0].indexOf("(")+1);
+                        String a = s[0].substring(s[0].indexOf("(") + 1);
                         String b = s[1];
                         String c = s[2].substring(0, s[2].indexOf(")"));
-                        if(var.get(a) == null || var.get(b) == null || var.get(c) == null) throw new IllegalArgumentException("变量不存在");
+                        if (var.get(a) == null || var.get(b) == null || var.get(c) == null)
+                            throw new IllegalArgumentException("变量不存在");
                         Fraction result = Vec.mixed(var.get(a), var.get(b), var.get(c));
                         System.out.println(result);
                     }
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return true;
