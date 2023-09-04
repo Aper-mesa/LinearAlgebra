@@ -31,7 +31,7 @@ public class Mat {
                 case "4" -> result = exponentiate();
                 case "5" -> result = scalarMultiply();
                 case "6" -> result = transpose();
-                case "7" -> result = getRank();
+                case "7" -> result = (Fraction[][]) getRank(input(1))[1];
                 case "8" -> result = inverse();
                 case "0" -> System.exit(0);
             }
@@ -137,7 +137,7 @@ public class Mat {
     ///数乘
     public static Fraction[][] scalarMultiply() {
         mat1 = input(1);
-        System.out.println("输入所乘数字");
+        System.out.println("输入标量");
         Fraction k = new Fraction(input.nextLine());
         Fraction[][] result = deepCopy(mat1);
         for (int i = 0; i < mat1.length; i++)
@@ -154,12 +154,13 @@ public class Mat {
         return result;
     }
 
-    ///求秩框架
-    public static Fraction[][] getRank() {
-        mat1 = input(1);
-        Fraction[][] result = deepCopy(mat1);
-        System.out.println("秩为" + rankAlgorithm(result));
-        return result;
+    ///求秩框架，返回一个长度为2的Object数组，第一个放矩阵的秩，第二个放阶梯矩阵
+    public static Object[] getRank(Fraction[][] matrix) {
+        Object[] resultArr = new Object[2];
+        Fraction[][] echelonMatrix = deepCopy(matrix);
+        resultArr[0] = rankAlgorithm(echelonMatrix);
+        resultArr[1] = echelonMatrix;
+        return resultArr;
     }
 
     ///求秩算法核心
