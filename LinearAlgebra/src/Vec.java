@@ -101,8 +101,8 @@ public class Vec {
         for (int i = 0; i < a.dimension; i++) {
             result = result.add(a.data[i].multiply(a.data[i]));
         }
-        // TODO: 等待Fraction 乘方
-        return result;
+        // TODO: 临时用法
+        return result.squareRoot();
     }
 
     public Fraction length() {
