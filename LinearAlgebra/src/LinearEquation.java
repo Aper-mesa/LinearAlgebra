@@ -11,8 +11,9 @@ public class LinearEquation {
     private static int numberOfEquations = 0;
 
     public static void main(String[] args) {
-        System.out.println("输入线性方程组元的个数");
+        System.out.println("输入线性方程组元的个数，输入0退出");
         numberOfUnknowns = Integer.parseInt(input.nextLine());
+        if (numberOfUnknowns == 0) System.exit(0);
         System.out.println("按行输入增广矩阵，元素间用一个空格隔开，输入0结束");
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
@@ -30,8 +31,8 @@ public class LinearEquation {
         int augmentedRank = (int) Mat.getRank(augmentedMatrix)[0];
         int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
         if (augmentedRank != coefficientRank) {
-            System.out.println("方程组无解");
-            System.exit(0);
+            System.out.println("方程组无解\n");
+            return;
         }
         boolean uniqueSolution = false;
         Fraction[][] augmentedEchelon;
@@ -47,87 +48,83 @@ public class LinearEquation {
         coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
         if (coefficientRank == numberOfEquations) {
             uniqueSolution = true;
-            System.out.println("方程有唯一解");
-        } else System.out.println("方程有无数解");
-        System.out.println("阶梯增广矩阵：");
-        for (Fraction[] row : augmentedEchelon) System.out.println(Arrays.toString(row));
+            System.out.println("方程有唯一解\n");
+        } else System.out.println("方程有无数解\n");
         if (uniqueSolution) uniqueSolution(augmentedEchelon);
+        else infiniteSolution(augmentedEchelon);
     }
 
     ///求唯一解
-    private static Fraction[][] uniqueSolution(Fraction[][] augmentedEchelon) {
+    private static void uniqueSolution(Fraction[][] augmentedEchelon) {
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Fraction[] constantVector = new Fraction[augmentedEchelon.length];
         Fraction[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
         for (int i = 0; i < constantVector.length; i++)
             constantVector[i] = augmentedEchelon[i][augmentedEchelon[0].length - 1];
-        System.out.println("常数向量：");
-        System.out.println(Arrays.toString(constantVector));
-        boolean zero = true;
-       /* //此循环将系数矩阵变为上三角
-        for (int dia = 0; dia < augmentedEchelon.length; dia++) {
-            Fraction[] tempRow, tempRow2;
+        //此循环将系数矩阵变为上三角
+        for (int dia = 0; dia < coefficientEchelon.length; dia++) {
+            Fraction[] tempRow;
+            Fraction tempElement;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (augmentedEchelon[dia][dia].equals(Fraction.ZERO)) {
+            if (coefficientEchelon[dia][dia].equals(Fraction.ZERO)) {
                 int i;
-                for (i = dia + 1; i < augmentedEchelon.length; i++) {
-                    if (!augmentedEchelon[i][dia].equals(Fraction.ZERO)) {
-                        zero = false;
-                        break;
-                    }
-                }
-                if (zero) System.out.println("对角线上有0");
-                tempRow = augmentedEchelon[dia];
-                augmentedEchelon[dia] = augmentedEchelon[i];
-                augmentedEchelon[i] = tempRow;
-                tempRow2 = constantVector[dia];
+                for (i = dia + 1; i < coefficientEchelon.length; i++)
+                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) break;
+                tempRow = coefficientEchelon[dia];
+                coefficientEchelon[dia] = coefficientEchelon[i];
+                coefficientEchelon[i] = tempRow;
+                tempElement = constantVector[dia];
                 constantVector[dia] = constantVector[i];
-                constantVector[i] = tempRow2;
+                constantVector[i] = tempElement;
             }
             int i;
             //将对角线数以下的数字变为0
-            for (int k = 0; k < augmentedEchelon.length - dia - 1; k++) {
+            for (int k = 0; k < coefficientEchelon.length - dia - 1; k++) {
                 boolean has = false;
                 //找到第一个不是0的数字的行的索引
-                for (i = dia + 1; i < augmentedEchelon.length; i++) {
-                    if (!augmentedEchelon[i][dia].equals(Fraction.ZERO)) {
+                for (i = dia + 1; i < coefficientEchelon.length; i++) {
+                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) {
                         has = true;
                         break;
                     }
                 }
-                Tool.addK(constantVector, has, i, dia, augmentedEchelon);
+                Tool.addK(constantVector, has, i, dia, coefficientEchelon);
             }
         }
         //接下来将对角线上的数字变为0：从下往上加
-        for (int dia = augmentedEchelon.length - 1; dia >= 0; dia--) {
+        for (int dia = coefficientEchelon.length - 1; dia >= 0; dia--) {
             int i;
             //将对角线数以上的数字变为0
             for (int k = 0; k < dia + 1; k++) {
                 boolean has = false;
                 //找到对角线数上第一个非零数字
                 for (i = dia - 1; i >= 0; i--) {
-                    if (!augmentedEchelon[i][dia].equals(Fraction.ZERO)) {
+                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) {
                         has = true;
                         break;
                     }
                 }
-                Tool.addK(constantVector, has, i, dia, augmentedEchelon);
+                Tool.addK(constantVector, has, i, dia, coefficientEchelon);
             }
         }
         //最后将对角线数都化为1
-        for (int i = 0; i < augmentedEchelon.length; i++) {
-            if (!augmentedEchelon[i][i].equals(Fraction.ONE)) {
-                Fraction ratio = Fraction.ONE.divide(augmentedEchelon[i][i]);
-                for (int j = 0; j < augmentedEchelon.length; j++) {
-                    augmentedEchelon[i][j] = augmentedEchelon[i][j].multiply(ratio);
-                    constantVector[i][j] = constantVector[i][j].multiply(ratio);
+        for (int i = 0; i < coefficientEchelon.length; i++) {
+            if (!coefficientEchelon[i][i].equals(Fraction.ONE)) {
+                Fraction ratio = Fraction.ONE.divide(coefficientEchelon[i][i]);
+                for (int j = 0; j < coefficientEchelon.length; j++) {
+                    coefficientEchelon[i][j] = coefficientEchelon[i][j].multiply(ratio);
+                    constantVector[j] = constantVector[j].multiply(ratio);
                 }
             }
-        }*/
-        return augmentedEchelon;
+        }
+        //展示结果
+        System.out.println("解：");
+        for (int i = 0; i < numberOfUnknowns; i++) System.out.println("x" + (i + 1) + "=" + constantVector[i]);
+        System.out.println();
+        main(null);
     }
 
-    private static Fraction[][] infiniteSolution(Fraction[][] echelon) {
-        return null;
+    ///求通解
+    private static void infiniteSolution(Fraction[][] augmentedEchelon) {
     }
 }

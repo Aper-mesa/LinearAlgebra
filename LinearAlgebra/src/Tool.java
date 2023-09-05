@@ -42,6 +42,26 @@ class Tool {
         }
     }
 
+    ///向量加K倍操作
+    protected static void addK(Fraction[] vector, boolean has, int i, int dia, Fraction[][] mat) {
+        if (has) {
+            //计算两行之间的比例
+            Fraction ratio = mat[i][dia].negate().divide(mat[dia][dia]);
+            //用临时数组存储乘以比例之后的对角线行
+            Fraction[] tempRow = new Fraction[mat.length];
+            Fraction tempElement = null;
+            for (int j = 0; j < mat.length; j++) {
+                tempRow[j] = ratio.multiply(mat[dia][j]);
+                tempElement = ratio.multiply(vector[j]);
+            }
+            //将临时数组中的数据依次加到要变成0的那一行中
+            for (int j = 0; j < mat.length; j++) {
+                mat[i][j] = mat[i][j].add(tempRow[j]);
+                vector[j] = vector[j].add(tempElement);
+            }
+        }
+    }
+
     ///判断二维数组是否存在元素全为0的某一行或某一列
     protected static boolean hasZeroRowOrColumn(Fraction[][] input) {
         boolean badOne = false;
