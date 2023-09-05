@@ -7,7 +7,7 @@ public class Det {
     }
 
     public static Fraction getValue(Fraction[][] det) {
-        if (zero(det)) return Fraction.ZERO;
+        if (Tool.hasZeroRowOrColumn(det)) return Fraction.ZERO;
         int order = det.length;
         //行列式的结果
         Fraction result = Fraction.ONE;
@@ -79,31 +79,4 @@ public class Det {
         }
         System.out.println("该" + order + "阶行列式的结果为" + Det.getValue(det));
     }
-
-    ///判断行列式是否存在元素全为0的某一行或某一列
-    public static boolean zero(Fraction[][] det) {
-        boolean badOne = false;
-        for (Fraction[] row : det) {
-            badOne = false;
-            for (Fraction e : row) {
-                if (!e.equals(Fraction.ZERO)) {
-                    badOne = true;
-                    break;
-                }
-            }
-            if (!badOne) return true;
-        }
-        for (int i = 0; i < det.length; i++) {
-            badOne = false;
-            for (Fraction[] col : det) {
-                if (!col[i].equals(Fraction.ZERO)) {
-                    badOne = true;
-                    break;
-                }
-            }
-            if (!badOne) return true;
-        }
-        return !badOne;
-    }
-
 }

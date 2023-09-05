@@ -75,8 +75,8 @@ public class Mat {
     public static Fraction[][] add(int sign) {
         mat1 = input(1);
         mat2 = input(2);
-        Fraction[][] left = deepCopy(mat1);
-        Fraction[][] right = deepCopy(mat2);
+        Fraction[][] left = Tool.deepCopy(mat1);
+        Fraction[][] right = Tool.deepCopy(mat2);
         if (row1 != row2 || col1 != col2) {
             System.out.println("两个矩阵不同型，无法计算\n");
             main(null);
@@ -101,8 +101,8 @@ public class Mat {
 
     ///乘法算法核心
     private static Fraction[][] multiplicationAlgorithm(Fraction[][] left, Fraction[][] right) {
-        Fraction[][] multiplicand = deepCopy(left);
-        Fraction[][] multiplier = deepCopy(right);
+        Fraction[][] multiplicand = Tool.deepCopy(left);
+        Fraction[][] multiplier = Tool.deepCopy(right);
         Fraction[][] result = new Fraction[multiplicand.length][multiplier[0].length];
         //临时记录积的某个元素的值
         Fraction temp;
@@ -121,7 +121,7 @@ public class Mat {
     ///方幂
     public static Fraction[][] exponentiate() {
         mat1 = input(1);
-        Fraction[][] result = deepCopy(mat1);
+        Fraction[][] result = Tool.deepCopy(mat1);
         System.out.println("输入指数");
         int exponent = Integer.parseInt(input.nextLine());
         //指数为0，结果为同阶单位矩阵
@@ -139,7 +139,7 @@ public class Mat {
         mat1 = input(1);
         System.out.println("输入标量");
         Fraction k = new Fraction(input.nextLine());
-        Fraction[][] result = deepCopy(mat1);
+        Fraction[][] result = Tool.deepCopy(mat1);
         for (int i = 0; i < mat1.length; i++)
             for (int j = 0; j < mat1[0].length; j++) result[i][j] = k.multiply(result[i][j]);
         return result;
@@ -157,7 +157,7 @@ public class Mat {
     ///求秩框架，返回一个长度为2的Object数组，第一个放矩阵的秩，第二个放阶梯矩阵
     public static Object[] getRank(Fraction[][] matrix) {
         Object[] resultArr = new Object[2];
-        Fraction[][] echelonMatrix = deepCopy(matrix);
+        Fraction[][] echelonMatrix = Tool.deepCopy(matrix);
         resultArr[0] = rankAlgorithm(echelonMatrix);
         resultArr[1] = echelonMatrix;
         return resultArr;
@@ -253,13 +253,13 @@ public class Mat {
     ///求逆
     public static Fraction[][] inverse() {
         mat1 = input(1);
-        Fraction[][] fraction = deepCopy(mat1);
+        Fraction[][] fraction = Tool.deepCopy(mat1);
         if (row1 != col1) {
             System.out.println("只有方阵才有逆矩阵\n");
             main(null);
         }
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
-        Fraction[][] test = deepCopy(fraction);
+        Fraction[][] test = Tool.deepCopy(fraction);
         //调用求秩方法判断方阵是否满秩
         if (fraction.length != rankAlgorithm(test)) {
             System.out.println("方阵不满秩\n");
@@ -301,7 +301,7 @@ public class Mat {
                         break;
                     }
                 }
-                addK(identity, has, i, dia, fraction);
+                Tool.addK(identity, has, i, dia, fraction);
             }
         }
         //接下来将对角线上的数字变为0：从下往上加
@@ -317,7 +317,7 @@ public class Mat {
                         break;
                     }
                 }
-                addK(identity, has, i, dia, fraction);
+                Tool.addK(identity, has, i, dia, fraction);
             }
         }
         //最后将对角线数都化为1
@@ -331,31 +331,5 @@ public class Mat {
             }
         }
         return identity;
-    }
-
-    ///矩阵加K倍操作
-    private static void addK(Fraction[][] identity, boolean has, int i, int dia, Fraction[][] mat) {
-        if (has) {
-            //计算两行之间的比例
-            Fraction ratio = mat[i][dia].negate().divide(mat[dia][dia]);
-            //用临时数组存储乘以比例之后的对角线行
-            Fraction[] temp = new Fraction[mat.length], temp2 = new Fraction[mat.length];
-            for (int j = 0; j < mat.length; j++) {
-                temp[j] = ratio.multiply(mat[dia][j]);
-                temp2[j] = ratio.multiply(identity[dia][j]);
-            }
-            //将临时数组中的数据依次加到要变成0的那一行中
-            for (int j = 0; j < mat.length; j++) {
-                mat[i][j] = mat[i][j].add(temp[j]);
-                identity[i][j] = identity[i][j].add(temp2[j]);
-            }
-        }
-    }
-
-    //二维数组深复制，仅需提供起点，自动新建相同大小的终点
-    private static Fraction[][] deepCopy(Fraction[][] origin) {
-        Fraction[][] destination = new Fraction[origin.length][origin[0].length];
-        for (int i = 0; i < destination.length; i++) destination[i] = Arrays.copyOf(origin[i], destination[i].length);
-        return destination;
     }
 }
