@@ -49,16 +49,12 @@ class Tool {
             Fraction ratio = mat[i][dia].negate().divide(mat[dia][dia]);
             //用临时数组存储乘以比例之后的对角线行
             Fraction[] tempRow = new Fraction[mat.length];
-            Fraction tempElement = null;
-            for (int j = 0; j < mat.length; j++) {
-                tempRow[j] = ratio.multiply(mat[dia][j]);
-                tempElement = ratio.multiply(vector[j]);
-            }
+            Fraction tempElement;
+            for (int j = 0; j < mat.length; j++) tempRow[j] = ratio.multiply(mat[dia][j]);
+            tempElement = ratio.multiply(vector[dia]);
             //将临时数组中的数据依次加到要变成0的那一行中
-            for (int j = 0; j < mat.length; j++) {
-                mat[i][j] = mat[i][j].add(tempRow[j]);
-                vector[j] = vector[j].add(tempElement);
-            }
+            for (int j = 0; j < mat.length; j++) mat[i][j] = mat[i][j].add(tempRow[j]);
+            vector[i] = vector[i].add(tempElement);
         }
     }
 

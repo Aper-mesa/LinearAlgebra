@@ -32,6 +32,8 @@ public class LinearEquation {
         int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
         if (augmentedRank != coefficientRank) {
             System.out.println("方程组无解\n");
+            numberOfEquations=0;
+            main(null);
             return;
         }
         boolean uniqueSolution = false;
@@ -113,14 +115,15 @@ public class LinearEquation {
                 Fraction ratio = Fraction.ONE.divide(coefficientEchelon[i][i]);
                 for (int j = 0; j < coefficientEchelon.length; j++) {
                     coefficientEchelon[i][j] = coefficientEchelon[i][j].multiply(ratio);
-                    constantVector[j] = constantVector[j].multiply(ratio);
                 }
+                constantVector[i] = constantVector[i].multiply(ratio);
             }
         }
         //展示结果
         System.out.println("解：");
         for (int i = 0; i < numberOfUnknowns; i++) System.out.println("x" + (i + 1) + "=" + constantVector[i]);
         System.out.println();
+        numberOfEquations=0;
         main(null);
     }
 
