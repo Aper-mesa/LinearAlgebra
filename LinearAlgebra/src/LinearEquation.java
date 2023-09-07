@@ -11,6 +11,11 @@ public class LinearEquation {
     private static int numberOfEquations = 0;
 
     public static void main(String[] args) {
+        compute();
+    }
+
+    ///求解的初始步骤：输入和判断等
+    private static void compute() {
         System.out.println("输入线性方程组元的个数，输入0退出");
         numberOfUnknowns = Integer.parseInt(input.nextLine());
         if (numberOfUnknowns == 0) System.exit(0);
@@ -30,10 +35,10 @@ public class LinearEquation {
         coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfUnknowns);
         int augmentedRank = (int) Mat.getRank(augmentedMatrix)[0];
         int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
-        System.out.println("增广秩：" + augmentedRank+", 系数秩：" + coefficientRank);
+        System.out.println("增广秩：" + augmentedRank + ", 系数秩：" + coefficientRank);
         if (augmentedRank != coefficientRank) {
             System.out.println("方程组无解\n");
-            numberOfEquations=0;
+            numberOfEquations = 0;
             main(null);
             return;
         }
@@ -49,16 +54,14 @@ public class LinearEquation {
         } while (Tool.hasZeroRowOrColumn(augmentedEchelon));
         coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfUnknowns);
         coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
-        if (coefficientRank == numberOfEquations) {
-            uniqueSolution = true;
-            System.out.println("方程有唯一解\n");
-        } else System.out.println("方程有无数解\n");
-        if (uniqueSolution) uniqueSolution(augmentedEchelon);
+        //判断系数矩阵是否满秩来确定方程解的数量
+        if (coefficientRank == numberOfEquations) uniqueSolution(augmentedEchelon);
         else infiniteSolution(augmentedEchelon);
     }
 
     ///求唯一解
     private static void uniqueSolution(Fraction[][] augmentedEchelon) {
+        System.out.println("方程有唯一解\n");
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Fraction[] constantVector = new Fraction[augmentedEchelon.length];
         Fraction[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
@@ -124,12 +127,12 @@ public class LinearEquation {
         System.out.println("解：");
         for (int i = 0; i < numberOfUnknowns; i++) System.out.println("x" + (i + 1) + "=" + constantVector[i]);
         System.out.println();
-        numberOfEquations=0;
+        numberOfEquations = 0;
         main(null);
     }
 
     ///求通解
     private static void infiniteSolution(Fraction[][] augmentedEchelon) {
-        System.out.println("无数解");
+        System.out.println("方程有无数解\n");
     }
 }
