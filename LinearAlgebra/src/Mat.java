@@ -230,6 +230,7 @@ public class Mat {
                 inner:
                 for (firstNonZero = 0; firstNonZero < mat.length; firstNonZero++) {
                     for (int i = 0; i < col; i++) if (!mat[firstNonZero][i].equals(Fraction.ZERO)) continue inner;
+                    //这一步使2变成4/2
                     if (!mat[firstNonZero][col].equals(Fraction.ZERO)) {
                         for (bottom = firstNonZero + 1; bottom < mat.length; bottom++) {
                             if (!mat[bottom][col].equals(Fraction.ZERO)) {

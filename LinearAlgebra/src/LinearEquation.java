@@ -30,6 +30,7 @@ public class LinearEquation {
         coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfUnknowns);
         int augmentedRank = (int) Mat.getRank(augmentedMatrix)[0];
         int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
+        System.out.println("增广秩：" + augmentedRank+", 系数秩：" + coefficientRank);
         if (augmentedRank != coefficientRank) {
             System.out.println("方程组无解\n");
             numberOfEquations=0;
@@ -129,5 +130,6 @@ public class LinearEquation {
 
     ///求通解
     private static void infiniteSolution(Fraction[][] augmentedEchelon) {
+        System.out.println("无数解");
     }
 }

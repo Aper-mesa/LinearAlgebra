@@ -288,7 +288,9 @@ public class Fraction {
         else if (numerator.compareTo(BigDecimal.ZERO) == 0 && ((Fraction) fraction).numerator.compareTo(BigDecimal.ZERO) == 0)
             return true;
         else if (sign - ((Fraction) fraction).sign != 0) return false;
-        commonize((Fraction) fraction);
-        return numerator.subtract(((Fraction) fraction).numerator).compareTo(BigDecimal.ZERO) == 0;
+        Fraction copiedFraction = new Fraction(fraction.toString());
+        Fraction thisFraction = new Fraction(this.toString());
+        thisFraction.commonize(copiedFraction);
+        return thisFraction.numerator.subtract(copiedFraction.numerator).compareTo(BigDecimal.ZERO) == 0;
     }
 }
