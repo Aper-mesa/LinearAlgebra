@@ -1,10 +1,6 @@
 import java.util.*;
 
 //此类用于解线性方程组
-//让用户输入增广矩阵。获得系数矩阵。
-//分别求系数矩阵和增广矩阵的逆，不同则方程组无解。接着看系数矩阵是否满秩，满秩则有唯一解，降秩则有无穷解。
-//用阶梯化的增广矩阵继续求解。若有唯一解，则从下往上依次迭代得出所有解。
-//若有无穷解，则找出自由未知量，将其移至等式右侧，并用自由未知量依次表示出剩余未知量。
 public class LinearEquation {
     private static final Scanner input = new Scanner(System.in);
     private static int numberOfVariables;
