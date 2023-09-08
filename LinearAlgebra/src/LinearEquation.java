@@ -56,7 +56,7 @@ public class LinearEquation {
         coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
         //判断系数矩阵是否满秩来确定方程解的数量
         if (coefficientRank == numberOfEquations) uniqueSolution(augmentedEchelon);
-        else infiniteSolution(augmentedEchelon);
+        else infiniteSolution(augmentedEchelon, numberOfUnknowns - augmentedRank);
     }
 
     ///求唯一解
@@ -132,7 +132,16 @@ public class LinearEquation {
     }
 
     ///求通解
-    private static void infiniteSolution(Fraction[][] augmentedEchelon) {
-        System.out.println("方程有无数解\n");
+    private static void infiniteSolution(Fraction[][] augmentedEchelon, int numberOfFreeVariables) {
+        //确定自由未知量n-r，将常数向量左边的n-r列单独保存
+        Fraction[][] freeColumn = new Fraction[numberOfFreeVariables][numberOfEquations];
+        for (int i = numberOfFreeVariables; i > 0; i--) {
+            for (int j = 0; j < freeColumn[0].length; j++) {
+                freeColumn[i-1][j] = augmentedEchelon[j][augmentedEchelon[0].length-i-1];
+            }
+        }
+        for (Fraction[] fractions : freeColumn) {
+            System.out.println(Arrays.toString(fractions));
+        }
     }
 }
