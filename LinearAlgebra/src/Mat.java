@@ -31,7 +31,11 @@ public class Mat {
                 case "4" -> result = exponentiate();
                 case "5" -> result = scalarMultiply();
                 case "6" -> result = transpose();
-                case "7" -> result = (Fraction[][]) getRank(input(1))[1];
+                case "7" -> {
+                    Object[] resultArr = getRank(input(1));
+                    result = (Fraction[][]) resultArr[1];
+                    System.out.println("秩为" + (int) resultArr[0]);
+                }
                 case "8" -> result = inverse();
                 case "0" -> System.exit(0);
             }
@@ -268,7 +272,7 @@ public class Mat {
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Fraction[][] identity = new Fraction[fraction.length][fraction.length];
-        for (Fraction[] row : identity) Arrays.fill(row,Fraction.ZERO);
+        for (Fraction[] row : identity) Arrays.fill(row, Fraction.ZERO);
         for (int i = 0; i < identity.length; i++) identity[i][i] = Fraction.ONE;
         boolean zero = true;
         //此循环将方阵变为上三角

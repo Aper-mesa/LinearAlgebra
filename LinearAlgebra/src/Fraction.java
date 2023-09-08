@@ -281,6 +281,11 @@ public class Fraction {
         return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
     }
 
+    ///判断是否为负数
+    public boolean isNegative() {
+        return sign < 0;
+    }
+
     ///判断两个分数是否在数值上相同。无法使用subtract方法，否则产生递归调用问题导致栈溢出
     @Override
     public boolean equals(Object fraction) {

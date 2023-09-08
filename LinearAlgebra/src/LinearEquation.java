@@ -7,7 +7,7 @@ import java.util.*;
 //若有无穷解，则找出自由未知量，将其移至等式右侧，并用自由未知量依次表示出剩余未知量。
 public class LinearEquation {
     private static final Scanner input = new Scanner(System.in);
-    private static int numberOfUnknowns;
+    private static int numberOfVariables;
     private static int numberOfEquations = 0;
 
     public static void main(String[] args) {
@@ -17,8 +17,8 @@ public class LinearEquation {
     ///求解的初始步骤：输入和判断等
     private static void compute() {
         System.out.println("输入线性方程组元的个数，输入0退出");
-        numberOfUnknowns = Integer.parseInt(input.nextLine());
-        if (numberOfUnknowns == 0) System.exit(0);
+        numberOfVariables = Integer.parseInt(input.nextLine());
+        if (numberOfVariables == 0) System.exit(0);
         System.out.println("按行输入增广矩阵，元素间用一个空格隔开，输入0结束");
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
@@ -27,22 +27,12 @@ public class LinearEquation {
             equations.add(nextLine);
             numberOfEquations++;
         }
-        Fraction[][] augmentedMatrix = new Fraction[numberOfEquations][numberOfUnknowns + 1];
+        Fraction[][] augmentedMatrix = new Fraction[numberOfEquations][numberOfVariables + 1];
         Fraction[][] coefficientMatrix;
         for (int i = 0; i < augmentedMatrix.length; i++)
             for (int j = 0; j < augmentedMatrix[0].length; j++)
                 augmentedMatrix[i][j] = new Fraction(equations.get(i).split(" ")[j]);
-        coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfUnknowns);
-        int augmentedRank = (int) Mat.getRank(augmentedMatrix)[0];
-        int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
-        System.out.println("增广秩：" + augmentedRank + ", 系数秩：" + coefficientRank);
-        if (augmentedRank != coefficientRank) {
-            System.out.println("方程组无解\n");
-            numberOfEquations = 0;
-            main(null);
-            return;
-        }
-        boolean uniqueSolution = false;
+        coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfVariables);
         Fraction[][] augmentedEchelon;
         //此循环去掉阶梯增广矩阵的0行
         do {
@@ -52,16 +42,24 @@ public class LinearEquation {
                 numberOfEquations--;
             }
         } while (Tool.hasZeroRowOrColumn(augmentedEchelon));
-        coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfUnknowns);
+        int augmentedRank = (int) Mat.getRank(augmentedEchelon)[0];
+        int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
+        if (augmentedRank != coefficientRank) {
+            System.out.println("方程组无解\n");
+            numberOfEquations = 0;
+            main(null);
+            return;
+        }
+        coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfVariables);
         coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
-        //判断系数矩阵是否满秩来确定方程解的数量
-        if (coefficientRank == numberOfEquations) uniqueSolution(augmentedEchelon);
-        else infiniteSolution(augmentedEchelon, numberOfUnknowns - augmentedRank);
+        //判断系数矩阵来确定方的程解的数量
+        if (coefficientRank == numberOfVariables) uniqueSolution(augmentedEchelon);
+        else infiniteSolution(augmentedEchelon, numberOfVariables - augmentedRank);
     }
 
     ///求唯一解
     private static void uniqueSolution(Fraction[][] augmentedEchelon) {
-        System.out.println("方程有唯一解\n");
+        System.out.println("方程组有唯一解\n");
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Fraction[] constantVector = new Fraction[augmentedEchelon.length];
         Fraction[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
@@ -117,15 +115,14 @@ public class LinearEquation {
         for (int i = 0; i < coefficientEchelon.length; i++) {
             if (!coefficientEchelon[i][i].equals(Fraction.ONE)) {
                 Fraction ratio = Fraction.ONE.divide(coefficientEchelon[i][i]);
-                for (int j = 0; j < coefficientEchelon.length; j++) {
+                for (int j = 0; j < coefficientEchelon.length; j++)
                     coefficientEchelon[i][j] = coefficientEchelon[i][j].multiply(ratio);
-                }
                 constantVector[i] = constantVector[i].multiply(ratio);
             }
         }
         //展示结果
         System.out.println("解：");
-        for (int i = 0; i < numberOfUnknowns; i++) System.out.println("x" + (i + 1) + "=" + constantVector[i]);
+        for (int i = 0; i < numberOfVariables; i++) System.out.println("x" + (i + 1) + " = " + constantVector[i]);
         System.out.println();
         numberOfEquations = 0;
         main(null);
@@ -133,15 +130,23 @@ public class LinearEquation {
 
     ///求通解
     private static void infiniteSolution(Fraction[][] augmentedEchelon, int numberOfFreeVariables) {
+        System.out.println("方程组有无穷解");
         //确定自由未知量n-r，将常数向量左边的n-r列单独保存
-        Fraction[][] freeColumn = new Fraction[numberOfFreeVariables][numberOfEquations];
-        for (int i = numberOfFreeVariables; i > 0; i--) {
-            for (int j = 0; j < freeColumn[0].length; j++) {
-                freeColumn[i-1][j] = augmentedEchelon[j][augmentedEchelon[0].length-i-1];
-            }
-        }
-        for (Fraction[] fractions : freeColumn) {
-            System.out.println(Arrays.toString(fractions));
+        Fraction[][] freeColumns = new Fraction[numberOfFreeVariables][numberOfEquations];
+        for (int i = numberOfFreeVariables; i > 0; i--)
+            for (int j = 0; j < freeColumns[0].length; j++)
+                freeColumns[numberOfFreeVariables - i][j] = augmentedEchelon[j][augmentedEchelon[0].length - i - 1];
+        //将自由列所有元素取相反数
+        for (Fraction[] column : freeColumns) for (int i = 0; i < column.length; i++) column[i] = column[i].negate();
+        int numberOfBasicVariables = numberOfVariables - numberOfFreeVariables;
+        //展示结果
+        System.out.println("通解：");
+        for (int i = 0; i < numberOfEquations; i++) {
+            StringBuilder tempFree = new StringBuilder();
+            for (int j = 0; j < freeColumns.length - 1; j++)
+                tempFree.append(freeColumns[j][i]).append("X").append(numberOfBasicVariables + j + 1).append(freeColumns[j + 1][i].isNegative() ? " " : " +");
+            tempFree.append(freeColumns[freeColumns.length - 1][i]).append("X").append(numberOfVariables).append(" +");
+            System.out.println("X" + (i + 1) + " = " + tempFree + augmentedEchelon[i][augmentedEchelon[0].length - 1]);
         }
     }
 }
