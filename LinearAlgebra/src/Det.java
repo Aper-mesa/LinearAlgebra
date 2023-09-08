@@ -72,8 +72,8 @@ public class Det {
         System.out.println("输入行列式的阶数");
         order = Integer.parseInt(input.nextLine());
         det = new Fraction[order][order];
+        System.out.println("按行输入矩阵，元素之间用一个空格隔开");
         for (int i = 0; i < order; i++) {
-            System.out.println("输入行列式第" + (i + 1) + "行的所有元素，元素之间用一个空格隔开");
             tempRowArr = input.nextLine().split(" ");
             for (int j = 0; j < order; j++) det[i][j] = new Fraction(tempRowArr[j]);
         }
