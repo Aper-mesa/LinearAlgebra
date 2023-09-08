@@ -68,15 +68,9 @@ public class Det {
         //二维数组存储行列式
         Fraction[][] det;
         //临时数组存储用户输入的行列式的某一行的所有元素
-        String[] tempRowArr;
         System.out.println("输入行列式的阶数");
         order = Integer.parseInt(input.nextLine());
-        det = new Fraction[order][order];
-        System.out.println("按行输入矩阵，元素之间用一个空格隔开");
-        for (int i = 0; i < order; i++) {
-            tempRowArr = input.nextLine().split(" ");
-            for (int j = 0; j < order; j++) det[i][j] = new Fraction(tempRowArr[j]);
-        }
-        System.out.println("该" + order + "阶行列式的结果为" + Det.getValue(det));
+        det = Tool.input(order, order);
+        System.out.println("结果为" + Det.getValue(det));
     }
 }

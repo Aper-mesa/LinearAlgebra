@@ -65,14 +65,7 @@ public class Mat {
             actualCol = col2;
         }
         //临时数组存储用户输入的行列式的某一行的所有元素
-        String[] tempRowArr;
-        Fraction[][] mat = new Fraction[actualRow][actualCol];
-        System.out.println("按行输入矩阵，元素之间用一个空格隔开");
-        for (int i = 0; i < actualRow; i++) {
-            tempRowArr = input.nextLine().split(" ");
-            for (int j = 0; j < actualCol; j++) mat[i][j] = new Fraction(tempRowArr[j]);
-        }
-        return mat;
+        return Tool.input(actualRow,actualCol);
     }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减

@@ -1,7 +1,10 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 //此类提供各种工具和操作供各类使用
 class Tool {
+    private static Scanner input = new Scanner(System.in);
+
     ///二维数组深复制，仅需提供起点，自动新建相同大小的终点
     protected static Fraction[][] deepCopy(Fraction[][] origin) {
         Fraction[][] destination = new Fraction[origin.length][origin[0].length];
@@ -82,5 +85,17 @@ class Tool {
             if (!badOne) return true;
         }
         return !badOne;
+    }
+
+    ///输入二维数组
+    protected static Fraction[][] input(int row, int column) {
+        Fraction[][] result = new Fraction[row][column];
+        String[] tempRowArr;
+        System.out.println("按行输入，元素之间用一个空格隔开");
+        for (int i = 0; i < row; i++) {
+            tempRowArr = input.nextLine().split(" ");
+            for (int j = 0; j < column; j++) result[i][j] = new Fraction(tempRowArr[j]);
+        }
+        return result;
     }
 }
