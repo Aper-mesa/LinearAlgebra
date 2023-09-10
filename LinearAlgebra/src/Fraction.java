@@ -16,6 +16,14 @@ public class Fraction {
     //符号
     private int sign;
 
+    protected BigDecimal getNumerator() {
+        return numerator;
+    }
+
+    protected BigDecimal getDenominator() {
+        return denominator;
+    }
+
     private void setNumerator(BigDecimal numerator) {
         this.numerator = numerator;
     }
@@ -38,9 +46,9 @@ public class Fraction {
 
     ///直接输入字符串的简单粗暴构造方法
     public Fraction(String fraction) {
-        boolean positive = true;
+        boolean sign = true;
         if (fraction.startsWith("-")) {
-            positive = false;
+            sign = false;
             fraction = fraction.substring(1);
         }
         if (fraction.contains("/")) {
@@ -51,7 +59,11 @@ public class Fraction {
             numerator = new BigDecimal(fraction);
             denominator = BigDecimal.ONE;
         }
-        sign = positive ? 1 : -1;
+        if (denominator.compareTo(BigDecimal.ZERO) < 0) {
+            denominator = denominator.negate();
+            sign = !sign;
+        }
+        this.sign = sign ? 1 : -1;
         integerize(this);
     }
 
@@ -95,7 +107,7 @@ public class Fraction {
     }
 
     ///约分
-    private void simplify(Fraction fraction) {
+    protected static void simplify(Fraction fraction) {
         BigDecimal numerator = fraction.numerator;
         BigDecimal denominator = fraction.denominator;
         //两个集合分别存储分子和分母的除1以外的所有因数
@@ -265,6 +277,14 @@ public class Fraction {
         return new Fraction(numerator, denominator, sign * -1);
     }
 
+    ///取余操作，仅限整数间运算
+    public Fraction remainder(Fraction fraction) {
+        Fraction dividend = new Fraction(this.toString());
+        Fraction divisor = new Fraction(fraction.toString());
+        if (dividend.notInteger() || divisor.notInteger()) return dividend;
+        else return new Fraction(numerator.remainder(divisor.numerator));
+    }
+
     ///输出分数形式的字符串
     @Override
     public String toString() {
@@ -284,6 +304,11 @@ public class Fraction {
     ///判断是否为负数
     public boolean isNegative() {
         return sign < 0;
+    }
+
+    ///判断是否为整数
+    public boolean notInteger() {
+        return denominator.compareTo(BigDecimal.ONE) != 0;
     }
 
     ///判断两个分数是否在数值上相同。无法使用subtract方法，否则产生递归调用问题导致栈溢出

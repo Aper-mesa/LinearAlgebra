@@ -1,13 +1,9 @@
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.Random;
 
 public class Test {
     public static void main(String[] args) {
-        System.out.println(factorial(7));
-    }
-
-    private static int factorial(int n) {
-        return n == 1 ? 1 : n * factorial(n - 1);
+        Real r1 = new Real("8^");
+        Fraction f1 = new Fraction("1/5");
+        System.out.println(r1);
     }
 }
