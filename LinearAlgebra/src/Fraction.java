@@ -196,9 +196,7 @@ public class Fraction {
     ///减法
     public Fraction subtract(Fraction fraction) {
         Fraction subtrahend = new Fraction(fraction.toString());
-        if (equals(subtrahend))
-            subtrahend = new Fraction(subtrahend.numerator, subtrahend.denominator, subtrahend.sign);
-        subtrahend.setSign(-1 * subtrahend.sign);
+        subtrahend.sign *= -1;
         return add(subtrahend);
     }
 
@@ -293,12 +291,12 @@ public class Fraction {
 
     ///输出小数形式的字符串
     public String toDecimalString() {
-        return (sign > 0 ? "" : "-") + numerator.divide(denominator, RoundingMode.HALF_DOWN);
+        return (sign > 0 ? "" : "-") + numerator.divide(denominator, 100, RoundingMode.HALF_UP).stripTrailingZeros();
     }
 
-    ///输出小数
+    ///输出小数，保留四位
     public double toDecimal() {
-        return (sign > 0 ? 1 : -1) * numerator.divide(denominator, RoundingMode.HALF_DOWN).doubleValue();
+        return (sign > 0 ? 1 : -1) * numerator.divide(denominator, 4, RoundingMode.HALF_UP).doubleValue();
     }
 
     ///判断是否为负数
