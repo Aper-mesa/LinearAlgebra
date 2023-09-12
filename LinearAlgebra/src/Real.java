@@ -28,6 +28,10 @@ public class Real {
     private Fraction dExponent = Fraction.ONE;
     //符号
     private int sign = 1;
+    //静态0
+    public static final Real ZERO = new Real("0");
+    //静态1
+    public static final Real ONE = new Real("1");
 
     ///字符串全参构造，格式：a*b^/c*d^，只写^默认表示二次根式，目前仅支持二次根式！
     public Real(String inputStr) {
@@ -74,8 +78,8 @@ public class Real {
         dExponent = real.dExponent;
     }
 
-    ///分子分母输入分数的构造方法
-    public Real(Fraction nCoefficient, Fraction nBase, Fraction nExponent, Fraction dCoefficient, Fraction dBase, Fraction dExponent) {
+    ///分别输入每一个值的构造方法
+    public Real(int sign, Fraction nCoefficient, Fraction nBase, Fraction nExponent, Fraction dCoefficient, Fraction dBase, Fraction dExponent) {
         this.nCoefficient = nCoefficient;
         this.nBase = nBase;
         this.nExponent = nExponent;
@@ -227,24 +231,85 @@ public class Real {
     ///除法
     public Real divide(Real real) {
         Real dividend = new Real(this);
-        Real divisorReciprocal = new Real(real.dCoefficient, real.dBase, real.dExponent, real.nCoefficient, real.nBase, real.nExponent);
+        Real divisorReciprocal = new Real(sign, real.dCoefficient, real.dBase, real.dExponent, real.nCoefficient, real.nBase, real.nExponent);
         dividend = dividend.multiply(divisorReciprocal);
         dividend.sign = dividend.sign == divisorReciprocal.sign ? 1 : -1;
         dividend.simplify();
         return dividend;
     }
 
+    ///开根号，前提是原式没有根号，且是正数
+    public Real sqrt() {
+        if (sign == -1 || !this.nExponent.equals(Fraction.ONE) || !this.dExponent.equals(Fraction.ONE))
+            throw new ArithmeticException("负数开根号或原式已存在根号");
+        Real copy = new Real(this);
+        //将分子分母的系数转移到底数中来
+        copy.nBase = copy.nBase.multiply(copy.nCoefficient);
+        copy.nCoefficient = Fraction.ONE;
+        copy.dBase = copy.dBase.multiply(copy.dCoefficient);
+        copy.dCoefficient = Fraction.ONE;
+        copy.nExponent = new Fraction("0.5");
+        copy.dExponent = new Fraction("0.5");
+        copy.simplify();
+        return copy;
+    }
+
+    ///变为相反数
+    public Real negate() {
+        return new Real(sign * -1, nCoefficient, nBase, nExponent, dCoefficient, dBase, dExponent);
+    }
+
+    ///取余运算，仅限整数
+    public Real remainder(Real real) {
+        Real dividend = new Real(this);
+        Real divisor = new Real(real);
+        if (dividend.notInteger() || divisor.notInteger()) throw new ArithmeticException("小数取余");
+        else {
+            if (dividend.sign < 0) {
+                dividend.nCoefficient = dividend.nCoefficient.negate();
+                dividend.sign *= -1;
+            }
+            if (divisor.sign < 0) {
+                divisor.nCoefficient = divisor.nCoefficient.negate();
+                divisor.sign *= -1;
+            }
+        }
+        return new Real(1, dividend.nCoefficient.remainder(divisor.nCoefficient), Fraction.ONE, Fraction.ONE, Fraction.ONE, Fraction.ONE, Fraction.ONE);
+    }
+
+    ///判断是否为整数
+    public boolean notInteger() {
+        if (nExponent.notInteger() || dExponent.notInteger() || nCoefficient.notInteger() || !dCoefficient.equals(Fraction.ONE) || nBase.notInteger() || !dBase.equals(Fraction.ONE))
+            return true;
+        return false;
+    }
+
+    ///判断是否为负数
+    public boolean isNegative() {
+        return sign < 0;
+    }
+
+    ///判断两个实数是否在数值上相同
+    @Override
+    public boolean equals(Object real) {
+        if (!(real instanceof Real)) return false;
+        Real thisCopy = new Real(this);
+        Real realCopy = new Real((Real) real);
+        return thisCopy.subtract(realCopy).nCoefficient.equals(Fraction.ZERO);
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
+        StringBuilder numerator = new StringBuilder();
+        StringBuilder denominator = new StringBuilder();
         if (sign < 0) result.append("-");
-        System.out.println("sign \t" + sign);
-        System.out.println("nCo  \t" + nCoefficient);
-        System.out.println("nBase\t" + nBase);
-        System.out.println("nEx  \t" + nExponent);
-        System.out.println("dCo  \t" + dCoefficient);
-        System.out.println("dBase\t" + dBase);
-        System.out.println("dEx  \t" + dExponent);
-        return "Hope it's fixed.";
+        if(!nCoefficient.equals(Fraction.ONE)) numerator.append(nCoefficient);
+        if(nExponent.equals(new Fraction("0.5"))) numerator.append("√").append(nBase);
+        if (!dCoefficient.equals(Fraction.ONE)||dExponent.equals("0.5")) denominator.append("/");
+        if(!dCoefficient.equals(Fraction.ONE)) denominator.append(dCoefficient);
+        if(dExponent.equals(new Fraction("0.5"))) denominator.append("√").append(dBase);
+        result.append(numerator).append(denominator);
+        return result.toString();
     }
 }

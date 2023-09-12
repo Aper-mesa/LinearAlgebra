@@ -280,7 +280,19 @@ public class Fraction {
         Fraction dividend = new Fraction(this.toString());
         Fraction divisor = new Fraction(fraction.toString());
         if (dividend.notInteger() || divisor.notInteger()) return dividend;
-        else return new Fraction(numerator.remainder(divisor.numerator));
+            //考虑负数，将符号提至分子的位置
+        else {
+            if (dividend.sign < 0) {
+                dividend.numerator = dividend.numerator.negate();
+                dividend.sign *= -1;
+            }
+            if (divisor.sign < 0) {
+                divisor.numerator = divisor.numerator.negate();
+                divisor.sign *= -1;
+            }
+            return new Fraction(dividend.numerator.remainder(divisor.numerator));
+        }
+
     }
 
     ///输出分数形式的字符串
