@@ -1,5 +1,4 @@
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +14,11 @@ public class Fraction {
     private BigDecimal denominator;
     //符号
     private int sign;
+    ///静态的数值为0的分数
+    public static final Fraction ZERO = new Fraction("0");
+
+    ///静态的数值为1的分数
+    public static final Fraction ONE = new Fraction("1");
 
     protected BigDecimal getNumerator() {
         return numerator;
@@ -24,24 +28,19 @@ public class Fraction {
         return denominator;
     }
 
-    private void setNumerator(BigDecimal numerator) {
-        this.numerator = numerator;
-    }
-
-    private void setDenominator(BigDecimal denominator) {
-        this.denominator = denominator;
-    }
-
-    private void setSign(int sign) {
-        this.sign = sign;
-    }
-
     ///全参构造
-    public Fraction(BigDecimal numerator, BigDecimal denominator, int sign) {
+    public Fraction(int sign, BigDecimal numerator, BigDecimal denominator) {
         this.numerator = new BigDecimal(numerator.toPlainString());
         this.denominator = new BigDecimal(denominator.toPlainString());
         this.sign = sign;
         integerize(this);
+    }
+
+    ///输入分数的构造方法
+    public Fraction(Fraction fraction) {
+        this.sign = fraction.sign;
+        this.numerator = fraction.numerator;
+        this.denominator = fraction.denominator;
     }
 
     ///直接输入字符串的简单粗暴构造方法
@@ -66,27 +65,6 @@ public class Fraction {
         this.sign = sign ? 1 : -1;
         integerize(this);
     }
-
-    ///不输入符号的构造方法，符号默认为正
-    public Fraction(BigDecimal numerator, BigDecimal denominator) {
-        this(numerator, denominator, 1);
-    }
-
-    ///不输入分母的构造方法，分母默认为1
-    public Fraction(BigDecimal numerator, int sign) {
-        this(numerator, new BigDecimal(1), sign);
-    }
-
-    ///不输入分母和符号的构造方法，分母默认为1，符号默认为正
-    public Fraction(BigDecimal numerator) {
-        this(numerator, new BigDecimal(1));
-    }
-
-    ///静态的数值为0的分数
-    public static final Fraction ZERO = new Fraction("0");
-
-    ///静态的数值为1的分数
-    public static final Fraction ONE = new Fraction("1");
 
     ///整数化
     private void integerize(Fraction fraction) {
@@ -139,8 +117,8 @@ public class Fraction {
             numerator = numerator.divide(max, RoundingMode.HALF_DOWN);
             denominator = denominator.divide(max, RoundingMode.HALF_DOWN);
         }
-        fraction.setNumerator(new BigDecimal(numerator.stripTrailingZeros().toPlainString()));
-        fraction.setDenominator(new BigDecimal(denominator.stripTrailingZeros().toPlainString()));
+        fraction.numerator = new BigDecimal(numerator.stripTrailingZeros().toPlainString());
+        fraction.denominator = new BigDecimal(denominator.stripTrailingZeros().toPlainString());
     }
 
     ///获取一个数字的除1以外的所有因数
@@ -161,18 +139,18 @@ public class Fraction {
         BigDecimal oldDenominator = denominator;
         numerator = numerator.multiply(fraction.denominator);
         denominator = denominator.multiply(fraction.denominator);
-        fraction.setNumerator(fraction.numerator.multiply(oldDenominator));
-        fraction.setDenominator(fraction.denominator.multiply(oldDenominator));
+        fraction.numerator = fraction.numerator.multiply(oldDenominator);
+        fraction.denominator = fraction.denominator.multiply(oldDenominator);
     }
 
     ///加法
     public Fraction add(Fraction fraction) {
-        Fraction addend = new Fraction(numerator, denominator, sign);
-        Fraction augend = new Fraction(fraction.toString());
-        augend.setNumerator(new BigDecimal(augend.numerator.toPlainString()));
-        augend.setDenominator(new BigDecimal(augend.denominator.toPlainString()));
+        Fraction addend = new Fraction(sign, numerator, denominator);
+        Fraction augend = new Fraction(fraction);
+        augend.numerator = new BigDecimal(augend.numerator.toPlainString());
+        augend.denominator = new BigDecimal(augend.denominator.toPlainString());
         //如果拿同一个对象进行加法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (equals(augend)) augend = new Fraction(augend.numerator, augend.denominator, augend.sign);
+        if (equals(augend)) augend = new Fraction(augend.sign, augend.numerator, augend.denominator);
         addend.commonize(augend);
         //先统一把符号放到分子上再进行计算
         if (addend.sign < 0) {
@@ -195,18 +173,18 @@ public class Fraction {
 
     ///减法
     public Fraction subtract(Fraction fraction) {
-        Fraction subtrahend = new Fraction(fraction.toString());
+        Fraction subtrahend = new Fraction(fraction);
         subtrahend.sign *= -1;
         return add(subtrahend);
     }
 
     ///乘法
     public Fraction multiply(Fraction fraction) {
-        Fraction multiplicand = new Fraction(toString());
-        Fraction multiplier = new Fraction(fraction.toString());
+        Fraction multiplicand = new Fraction(this);
+        Fraction multiplier = new Fraction(fraction);
         //如果拿同一个对象进行乘法操作，需要将除数分配到新的内存空间，否则结果出错
         if (equals(multiplier))
-            multiplier = new Fraction(multiplier.numerator, multiplier.denominator, multiplier.sign);
+            multiplier = new Fraction(multiplier.sign, multiplier.numerator, multiplier.denominator);
         multiplicand.numerator = numerator.multiply(multiplier.numerator);
         multiplicand.denominator = denominator.multiply(multiplier.denominator);
         multiplicand.sign = sign == multiplier.sign ? 1 : -1;
@@ -216,17 +194,14 @@ public class Fraction {
 
     ///除法
     public Fraction divide(Fraction fraction) {
-        Fraction dividend = new Fraction(toString());
-        Fraction divisor = new Fraction(fraction.toString());
-        divisor.setNumerator(new BigDecimal(divisor.numerator.toPlainString()));
-        divisor.setDenominator(new BigDecimal(divisor.denominator.toPlainString()));
+        Fraction dividend = new Fraction(this);
+        Fraction divisor = new Fraction(fraction);
+        divisor.numerator = new BigDecimal(divisor.numerator.toPlainString());
+        divisor.denominator = new BigDecimal(divisor.denominator.toPlainString());
         //如果拿同一个对象进行除法操作，需要将除数分配到新的内存空间，否则结果出错
         if (equals(divisor))
-            divisor = new Fraction(divisor.numerator, new BigDecimal(divisor.denominator.toPlainString()), divisor.sign);
-        if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) {
-            System.out.println("0不可作除数");
-            System.exit(0);
-        }
+            divisor = new Fraction(divisor.sign, divisor.numerator, new BigDecimal(divisor.denominator.toPlainString()));
+        if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) throw new ArithmeticException("0作除数");
         dividend.numerator = numerator.multiply(divisor.denominator);
         dividend.denominator = denominator.multiply(divisor.numerator);
         dividend.sign = dividend.sign == divisor.sign ? 1 : -1;
@@ -234,51 +209,15 @@ public class Fraction {
         return dividend;
     }
 
-    ///幂运算
-    //FIXME BigDecimal类只提供整数指数的幂运算，根本不够用。需要写一个根式类。
-    public Fraction exponentiate(int exponent) {
-        BigDecimal numerator = this.numerator;
-        BigDecimal denominator = this.denominator;
-        if (sign < 0) {
-            sign *= -1;
-            numerator = numerator.negate();
-        }
-        numerator = numerator.pow(exponent, new MathContext(3));
-        denominator = denominator.pow(exponent, new MathContext(3));
-        if (numerator.compareTo(BigDecimal.ZERO) < 0) {
-            sign *= -1;
-            numerator = numerator.negate();
-        }
-        Fraction result = new Fraction(numerator, denominator, sign);
-        simplify(result);
-        return result;
-    }
-
-    ///开根号
-    //FIXME 此方法为根式类写好前的临时方法，仅用于临时向量模长计算。根式类写好后此类将会与幂运算方法合并。
-    public Fraction squareRoot() {
-        if (sign < 0) {
-            System.out.println("负数无实数平方根");
-            return this;
-        }
-        BigDecimal numerator = this.numerator;
-        BigDecimal denominator = this.denominator;
-        numerator = numerator.sqrt(new MathContext(3));
-        denominator = denominator.sqrt(new MathContext(3));
-        Fraction result = new Fraction(numerator, denominator);
-        simplify(result);
-        return result;
-    }
-
     ///变为相反数的方法
     public Fraction negate() {
-        return new Fraction(numerator, denominator, sign * -1);
+        return new Fraction(sign * -1, numerator, denominator);
     }
 
     ///取余操作，仅限整数间运算
     public Fraction remainder(Fraction fraction) {
-        Fraction dividend = new Fraction(this.toString());
-        Fraction divisor = new Fraction(fraction.toString());
+        Fraction dividend = new Fraction(this);
+        Fraction divisor = new Fraction(fraction);
         if (dividend.notInteger() || divisor.notInteger()) return dividend;
             //考虑负数，将符号提至分子的位置
         else {
@@ -290,7 +229,7 @@ public class Fraction {
                 divisor.numerator = divisor.numerator.negate();
                 divisor.sign *= -1;
             }
-            return new Fraction(dividend.numerator.remainder(divisor.numerator));
+            return new Fraction(1, dividend.numerator.remainder(divisor.numerator), BigDecimal.ONE);
         }
 
     }
@@ -304,11 +243,6 @@ public class Fraction {
     ///输出小数形式的字符串
     public String toDecimalString() {
         return (sign > 0 ? "" : "-") + numerator.divide(denominator, 100, RoundingMode.HALF_UP).stripTrailingZeros();
-    }
-
-    ///输出小数，保留四位
-    public double toDecimal() {
-        return (sign > 0 ? 1 : -1) * numerator.divide(denominator, 4, RoundingMode.HALF_UP).doubleValue();
     }
 
     ///判断是否为负数
@@ -328,8 +262,8 @@ public class Fraction {
         else if (numerator.compareTo(BigDecimal.ZERO) == 0 && ((Fraction) fraction).numerator.compareTo(BigDecimal.ZERO) == 0)
             return true;
         else if (sign - ((Fraction) fraction).sign != 0) return false;
-        Fraction copiedFraction = new Fraction(fraction.toString());
-        Fraction thisFraction = new Fraction(this.toString());
+        Fraction copiedFraction = new Fraction((Fraction) fraction);
+        Fraction thisFraction = new Fraction(this);
         thisFraction.commonize(copiedFraction);
         return thisFraction.numerator.subtract(copiedFraction.numerator).compareTo(BigDecimal.ZERO) == 0;
     }

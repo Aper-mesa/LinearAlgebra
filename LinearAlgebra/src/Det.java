@@ -6,26 +6,26 @@ public class Det {
     private Det() {
     }
 
-    public static Fraction getValue(Fraction[][] det) {
-        if (Tool.hasZeroRowOrColumn(det)) return Fraction.ZERO;
+    public static Real getValue(Real[][] det) {
+        if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
         int order = det.length;
         //行列式的结果
-        Fraction result = Fraction.ONE;
+        Real result = Real.ONE;
         //记录行列式是否因交换而需要变为原相反数
         boolean switched = false;
         boolean zero = true;
         for (int dia = 0; dia < order; dia++) {
-            Fraction[] tempRow;
+            Real[] tempRow;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (det[dia][dia].equals(Fraction.ZERO)) {
+            if (det[dia][dia].equals(Real.ZERO)) {
                 int i;
                 for (i = dia + 1; i < order; i++) {
-                    if (!det[i][dia].equals(Fraction.ZERO)) {
+                    if (!det[i][dia].equals(Real.ZERO)) {
                         zero = false;
                         break;
                     }
                 }
-                if (zero) return Fraction.ZERO;
+                if (zero) return Real.ZERO;
                 tempRow = det[dia];
                 det[dia] = det[i];
                 det[i] = tempRow;
@@ -37,16 +37,16 @@ public class Det {
                 boolean has = false;
                 //找到第一个不是0的数字的行的索引
                 for (i = dia + 1; i < order; i++) {
-                    if (!det[i][dia].equals(Fraction.ZERO)) {
+                    if (!det[i][dia].equals(Real.ZERO)) {
                         has = true;
                         break;
                     }
                 }
                 if (has) {
                     //计算两行之间的比例
-                    Fraction ratio = det[i][dia].negate().divide(det[dia][dia]);
+                    Real ratio = det[i][dia].negate().divide(det[dia][dia]);
                     //用临时数组存储乘以比例之后的对角线行
-                    Fraction[] tempArr = new Fraction[order];
+                    Real[] tempArr = new Real[order];
                     for (int j = 0; j < order; j++) {
                         tempArr[j] = det[dia][j].multiply(ratio);
                     }
@@ -66,7 +66,7 @@ public class Det {
         //行列式的阶数
         int order;
         //二维数组存储行列式
-        Fraction[][] det;
+        Real[][] det;
         //临时数组存储用户输入的行列式的某一行的所有元素
         System.out.println("输入行列式的阶数");
         order = Integer.parseInt(input.nextLine());

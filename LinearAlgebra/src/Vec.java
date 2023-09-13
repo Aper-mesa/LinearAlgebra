@@ -13,10 +13,10 @@ import java.util.*;
 public class Vec {
     // 向量维数，自初始化起不可改变
     public final int dimension;
-    public Fraction[] data;
+    public Real[] data;
 
     // 传入
-    public Vec(int dimension, Fraction[] data) {
+    public Vec(int dimension, Real[] data) {
         this.dimension = dimension;
         this.data = data;
     }
@@ -25,7 +25,7 @@ public class Vec {
     public static Vec add(Vec a, Vec b) {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension) throw new IllegalArgumentException("向量维数不同");
-        Fraction[] data = new Fraction[a.dimension];
+        Real[] data = new Real[a.dimension];
         for (int i = 0; i < a.dimension; i++) {
             data[i] = a.data[i].add(b.data[i]);
         }
@@ -40,7 +40,7 @@ public class Vec {
     public static Vec subtract(Vec a, Vec b) {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension) throw new IllegalArgumentException("向量维数不同");
-        Fraction[] data = new Fraction[a.dimension];
+        Real[] data = new Real[a.dimension];
         for (int i = 0; i < a.dimension; i++) {
             data[i] = a.data[i].subtract(b.data[i]);
         }
@@ -52,30 +52,30 @@ public class Vec {
     }
 
     // 数乘
-    public static Vec multiply(Fraction a, Vec b) {
-        Fraction[] data = new Fraction[b.dimension];
+    public static Vec multiply(Real a, Vec b) {
+        Real[] data = new Real[b.dimension];
         for (int i = 0; i < b.dimension; i++) {
             data[i] = a.multiply(b.data[i]);
         }
         return new Vec(b.dimension, data);
     }
 
-    public Vec multiply(Fraction a) {
+    public Vec multiply(Real a) {
         return multiply(a, this);
     }
 
     // 内积
-    public static Fraction dot(Vec a, Vec b) {
+    public static Real dot(Vec a, Vec b) {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension) throw new IllegalArgumentException("向量维数不同");
-        Fraction result = Fraction.ZERO;
+        Real result = Real.ZERO;
         for (int i = 0; i < a.dimension; i++) {
             result = result.add(a.data[i].multiply(b.data[i]));
         }
         return result;
     }
 
-    public Fraction dot(Vec b) {
+    public Real dot(Vec b) {
         return dot(this, b);
     }
 
@@ -84,7 +84,7 @@ public class Vec {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension) throw new IllegalArgumentException("向量维数不同");
         if (a.dimension != 3) throw new IllegalArgumentException("外积只能用于三维向量");
-        Fraction[] data = new Fraction[3];
+        Real[] data = new Real[3];
         data[0] = a.data[1].multiply(b.data[2]).subtract(a.data[2].multiply(b.data[1]));
         data[1] = a.data[2].multiply(b.data[0]).subtract(a.data[0].multiply(b.data[2]));
         data[2] = a.data[0].multiply(b.data[1]).subtract(a.data[1].multiply(b.data[0]));
@@ -96,39 +96,39 @@ public class Vec {
     }
 
     // 模长
-    public static Fraction length(Vec a) {
-        Fraction result = Fraction.ZERO;
+    public static Real length(Vec a) {
+        Real result = Real.ZERO;
         for (int i = 0; i < a.dimension; i++) {
             result = result.add(a.data[i].multiply(a.data[i]));
         }
         // TODO: 临时用法
-        return result.squareRoot();
+        return result.sqrt();
     }
 
-    public Fraction length() {
+    public Real length() {
         return length(this);
     }
 
     // 夹角
-    public static Fraction angle(Vec a, Vec b) {
+    public static Real angle(Vec a, Vec b) {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension) throw new IllegalArgumentException("向量维数不同");
         return dot(a, b).divide(length(a).multiply(length(b)));
     }
 
-    public Fraction angle(Vec b) {
+    public Real angle(Vec b) {
         return angle(this, b);
     }
 
     // 混合积
-    public static Fraction mixed(Vec a, Vec b, Vec c) {
+    public static Real mixed(Vec a, Vec b, Vec c) {
         // 判断向量维数是否相同
         if (a.dimension != b.dimension || a.dimension != c.dimension)
             throw new IllegalArgumentException("向量维数不同");
         return dot(a, cross(b, c));
     }
 
-    public Fraction mixed(Vec b, Vec c) {
+    public Real mixed(Vec b, Vec c) {
         return mixed(this, b, c);
     }
 
@@ -140,9 +140,9 @@ public class Vec {
                 """.formatted(dimension, _out(data));
     }
 
-    protected static String _out(Fraction[] data) {
+    protected static String _out(Real[] data) {
         StringBuilder result = new StringBuilder();
-        for (Fraction datum : data) {
+        for (Real datum : data) {
             result.append(datum).append(" ");
         }
         return result.toString();
@@ -159,12 +159,12 @@ public class Vec {
     }
 
     // 获得向量数据
-    public Fraction[] getData() {
+    public Real[] getData() {
         return data;
     }
 
     // 控制台
-    public static void main(String[] src) {
+    public static void main(Real[] src) {
         Dictionary<String, Vec> var = new Hashtable<>();
         Console console = new Console();
         Scanner scanner = new Scanner(System.in);
@@ -213,7 +213,7 @@ class Console {
                 if (src.contains("+") || src.contains("-") || src.contains("*") || src.contains("^")) {
                     String r = src.substring(src.indexOf("=") + 1);
                     if (src.contains("*")) {
-                        Fraction a = new Fraction(r.substring(0, r.indexOf("*")));
+                        Real a = new Real(r.substring(0, r.indexOf("*")));
                         String b = r.substring(r.indexOf("*") + 1);
                         if (var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.multiply(a, var.get(b));
@@ -240,7 +240,7 @@ class Console {
                         String a = r.substring(0, r.indexOf("^"));
                         String b = r.substring(r.indexOf("^") + 1);
                         if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.angle(var.get(a), var.get(b));
+                        Real result = Vec.angle(var.get(a), var.get(b));
                         System.out.println(src.substring(0, src.indexOf("=")) + " = " + result);
                     }
                     return true;
@@ -248,9 +248,9 @@ class Console {
                 String[] data = src.split("=");
                 String name = data[0];
                 String[] value = data[1].substring(1, data[1].length() - 1).split(",");
-                Fraction[] result = new Fraction[value.length];
+                Real[] result = new Real[value.length];
                 for (int i = 0; i < value.length; i++) {
-                    result[i] = new Fraction(value[i]);
+                    result[i] = new Real(value[i]);
                 }
                 var.put(name, new Vec(result.length, result));
                 System.out.println(name + " = " + var.get(name));
@@ -259,7 +259,7 @@ class Console {
                     System.out.println(var.get(src));
                 } else {
                     if (src.contains("*")) {
-                        Fraction a = new Fraction(src.substring(0, src.indexOf("*")));
+                        Real a = new Real(src.substring(0, src.indexOf("*")));
                         String b = src.substring(src.indexOf("*") + 1);
                         if (var.get(b) == null) throw new IllegalArgumentException("变量不存在");
                         Vec result = Vec.multiply(a, var.get(b));
@@ -283,27 +283,27 @@ class Console {
                         String a = src.substring(0, src.indexOf("^"));
                         String b = src.substring(src.indexOf("^") + 1);
                         if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.angle(var.get(a), var.get(b));
+                        Real result = Vec.angle(var.get(a), var.get(b));
                         System.out.println(result);
                     }
                     if (src.contains(".")) {
                         String a = src.substring(0, src.indexOf("."));
                         String b = src.substring(src.indexOf(".") + 1);
                         if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.dot(var.get(a), var.get(b));
+                        Real result = Vec.dot(var.get(a), var.get(b));
                         System.out.println(result);
                     }
                     if (src.contains("|")) {
                         String a = src.substring(1);
                         if (var.get(a) == null) throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.length(var.get(a));
+                        Real result = Vec.length(var.get(a));
                         System.out.println(result);
                     }
                     if (src.contains("Angle")) {
                         String a = src.substring(src.indexOf("Angle(") + 6, src.indexOf(","));
                         String b = src.substring(src.indexOf(",") + 1, src.indexOf(")"));
                         if (var.get(a) == null || var.get(b) == null) throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.angle(var.get(a), var.get(b));
+                        Real result = Vec.angle(var.get(a), var.get(b));
                         System.out.println(result);
                     }
                     if (src.contains("Mix")) {
@@ -313,7 +313,7 @@ class Console {
                         String c = s[2].substring(0, s[2].indexOf(")"));
                         if (var.get(a) == null || var.get(b) == null || var.get(c) == null)
                             throw new IllegalArgumentException("变量不存在");
-                        Fraction result = Vec.mixed(var.get(a), var.get(b), var.get(c));
+                        Real result = Vec.mixed(var.get(a), var.get(b), var.get(c));
                         System.out.println(result);
                     }
                 }

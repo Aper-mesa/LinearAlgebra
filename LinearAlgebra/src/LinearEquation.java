@@ -42,7 +42,7 @@ public class LinearEquation {
         //控制台文字颜色转义符
         String blue = "\u001B[34m";
         String reset = "\u001B[0m";
-        System.out.println(blue + "注意根式格式：a*b^/c*d^，只写^默认表示二次根式，目前仅支持二次根式！"+reset);
+        System.out.println(blue + "注意根式格式：a*b^/c*d^，只写^默认表示二次根式，目前仅支持二次根式！" + reset);
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
             String nextLine = input.nextLine();
@@ -50,16 +50,16 @@ public class LinearEquation {
             equations.add(nextLine);
             numberOfEquations++;
         }
-        Fraction[][] augmentedMatrix = new Fraction[numberOfEquations][numberOfVariables + 1];
-        Fraction[][] coefficientMatrix;
+        Real[][] augmentedMatrix = new Real[numberOfEquations][numberOfVariables + 1];
+        Real[][] coefficientMatrix;
         for (int i = 0; i < augmentedMatrix.length; i++)
             for (int j = 0; j < augmentedMatrix[0].length; j++)
-                augmentedMatrix[i][j] = new Fraction(equations.get(i).split(" ")[j]);
+                augmentedMatrix[i][j] = new Real(equations.get(i).split(" ")[j]);
         coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfVariables);
-        Fraction[][] augmentedEchelon;
+        Real[][] augmentedEchelon;
         //此循环去掉阶梯增广矩阵的0行
         do {
-            augmentedEchelon = (Fraction[][]) Mat.getRank(augmentedMatrix)[1];
+            augmentedEchelon = (Real[][]) Mat.getRank(augmentedMatrix)[1];
             if (Tool.hasZeroRowOrColumn(augmentedEchelon)) {
                 augmentedEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon.length - 1, augmentedEchelon[0].length);
                 numberOfEquations--;
@@ -81,22 +81,22 @@ public class LinearEquation {
     }
 
     ///求唯一解
-    private static void uniqueSolution(Fraction[][] augmentedEchelon) {
+    private static void uniqueSolution(Real[][] augmentedEchelon) {
         System.out.println("方程组有唯一解\n");
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
-        Fraction[] constantVector = new Fraction[augmentedEchelon.length];
-        Fraction[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
+        Real[] constantVector = new Real[augmentedEchelon.length];
+        Real[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
         for (int i = 0; i < constantVector.length; i++)
             constantVector[i] = augmentedEchelon[i][augmentedEchelon[0].length - 1];
         //此循环将系数矩阵变为上三角
         for (int dia = 0; dia < coefficientEchelon.length; dia++) {
-            Fraction[] tempRow;
-            Fraction tempElement;
+            Real[] tempRow;
+            Real tempElement;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (coefficientEchelon[dia][dia].equals(Fraction.ZERO)) {
+            if (coefficientEchelon[dia][dia].equals(Real.ZERO)) {
                 int i;
                 for (i = dia + 1; i < coefficientEchelon.length; i++)
-                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) break;
+                    if (!coefficientEchelon[i][dia].equals(Real.ZERO)) break;
                 tempRow = coefficientEchelon[dia];
                 coefficientEchelon[dia] = coefficientEchelon[i];
                 coefficientEchelon[i] = tempRow;
@@ -110,7 +110,7 @@ public class LinearEquation {
                 boolean has = false;
                 //找到第一个不是0的数字的行的索引
                 for (i = dia + 1; i < coefficientEchelon.length; i++) {
-                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) {
+                    if (!coefficientEchelon[i][dia].equals(Real.ZERO)) {
                         has = true;
                         break;
                     }
@@ -118,26 +118,11 @@ public class LinearEquation {
                 Tool.addK(constantVector, has, i, dia, coefficientEchelon);
             }
         }
-        //接下来将对角线上的数字变为0：从下往上加
-        for (int dia = coefficientEchelon.length - 1; dia >= 0; dia--) {
-            int i;
-            //将对角线数以上的数字变为0
-            for (int k = 0; k < dia + 1; k++) {
-                boolean has = false;
-                //找到对角线数上第一个非零数字
-                for (i = dia - 1; i >= 0; i--) {
-                    if (!coefficientEchelon[i][dia].equals(Fraction.ZERO)) {
-                        has = true;
-                        break;
-                    }
-                }
-                Tool.addK(constantVector, has, i, dia, coefficientEchelon);
-            }
-        }
+        Tool.eliminateUpper(coefficientEchelon, constantVector);
         //最后将对角线数都化为1
         for (int i = 0; i < coefficientEchelon.length; i++) {
-            if (!coefficientEchelon[i][i].equals(Fraction.ONE)) {
-                Fraction ratio = Fraction.ONE.divide(coefficientEchelon[i][i]);
+            if (!coefficientEchelon[i][i].equals(Real.ONE)) {
+                Real ratio = Real.ONE.divide(coefficientEchelon[i][i]);
                 for (int j = 0; j < coefficientEchelon.length; j++)
                     coefficientEchelon[i][j] = coefficientEchelon[i][j].multiply(ratio);
                 constantVector[i] = constantVector[i].multiply(ratio);
@@ -152,15 +137,15 @@ public class LinearEquation {
     }
 
     ///求通解
-    private static void infiniteSolution(Fraction[][] augmentedEchelon, int numberOfFreeVariables) {
+    private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables) {
         System.out.println("方程组有无穷解");
         //确定自由未知量n-r，将常数向量左边的n-r列单独保存
-        Fraction[][] freeColumns = new Fraction[numberOfFreeVariables][numberOfEquations];
+        Real[][] freeColumns = new Real[numberOfFreeVariables][numberOfEquations];
         for (int i = numberOfFreeVariables; i > 0; i--)
             for (int j = 0; j < freeColumns[0].length; j++)
                 freeColumns[numberOfFreeVariables - i][j] = augmentedEchelon[j][augmentedEchelon[0].length - i - 1];
         //将自由列所有元素取相反数
-        for (Fraction[] column : freeColumns) for (int i = 0; i < column.length; i++) column[i] = column[i].negate();
+        for (Real[] column : freeColumns) for (int i = 0; i < column.length; i++) column[i] = column[i].negate();
         int numberOfBasicVariables = numberOfVariables - numberOfFreeVariables;
         //展示结果
         System.out.println("通解：");

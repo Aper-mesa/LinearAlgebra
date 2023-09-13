@@ -1,17 +1,15 @@
-/*
-*   实数类
-*   1. 以根号的形式展示所有指数不是1的数字
+/*  实数类
+    1. 以根号的形式展示所有指数不是1的数字
     2. 支持分母有理化和最简根式
     3. 支持根式之间的四则运算
     4. 支持数据的无损保存、传递和输出*/
-//TODO √
-
-import com.sun.source.tree.NewArrayTree;
 
 import java.math.BigDecimal;
 
 //FIXME 暂时先只写二次根式
 public class Real {
+    //符号
+    private int sign = 1;
     //分子的指数
     private Fraction nExponent = Fraction.ONE;
     //分子的底数
@@ -23,11 +21,8 @@ public class Real {
 
     //分母的底数
     private Fraction dBase = Fraction.ONE;
-
     //分母的指数
     private Fraction dExponent = Fraction.ONE;
-    //符号
-    private int sign = 1;
     //静态0
     public static final Real ZERO = new Real("0");
     //静态1
@@ -80,6 +75,7 @@ public class Real {
 
     ///分别输入每一个值的构造方法
     public Real(int sign, Fraction nCoefficient, Fraction nBase, Fraction nExponent, Fraction dCoefficient, Fraction dBase, Fraction dExponent) {
+        this.sign = sign;
         this.nCoefficient = nCoefficient;
         this.nBase = nBase;
         this.nExponent = nExponent;
@@ -98,25 +94,25 @@ public class Real {
     ///整数化
     private void integerize() {
         if (!nBase.getDenominator().equals(BigDecimal.ONE)) {
-            Fraction temp = new Fraction(nBase.getDenominator());
+            Fraction temp = new Fraction(1, nBase.getDenominator(), BigDecimal.ONE);
             nBase = nBase.multiply(temp);
             dBase = dBase.multiply(temp);
             dExponent = new Fraction("0.5");
         }
         if (!dBase.getDenominator().equals(BigDecimal.ONE)) {
-            Fraction temp = new Fraction(dBase.getDenominator());
+            Fraction temp = new Fraction(1, dBase.getDenominator(), BigDecimal.ONE);
             nBase = nBase.multiply(temp);
             dBase = dBase.multiply(temp);
             nExponent = new Fraction("0.5");
         }
         //系数整数化
         if (!nCoefficient.getDenominator().equals(BigDecimal.ONE)) {
-            Fraction temp = new Fraction(nCoefficient.getDenominator());
+            Fraction temp = new Fraction(1, nCoefficient.getDenominator(), BigDecimal.ONE);
             nCoefficient = nCoefficient.multiply(temp);
             dCoefficient = dCoefficient.multiply(temp);
         }
         if (!dCoefficient.getDenominator().equals(BigDecimal.ONE)) {
-            Fraction temp = new Fraction(dCoefficient.getDenominator());
+            Fraction temp = new Fraction(1, dCoefficient.getDenominator(), BigDecimal.ONE);
             nCoefficient = nCoefficient.multiply(temp);
             dCoefficient = dCoefficient.multiply(temp);
         }
@@ -124,29 +120,28 @@ public class Real {
 
     ///化简。先整数化，再分母有理化。化简时，先化简根式，再化简系数
     private void simplify() {
-        //根式底数为1时，将指数改为1；指数为1但底数不为1时，将底数转为系数。
-        if (nBase.equals(Fraction.ONE)) nExponent = Fraction.ONE;
-        if (dBase.equals(Fraction.ONE)) dExponent = Fraction.ONE;
-        if (nExponent.equals(Fraction.ONE) && !nBase.equals(Fraction.ONE)) {
-            nCoefficient = nCoefficient.multiply(nBase);
-            nBase = Fraction.ONE;
-        }
-        if (dExponent.equals(Fraction.ONE) && !dBase.equals(Fraction.ONE)) {
-            dCoefficient = dCoefficient.multiply(dBase);
-            dBase = Fraction.ONE;
-        }
+        transfer();
         if (dCoefficient.notInteger() || dBase.notInteger() || nCoefficient.notInteger() || nBase.notInteger())
             integerize();
         if (dExponent.notInteger()) rationalize();
         //先化简根式。找平方数
         for (int i = 2; i <= Math.sqrt(Integer.parseInt(nBase.toDecimalString())); i++) {
-            if (nBase.remainder(new Fraction(new BigDecimal(i * i))).equals(Fraction.ZERO)) {
-                nCoefficient = nCoefficient.multiply(new Fraction(new BigDecimal(i)));
-                nBase = nBase.divide(new Fraction(new BigDecimal(i * i)));
+            if (nBase.remainder(new Fraction(1, new BigDecimal(i * i), BigDecimal.ONE)).equals(Fraction.ZERO)) {
+                nCoefficient = nCoefficient.multiply(new Fraction(1, new BigDecimal(i), BigDecimal.ONE));
+                nBase = nBase.divide(new Fraction(1, new BigDecimal(i * i), BigDecimal.ONE));
                 i--;
             }
         }
-        //根式底数为1时，将指数改为1；指数为1但底数不为1时，将底数转为系数。
+        transfer();
+        //再化简系数。直接用分数类
+        Fraction coefficientFraction = new Fraction(1, new BigDecimal(nCoefficient.toDecimalString()), new BigDecimal(dCoefficient.toString()));
+        Fraction.simplify(coefficientFraction);
+        nCoefficient = new Fraction(1, coefficientFraction.getNumerator(), BigDecimal.ONE);
+        dCoefficient = new Fraction(1, coefficientFraction.getDenominator(), BigDecimal.ONE);
+    }
+
+    //根式底数为1时，将指数改为1；指数为1但底数不为1时，将底数转为系数。
+    private void transfer() {
         if (nBase.equals(Fraction.ONE)) nExponent = Fraction.ONE;
         if (dBase.equals(Fraction.ONE)) dExponent = Fraction.ONE;
         if (nExponent.equals(Fraction.ONE) && !nBase.equals(Fraction.ONE)) {
@@ -157,11 +152,6 @@ public class Real {
             dCoefficient = dCoefficient.multiply(dBase);
             dBase = Fraction.ONE;
         }
-        //再化简系数。直接用分数类
-        Fraction coefficientFraction = new Fraction(new BigDecimal(nCoefficient.toDecimalString()), new BigDecimal(dCoefficient.toString()));
-        Fraction.simplify(coefficientFraction);
-        nCoefficient = new Fraction(coefficientFraction.getNumerator());
-        dCoefficient = new Fraction(coefficientFraction.getDenominator());
     }
 
     ///通分
@@ -279,9 +269,7 @@ public class Real {
 
     ///判断是否为整数
     public boolean notInteger() {
-        if (nExponent.notInteger() || dExponent.notInteger() || nCoefficient.notInteger() || !dCoefficient.equals(Fraction.ONE) || nBase.notInteger() || !dBase.equals(Fraction.ONE))
-            return true;
-        return false;
+        return nExponent.notInteger() || dExponent.notInteger() || nCoefficient.notInteger() || !dCoefficient.equals(Fraction.ONE) || nBase.notInteger() || !dBase.equals(Fraction.ONE);
     }
 
     ///判断是否为负数
@@ -304,11 +292,11 @@ public class Real {
         StringBuilder numerator = new StringBuilder();
         StringBuilder denominator = new StringBuilder();
         if (sign < 0) result.append("-");
-        if(!nCoefficient.equals(Fraction.ONE)) numerator.append(nCoefficient);
-        if(nExponent.equals(new Fraction("0.5"))) numerator.append("√").append(nBase);
-        if (!dCoefficient.equals(Fraction.ONE)||dExponent.equals("0.5")) denominator.append("/");
-        if(!dCoefficient.equals(Fraction.ONE)) denominator.append(dCoefficient);
-        if(dExponent.equals(new Fraction("0.5"))) denominator.append("√").append(dBase);
+        if (!nCoefficient.equals(Fraction.ONE)) numerator.append(nCoefficient);
+        if (nExponent.equals(new Fraction("0.5"))) numerator.append("√").append(nBase);
+        if (!dCoefficient.equals(Fraction.ONE) || dExponent.equals(new Fraction("0.5"))) denominator.append("/");
+        if (!dCoefficient.equals(Fraction.ONE)) denominator.append(dCoefficient);
+        if (dExponent.equals(new Fraction("0.5"))) denominator.append("√").append(dBase);
         result.append(numerator).append(denominator);
         return result.toString();
     }
