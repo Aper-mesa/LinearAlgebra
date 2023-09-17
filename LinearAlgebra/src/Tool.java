@@ -113,8 +113,22 @@ class Tool {
                         break;
                     }
                 }
-                Tool.addK((Real[][]) identity, has, i, dia, reals);
+                if (identity instanceof Real[][]) Tool.addK((Real[][]) identity, has, i, dia, reals);
+                else Tool.addK((Real[]) identity, has, i, dia, reals);
             }
         }
+    }
+
+    ///返回一个n阶单位矩阵
+    protected static Real[][] getIdentity(int order) {
+        Real[][] identity = new Real[order][order];
+        for (Real[] row : identity) Arrays.fill(row, Real.ZERO);
+        for (int i = 0; i < identity.length; i++) identity[i][i] = Real.ONE;
+        return identity;
+    }
+
+    ///打印矩阵
+    protected static void print(Real[][] mat) {
+        for (Real[] row : mat) System.out.println(Arrays.toString(row));
     }
 }

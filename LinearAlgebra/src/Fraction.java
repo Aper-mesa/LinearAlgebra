@@ -13,12 +13,14 @@ public class Fraction {
     //分母
     private BigDecimal denominator;
     //符号
-    private int sign;
-    ///静态的数值为0的分数
+    int sign;
+    //静态的数值为0的分数
     public static final Fraction ZERO = new Fraction("0");
 
-    ///静态的数值为1的分数
+    //静态的数值为1的分数
     public static final Fraction ONE = new Fraction("1");
+    //静态的数值为0.5的分数
+    public static final Fraction HALF = new Fraction("0.5");
 
     protected BigDecimal getNumerator() {
         return numerator;
@@ -149,8 +151,6 @@ public class Fraction {
         Fraction augend = new Fraction(fraction);
         augend.numerator = new BigDecimal(augend.numerator.toPlainString());
         augend.denominator = new BigDecimal(augend.denominator.toPlainString());
-        //如果拿同一个对象进行加法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (equals(augend)) augend = new Fraction(augend.sign, augend.numerator, augend.denominator);
         addend.commonize(augend);
         //先统一把符号放到分子上再进行计算
         if (addend.sign < 0) {
@@ -182,9 +182,6 @@ public class Fraction {
     public Fraction multiply(Fraction fraction) {
         Fraction multiplicand = new Fraction(this);
         Fraction multiplier = new Fraction(fraction);
-        //如果拿同一个对象进行乘法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (equals(multiplier))
-            multiplier = new Fraction(multiplier.sign, multiplier.numerator, multiplier.denominator);
         multiplicand.numerator = numerator.multiply(multiplier.numerator);
         multiplicand.denominator = denominator.multiply(multiplier.denominator);
         multiplicand.sign = sign == multiplier.sign ? 1 : -1;
@@ -198,10 +195,7 @@ public class Fraction {
         Fraction divisor = new Fraction(fraction);
         divisor.numerator = new BigDecimal(divisor.numerator.toPlainString());
         divisor.denominator = new BigDecimal(divisor.denominator.toPlainString());
-        //如果拿同一个对象进行除法操作，需要将除数分配到新的内存空间，否则结果出错
-        if (equals(divisor))
-            divisor = new Fraction(divisor.sign, divisor.numerator, new BigDecimal(divisor.denominator.toPlainString()));
-        if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) throw new ArithmeticException("0作除数");
+        if (divisor.numerator.compareTo(BigDecimal.ZERO) == 0) throw new ArithmeticException("\n0作除数");
         dividend.numerator = numerator.multiply(divisor.denominator);
         dividend.denominator = denominator.multiply(divisor.numerator);
         dividend.sign = dividend.sign == divisor.sign ? 1 : -1;
@@ -238,16 +232,6 @@ public class Fraction {
     @Override
     public String toString() {
         return (numerator.compareTo(BigDecimal.ZERO) == 0 ? "" : (sign > 0 ? "" : "-")) + numerator.stripTrailingZeros().toPlainString() + (denominator.equals(BigDecimal.ONE) ? "" : "/") + (denominator.equals(BigDecimal.ONE) ? "" : denominator.stripTrailingZeros().toPlainString());
-    }
-
-    ///输出小数形式的字符串
-    public String toDecimalString() {
-        return (sign > 0 ? "" : "-") + numerator.divide(denominator, 100, RoundingMode.HALF_UP).stripTrailingZeros();
-    }
-
-    ///判断是否为负数
-    public boolean isNegative() {
-        return sign < 0;
     }
 
     ///判断是否为整数

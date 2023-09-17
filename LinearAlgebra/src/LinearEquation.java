@@ -136,11 +136,44 @@ public class LinearEquation {
         main(null);
     }
 
-    ///求通解
+    ///求基础解系η
     private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables) {
         System.out.println("方程组有无穷解");
-        //确定自由未知量n-r，将常数向量左边的n-r列单独保存
-        Real[][] freeColumns = new Real[numberOfFreeVariables][numberOfEquations];
+        //建一个集合存储所有未知量的索引
+        ArrayList<Integer> variables = new ArrayList<>();
+        for (int i = 0; i < numberOfVariables; i++) {
+            variables.add(i + 1);
+        }
+        Real[] constantVector = new Real[augmentedEchelon.length];
+        for (int i = 0; i < constantVector.length; i++)
+            constantVector[i] = augmentedEchelon[i][augmentedEchelon[0].length - 1];
+        Real[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
+        //将系数矩阵每一行的pivot都变成1，找pivot并将其从集合中去除，全部完成后剩余元素即为自由未知量
+        for (int j = 0; j < coefficientEchelon.length; j++) {
+            for (int i = 0; i < coefficientEchelon[0].length; i++) {
+                if (!coefficientEchelon[j][i].equals(Real.ZERO)) {
+                    variables.remove((Integer) i);
+                    if (!coefficientEchelon[j][i].equals(Real.ONE)) {
+                        Real ratio = Real.ONE.divide(coefficientEchelon[j][i]);
+                        System.out.println(ratio);
+                        for (int k = 0; k < coefficientEchelon[j].length; k++) {
+                            coefficientEchelon[j][k] = coefficientEchelon[j][k].multiply(ratio);
+                        }
+                        constantVector[j] = constantVector[j].multiply(ratio);
+                    }
+                    break;
+                }
+            }
+        }
+
+        //FIXME 临时打印
+        Tool.print(coefficientEchelon);
+        System.out.println();
+        System.out.println(Arrays.toString(constantVector));
+
+
+
+        /*Real[][] freeColumns = new Real[numberOfFreeVariables][numberOfEquations];
         for (int i = numberOfFreeVariables; i > 0; i--)
             for (int j = 0; j < freeColumns[0].length; j++)
                 freeColumns[numberOfFreeVariables - i][j] = augmentedEchelon[j][augmentedEchelon[0].length - i - 1];
@@ -155,6 +188,6 @@ public class LinearEquation {
                 tempFree.append(freeColumns[j][i]).append("X").append(numberOfBasicVariables + j + 1).append(freeColumns[j + 1][i].isNegative() ? " " : " +");
             tempFree.append(freeColumns[freeColumns.length - 1][i]).append("X").append(numberOfVariables).append(" +");
             System.out.println("X" + (i + 1) + " = " + tempFree + augmentedEchelon[i][augmentedEchelon[0].length - 1]);
-        }
+        }*/
     }
 }

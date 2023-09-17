@@ -6,11 +6,16 @@ public class Det {
     private Det() {
     }
 
-    public static Real getValue(Real[][] det) {
-        if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
+    public static Object[] getValue(Real[][] det) {
+        Object[] result = new Object[2];
+        result[1] = det;
+        if (Tool.hasZeroRowOrColumn(det)) {
+            result[0] = Real.ZERO;
+            return result;
+        }
         int order = det.length;
         //行列式的结果
-        Real result = Real.ONE;
+        result[0] = Real.ONE;
         //记录行列式是否因交换而需要变为原相反数
         boolean switched = false;
         boolean zero = true;
@@ -25,7 +30,10 @@ public class Det {
                         break;
                     }
                 }
-                if (zero) return Real.ZERO;
+                if (zero) {
+                    result[0] = Real.ZERO;
+                    return result;
+                }
                 tempRow = det[dia];
                 det[dia] = det[i];
                 det[i] = tempRow;
@@ -56,8 +64,8 @@ public class Det {
             }
         }
         //计算正对角线上的所有元素之积
-        for (int i = 0; i < order; i++) result = result.multiply(det[i][i]);
-        if (switched) result.negate();
+        for (int i = 0; i < order; i++) result[0] = ((Real) result[0]).multiply(det[i][i]);
+        if (switched) ((Real) result[0]).negate();
         return result;
     }
 
@@ -71,6 +79,6 @@ public class Det {
         System.out.println("输入行列式的阶数");
         order = Integer.parseInt(input.nextLine());
         det = Tool.input(order, order);
-        System.out.println("结果为" + Det.getValue(det));
+        System.out.println("结果为" + Det.getValue(det)[0]);
     }
 }

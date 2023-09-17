@@ -1,4 +1,4 @@
-/*  实数类
+/*  实数类-封装分数类
     1. 以根号的形式展示所有指数不是1的数字
     2. 支持分母有理化和最简根式
     3. 支持根式之间的四则运算
@@ -6,7 +6,7 @@
 
 import java.math.BigDecimal;
 
-//FIXME 暂时先只写二次根式
+//FIXME 暂时先只写二次根式，够用
 public class Real {
     //符号
     private int sign = 1;
@@ -18,7 +18,6 @@ public class Real {
     private Fraction nCoefficient = Fraction.ONE;
     //分母根式的系数
     private Fraction dCoefficient = Fraction.ONE;
-
     //分母的底数
     private Fraction dBase = Fraction.ONE;
     //分母的指数
@@ -44,20 +43,20 @@ public class Real {
             if (denominator.contains("*") && denominator.contains("^")) {
                 dBase = new Fraction(denominator.split("\\*")[1].substring(0, denominator.split("\\*")[1].length() - 1));
                 dCoefficient = new Fraction(denominator.split("\\*")[0]);
-                dBase = new Fraction("0.5");
+                dBase = Fraction.HALF;
             } else if (denominator.contains("^")) {
                 dBase = new Fraction(denominator.split("\\^")[0]);
-                dExponent = new Fraction("0.5");
+                dExponent = Fraction.HALF;
             } else dBase = new Fraction(denominator);
         }
         numerator = inputStr.split("/")[0];
         if (numerator.contains("*") && numerator.contains("^")) {
             nBase = new Fraction(numerator.split("\\*")[1].substring(0, numerator.split("\\*")[1].length() - 1));
             nCoefficient = new Fraction(numerator.split("\\*")[0]);
-            nExponent = new Fraction("0.5");
+            nExponent = Fraction.HALF;
         } else if (numerator.contains("^")) {
             nBase = new Fraction(numerator.split("\\^")[0]);
-            nExponent = new Fraction("0.5");
+            nExponent = Fraction.HALF;
         } else nBase = new Fraction(numerator);
         simplify();
     }
@@ -87,7 +86,7 @@ public class Real {
     ///分母有理化
     private void rationalize() {
         dExponent = Fraction.ONE;
-        nExponent = new Fraction("0.5");
+        nExponent = Fraction.HALF;
         nBase = nBase.multiply(dBase);
     }
 
@@ -97,13 +96,13 @@ public class Real {
             Fraction temp = new Fraction(1, nBase.getDenominator(), BigDecimal.ONE);
             nBase = nBase.multiply(temp);
             dBase = dBase.multiply(temp);
-            dExponent = new Fraction("0.5");
+            dExponent = Fraction.HALF;
         }
         if (!dBase.getDenominator().equals(BigDecimal.ONE)) {
             Fraction temp = new Fraction(1, dBase.getDenominator(), BigDecimal.ONE);
             nBase = nBase.multiply(temp);
             dBase = dBase.multiply(temp);
-            nExponent = new Fraction("0.5");
+            nExponent = Fraction.HALF;
         }
         //系数整数化
         if (!nCoefficient.getDenominator().equals(BigDecimal.ONE)) {
@@ -125,7 +124,7 @@ public class Real {
             integerize();
         if (dExponent.notInteger()) rationalize();
         //先化简根式。找平方数
-        for (int i = 2; i <= Math.sqrt(Integer.parseInt(nBase.toDecimalString())); i++) {
+        for (int i = 2; i <= Math.sqrt(Integer.parseInt(nBase.toString())); i++) {
             if (nBase.remainder(new Fraction(1, new BigDecimal(i * i), BigDecimal.ONE)).equals(Fraction.ZERO)) {
                 nCoefficient = nCoefficient.multiply(new Fraction(1, new BigDecimal(i), BigDecimal.ONE));
                 nBase = nBase.divide(new Fraction(1, new BigDecimal(i * i), BigDecimal.ONE));
@@ -134,7 +133,7 @@ public class Real {
         }
         transfer();
         //再化简系数。直接用分数类
-        Fraction coefficientFraction = new Fraction(1, new BigDecimal(nCoefficient.toDecimalString()), new BigDecimal(dCoefficient.toString()));
+        Fraction coefficientFraction = new Fraction(1, new BigDecimal(nCoefficient.toString()), new BigDecimal(dCoefficient.toString()));
         Fraction.simplify(coefficientFraction);
         nCoefficient = new Fraction(1, coefficientFraction.getNumerator(), BigDecimal.ONE);
         dCoefficient = new Fraction(1, coefficientFraction.getDenominator(), BigDecimal.ONE);
@@ -166,8 +165,12 @@ public class Real {
         real.nCoefficient = real.nCoefficient.multiply(temp);
     }
 
-    ///加法，与分数类基本一致
+    ///加法，先判断是否为同类项
     public Real add(Real real) {
+        if (real.nCoefficient.equals(Fraction.ONE) || real.nBase.equals(Fraction.ONE)) return new Real(this);
+        //若式子里还有根号则比较底数是否相同，一个有根号一个没根号则无法计算
+        if (!(nExponent.equals(Fraction.ONE) && real.nExponent.equals(Fraction.ONE)))
+            throw new ArithmeticException("\n非同类项");
         Real addend = new Real(this);
         Real augend = new Real(real);
         commonize(real);
@@ -180,7 +183,7 @@ public class Real {
             augend.nCoefficient = augend.nCoefficient.negate();
         }
         addend.nCoefficient = addend.nCoefficient.add(augend.nCoefficient);
-        if (addend.nCoefficient.isNegative()) {
+        if (addend.nCoefficient.sign < 0) {
             addend.nCoefficient = addend.nCoefficient.negate();
             addend.sign *= -1;
         }
@@ -231,15 +234,15 @@ public class Real {
     ///开根号，前提是原式没有根号，且是正数
     public Real sqrt() {
         if (sign == -1 || !this.nExponent.equals(Fraction.ONE) || !this.dExponent.equals(Fraction.ONE))
-            throw new ArithmeticException("负数开根号或原式已存在根号");
+            throw new ArithmeticException("\n负数开根号或原式已存在根号");
         Real copy = new Real(this);
         //将分子分母的系数转移到底数中来
         copy.nBase = copy.nBase.multiply(copy.nCoefficient);
         copy.nCoefficient = Fraction.ONE;
         copy.dBase = copy.dBase.multiply(copy.dCoefficient);
         copy.dCoefficient = Fraction.ONE;
-        copy.nExponent = new Fraction("0.5");
-        copy.dExponent = new Fraction("0.5");
+        copy.nExponent = Fraction.HALF;
+        copy.dExponent = Fraction.HALF;
         copy.simplify();
         return copy;
     }
@@ -253,7 +256,7 @@ public class Real {
     public Real remainder(Real real) {
         Real dividend = new Real(this);
         Real divisor = new Real(real);
-        if (dividend.notInteger() || divisor.notInteger()) throw new ArithmeticException("小数取余");
+        if (dividend.notInteger() || divisor.notInteger()) throw new ArithmeticException("\n小数取余");
         else {
             if (dividend.sign < 0) {
                 dividend.nCoefficient = dividend.nCoefficient.negate();
@@ -291,13 +294,13 @@ public class Real {
         StringBuilder result = new StringBuilder();
         StringBuilder numerator = new StringBuilder();
         StringBuilder denominator = new StringBuilder();
+        if (nCoefficient.equals(Fraction.ONE) && nBase.equals(Fraction.ONE)) numerator.append("1");
         if (sign < 0) result.append("-");
         if (!nCoefficient.equals(Fraction.ONE)) numerator.append(nCoefficient);
-        if (nExponent.equals(new Fraction("0.5"))) numerator.append("√").append(nBase);
-        if (!dCoefficient.equals(Fraction.ONE) || dExponent.equals(new Fraction("0.5"))) denominator.append("/");
+        if (nExponent.equals(Fraction.HALF)) numerator.append("√").append(nBase);
+        if (!dCoefficient.equals(Fraction.ONE) || dExponent.equals(Fraction.HALF)) denominator.append("/");
         if (!dCoefficient.equals(Fraction.ONE)) denominator.append(dCoefficient);
-        if (dExponent.equals(new Fraction("0.5"))) denominator.append("√").append(dBase);
-        result.append(numerator).append(denominator);
-        return result.toString();
+        if (dExponent.equals(Fraction.HALF)) denominator.append("√").append(dBase);
+        return result.append(numerator).append(denominator).toString();
     }
 }

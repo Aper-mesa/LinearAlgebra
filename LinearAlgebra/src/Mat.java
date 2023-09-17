@@ -23,6 +23,7 @@ public class Mat {
                     3. 乘法  4. 方幂
                     5. 数乘  6. 转置
                     7. 求秩  8. 求逆
+                    9. 特征值
                         0. 退出""");
             switch (input.nextLine()) {
                 case "1" -> result = add(1);
@@ -37,15 +38,11 @@ public class Mat {
                     System.out.println("秩为" + (int) resultArr[0]);
                 }
                 case "8" -> result = inverse();
+                case "9" -> System.out.println("懒鬼，自己算！");
                 case "0" -> System.exit(0);
             }
-            print(result);
+            Tool.print(result);
         }
-    }
-
-    ///打印矩阵
-    private static void print(Real[][] mat) {
-        for (Real[] row : mat) System.out.println(Arrays.toString(row));
     }
 
     ///传递一个二维数组变量用于存储一个矩阵,参数记录矩阵需要记录的次数，加减乘为1和2，幂运算为0
@@ -264,9 +261,7 @@ public class Mat {
             main(null);
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
-        Real[][] identity = new Real[reals.length][reals.length];
-        for (Real[] row : identity) Arrays.fill(row, Real.ZERO);
-        for (int i = 0; i < identity.length; i++) identity[i][i] = Real.ONE;
+        Real[][] identity = Tool.getIdentity(reals.length);
         boolean zero = true;
         //此循环将方阵变为上三角
         for (int dia = 0; dia < reals.length; dia++) {
@@ -301,5 +296,13 @@ public class Mat {
             }
         }
         return identity;
+    }
+
+    ///求特征值
+    public static Real[][] eigenvalue(Real[][] squareMatrix) {
+        if (squareMatrix.length!=squareMatrix[0].length)throw new ArithmeticException("非方阵");
+        int order = squareMatrix.length;
+        Real[][] identity = Tool.getIdentity(squareMatrix.length);
+        return null;
     }
 }
