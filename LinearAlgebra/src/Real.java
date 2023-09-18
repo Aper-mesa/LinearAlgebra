@@ -13,7 +13,7 @@ public class Real {
     //分子的指数
     private Fraction nExponent = Fraction.ONE;
     //分子的底数
-    private Fraction nBase;
+    private Fraction nBase = Fraction.ONE;
     //分子根式的系数
     private Fraction nCoefficient = Fraction.ONE;
     //分母根式的系数
@@ -57,7 +57,7 @@ public class Real {
         } else if (numerator.contains("^")) {
             nBase = new Fraction(numerator.split("\\^")[0]);
             nExponent = Fraction.HALF;
-        } else nBase = new Fraction(numerator);
+        } else nCoefficient = new Fraction(numerator);
         simplify();
     }
 
@@ -143,6 +143,7 @@ public class Real {
     private void transfer() {
         if (nBase.equals(Fraction.ONE)) nExponent = Fraction.ONE;
         if (dBase.equals(Fraction.ONE)) dExponent = Fraction.ONE;
+        if(!nCoefficient.equals(Fraction.ZERO)&&nBase.equals(Fraction.ZERO)) nBase= Fraction.ONE;
         if (nExponent.equals(Fraction.ONE) && !nBase.equals(Fraction.ONE)) {
             nCoefficient = nCoefficient.multiply(nBase);
             nBase = Fraction.ONE;
@@ -167,13 +168,13 @@ public class Real {
 
     ///加法，先判断是否为同类项
     public Real add(Real real) {
-        if (real.nCoefficient.equals(Fraction.ONE) || real.nBase.equals(Fraction.ONE)) return new Real(this);
+        if (real.nCoefficient.equals(Fraction.ZERO) || real.nBase.equals(Fraction.ZERO)) return new Real(this);
         //若式子里还有根号则比较底数是否相同，一个有根号一个没根号则无法计算
         if (!(nExponent.equals(Fraction.ONE) && real.nExponent.equals(Fraction.ONE)))
             throw new ArithmeticException("\n非同类项");
         Real addend = new Real(this);
         Real augend = new Real(real);
-        commonize(real);
+        addend.commonize(augend);
         if (addend.sign < 0) {
             addend.sign *= -1;
             addend.nCoefficient = addend.nCoefficient.negate();
@@ -224,9 +225,8 @@ public class Real {
     ///除法
     public Real divide(Real real) {
         Real dividend = new Real(this);
-        Real divisorReciprocal = new Real(sign, real.dCoefficient, real.dBase, real.dExponent, real.nCoefficient, real.nBase, real.nExponent);
+        Real divisorReciprocal = new Real(real.sign, real.dCoefficient, real.dBase, real.dExponent, real.nCoefficient, real.nBase, real.nExponent);
         dividend = dividend.multiply(divisorReciprocal);
-        dividend.sign = dividend.sign == divisorReciprocal.sign ? 1 : -1;
         dividend.simplify();
         return dividend;
     }
@@ -284,9 +284,14 @@ public class Real {
     @Override
     public boolean equals(Object real) {
         if (!(real instanceof Real)) return false;
+        else if (nCoefficient.equals(Fraction.ZERO) && ((Real) real).nCoefficient.equals(Fraction.ZERO)) return true;
+        else if (sign - (((Real) real).sign) != 0) return false;
+        else if (!nExponent.equals(((Real) real).nExponent)) return false;
+        else if (!nBase.equals(((Real) real).nBase)) return false;
         Real thisCopy = new Real(this);
         Real realCopy = new Real((Real) real);
-        return thisCopy.subtract(realCopy).nCoefficient.equals(Fraction.ZERO);
+        thisCopy.commonize(realCopy);
+        return thisCopy.nCoefficient.subtract(realCopy.nCoefficient).equals(Fraction.ZERO);
     }
 
     @Override
