@@ -119,6 +119,7 @@ public class Real {
 
     ///化简。先整数化，再分母有理化。化简时，先化简根式，再化简系数
     private void simplify() {
+        if (equals(ZERO) && sign < 0) sign *= -1;
         transfer();
         if (dCoefficient.notInteger() || dBase.notInteger() || nCoefficient.notInteger() || nBase.notInteger())
             integerize();
@@ -143,7 +144,7 @@ public class Real {
     private void transfer() {
         if (nBase.equals(Fraction.ONE)) nExponent = Fraction.ONE;
         if (dBase.equals(Fraction.ONE)) dExponent = Fraction.ONE;
-        if(!nCoefficient.equals(Fraction.ZERO)&&nBase.equals(Fraction.ZERO)) nBase= Fraction.ONE;
+        if (!nCoefficient.equals(Fraction.ZERO) && nBase.equals(Fraction.ZERO)) nBase = Fraction.ONE;
         if (nExponent.equals(Fraction.ONE) && !nBase.equals(Fraction.ONE)) {
             nCoefficient = nCoefficient.multiply(nBase);
             nBase = Fraction.ONE;

@@ -1,27 +1,4 @@
 import java.util.*;
-/*默认颜色：
-Reset: "\u001B[0m"
-前景色（文本颜色）：
-
-黑色："\u001B[30m"
-红色："\u001B[31m"
-绿色："\u001B[32m"
-黄色："\u001B[33m"
-蓝色："\u001B[34m"
-洋红色（品红）："\u001B[35m"
-青色："\u001B[36m"
-白色："\u001B[37m"
-背景色：
-
-黑色："\u001B[40m"
-红色："\u001B[41m"
-绿色："\u001B[42m"
-黄色："\u001B[43m"
-蓝色："\u001B[44m"
-洋红色（品红）："\u001B[45m"
-青色："\u001B[46m"
-白色："\u001B[47m"
-*/
 
 //此类用于解线性方程组
 public class LinearEquation {
@@ -82,7 +59,7 @@ public class LinearEquation {
 
     ///求唯一解
     private static void uniqueSolution(Real[][] augmentedEchelon) {
-        System.out.println("方程组有唯一解\n");
+        System.out.println("方程组有唯一解");
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Real[] constantVector = new Real[augmentedEchelon.length];
         Real[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
@@ -129,9 +106,7 @@ public class LinearEquation {
             }
         }
         //展示结果
-        System.out.println("解：");
-        for (int i = 0; i < numberOfVariables; i++) System.out.println("x" + (i + 1) + " = " + constantVector[i]);
-        System.out.println();
+        System.out.println(Arrays.toString(constantVector) + "\n");
         numberOfEquations = 0;
         main(null);
     }
@@ -140,10 +115,8 @@ public class LinearEquation {
     private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables) {
         System.out.println("方程组有无穷解");
         //建一个集合存储所有未知量的索引
-        ArrayList<Integer> variables = new ArrayList<>();
-        for (int i = 0; i < numberOfVariables; i++) {
-            variables.add(i + 1);
-        }
+        ArrayList<Integer> freeVariables = new ArrayList<>();
+        for (int i = 0; i < numberOfVariables; i++) freeVariables.add(i + 1);
         Real[] constantVector = new Real[augmentedEchelon.length];
         for (int i = 0; i < constantVector.length; i++)
             constantVector[i] = augmentedEchelon[i][augmentedEchelon[0].length - 1];
@@ -152,42 +125,60 @@ public class LinearEquation {
         for (int j = 0; j < coefficientEchelon.length; j++) {
             for (int i = 0; i < coefficientEchelon[0].length; i++) {
                 if (!coefficientEchelon[j][i].equals(Real.ZERO)) {
-                    variables.remove((Integer) i);
+                    freeVariables.remove((Integer) (i+1));
                     if (!coefficientEchelon[j][i].equals(Real.ONE)) {
                         Real ratio = Real.ONE.divide(coefficientEchelon[j][i]);
-                        System.out.println(ratio);
-                        for (int k = 0; k < coefficientEchelon[j].length; k++) {
+                        for (int k = 0; k < coefficientEchelon[j].length; k++)
                             coefficientEchelon[j][k] = coefficientEchelon[j][k].multiply(ratio);
-                        }
                         constantVector[j] = constantVector[j].multiply(ratio);
                     }
                     break;
                 }
             }
         }
+        //将所有基础未知量的索引存入一个数组中
+        ArrayList<Integer> basicVariables = new ArrayList<>();
+        for (int i = 0; i < numberOfVariables; i++) if (!freeVariables.contains(i + 1)) basicVariables.add(i + 1);
 
         //FIXME 临时打印
         Tool.print(coefficientEchelon);
         System.out.println();
         System.out.println(Arrays.toString(constantVector));
+        System.out.println();
 
-
-
-        /*Real[][] freeColumns = new Real[numberOfFreeVariables][numberOfEquations];
-        for (int i = numberOfFreeVariables; i > 0; i--)
-            for (int j = 0; j < freeColumns[0].length; j++)
-                freeColumns[numberOfFreeVariables - i][j] = augmentedEchelon[j][augmentedEchelon[0].length - i - 1];
-        //将自由列所有元素取相反数
-        for (Real[] column : freeColumns) for (int i = 0; i < column.length; i++) column[i] = column[i].negate();
-        int numberOfBasicVariables = numberOfVariables - numberOfFreeVariables;
-        //展示结果
-        System.out.println("通解：");
-        for (int i = 0; i < numberOfEquations; i++) {
-            StringBuilder tempFree = new StringBuilder();
-            for (int j = 0; j < freeColumns.length - 1; j++)
-                tempFree.append(freeColumns[j][i]).append("X").append(numberOfBasicVariables + j + 1).append(freeColumns[j + 1][i].isNegative() ? " " : " +");
-            tempFree.append(freeColumns[freeColumns.length - 1][i]).append("X").append(numberOfVariables).append(" +");
-            System.out.println("X" + (i + 1) + " = " + tempFree + augmentedEchelon[i][augmentedEchelon[0].length - 1]);
-        }*/
+        //基础解系
+        Real[][] fundamentalSolution = new Real[numberOfFreeVariables][numberOfVariables];
+        //这里要循环n-r次，每次都给自由未知量赋不同的值，但所有情况组合成一个标准基
+        for (int i = 0; i < numberOfFreeVariables; i++) {
+            Real[] specificFreeVariables = new Real[numberOfFreeVariables];
+            Real[] specificBasicVariables = new Real[basicVariables.size()];
+            Arrays.fill(specificFreeVariables, Real.ZERO);
+            Arrays.fill(specificBasicVariables, Real.ZERO);
+            specificFreeVariables[i] = Real.ONE;
+            //先把基础解系的自由未知量位置填好
+            for (int k = 0; k < numberOfFreeVariables; k++)
+                fundamentalSolution[i][freeVariables.get(k) - 1] = specificFreeVariables[k];
+            //这里循环解出基础未知量。从底下往上解
+            for (int k = basicVariables.size(); k > 0; k--) {
+                boolean pivot = false;
+                int pivotIndex = 0;
+                Real temp = Real.ZERO;
+                for (int j = 0; j < numberOfVariables; j++) {
+                    if (coefficientEchelon[k - 1][j].equals(Real.ZERO)) continue;
+                    if (!pivot && !coefficientEchelon[k - 1][j].equals(Real.ZERO)) {
+                        pivot = true;
+                        pivotIndex=j;
+                        continue;
+                    }
+                    if (j>pivotIndex){
+                        if(freeVariables.contains(j+1)) temp=temp.add(specificFreeVariables[freeVariables.indexOf(j+1)].multiply(coefficientEchelon[k-1][j]));
+                        else temp = temp.add(specificBasicVariables[freeVariables.indexOf(j+1)].multiply(coefficientEchelon[k-1][j]));
+                    }
+                }
+                specificBasicVariables[k-1] = temp;
+                fundamentalSolution[i][basicVariables.get(k - 1) - 1] = constantVector[k - 1].subtract(temp);
+            }
+        }
+        Tool.print(fundamentalSolution);
     }
 }
