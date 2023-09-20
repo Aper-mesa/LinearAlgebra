@@ -174,7 +174,9 @@ public class LinearEquation {
                 fundamentalSolution[i][basicVariables.get(k - 1) - 1] = constantVector[k - 1].subtract(temp);
             }
         }
-        System.out.println(numberOfFreeVariables + "个基础解系：");
+        System.out.println("一个基础解系：");
         Tool.print(fundamentalSolution);
+        numberOfEquations = 0;
+        main(null);
     }
 }
