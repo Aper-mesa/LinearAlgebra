@@ -173,9 +173,7 @@ public class Fraction {
 
     ///减法
     public Fraction subtract(Fraction fraction) {
-        Fraction subtrahend = new Fraction(fraction);
-        subtrahend.sign *= -1;
-        return add(subtrahend);
+        return add(new Fraction(fraction).negate());
     }
 
     ///乘法

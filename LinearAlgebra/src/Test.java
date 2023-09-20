@@ -25,8 +25,11 @@ Reset: "\u001B[0m"
 
 public class Test {
     public static void main(String[] args) {
-        Real r1 = new Real("-0");
-        Real r2 = new Real("-13/2");
-        System.out.println();
+        Num n1 = new Num("2+3i");
+        Num n2 = new Num("6^+7^i");
+        Real r1 = new Real("2^");
+        Real r2 = new Real("3");
+        Num n3 = new Num("2^-5i");
+        System.out.println(n1.multiply(n2));
     }
 }

@@ -171,7 +171,7 @@ public class Real {
     public Real add(Real real) {
         if (real.nCoefficient.equals(Fraction.ZERO) || real.nBase.equals(Fraction.ZERO)) return new Real(this);
         //若式子里还有根号则比较底数是否相同，一个有根号一个没根号则无法计算
-        if (!(nExponent.equals(Fraction.ONE) && real.nExponent.equals(Fraction.ONE)))
+        if (!nExponent.equals(real.nExponent) || (nExponent.equals(real.nExponent) && !nBase.equals(real.nBase)))
             throw new ArithmeticException("\n非同类项");
         Real addend = new Real(this);
         Real augend = new Real(real);
@@ -200,9 +200,7 @@ public class Real {
 
     ///减法
     public Real subtract(Real real) {
-        Real subtrahend = new Real(real);
-        subtrahend.sign *= -1;
-        return add(subtrahend);
+        return add(new Real(real).negate());
     }
 
     ///乘法
@@ -210,14 +208,21 @@ public class Real {
         Real multiplicand = new Real(this);
         Real multiplier = new Real(real);
         multiplicand.nCoefficient = multiplicand.nCoefficient.multiply(multiplier.nCoefficient);
-        if (!multiplicand.nExponent.equals(Fraction.ONE) && multiplicand.nExponent.equals(multiplier.nExponent))
+        multiplicand.dCoefficient = multiplicand.dCoefficient.multiply(multiplier.dCoefficient);
+/*        if (!multiplicand.nExponent.equals(Fraction.ONE) && multiplicand.nExponent.equals(multiplier.nExponent))
             multiplicand.nBase = multiplicand.nBase.multiply(multiplier.nBase);
         multiplicand.dCoefficient = multiplicand.dCoefficient.multiply(multiplier.dCoefficient);
         if (multiplicand.dExponent.equals(Fraction.ONE) && !multiplier.dExponent.equals(Fraction.ONE)) {
             multiplicand.dExponent = multiplier.dExponent;
             multiplicand.dBase = multiplicand.dBase.multiply(multiplier.dBase);
         } else if (!multiplicand.dExponent.equals(Fraction.ONE) && multiplicand.dExponent.equals(multiplier.dExponent))
-            multiplicand.dBase = multiplicand.dBase.multiply(multiplier.dBase);
+            multiplicand.dBase = multiplicand.dBase.multiply(multiplier.dBase);*/
+        if(multiplicand.nExponent.equals(Fraction.ONE)&&!multiplier.nExponent.equals(Fraction.ONE)){
+            multiplicand.nExponent=multiplier.nExponent;
+            multiplicand.nBase=multiplier.nBase;
+        } else {
+            multiplicand.nBase=multiplicand.nBase.multiply(multiplier.nBase);
+        }
         multiplicand.sign = sign == multiplier.sign ? 1 : -1;
         multiplicand.simplify();
         return multiplicand;
