@@ -23,6 +23,7 @@ Reset: "\u001B[0m"
 白色："\u001B[47m"
 */
 
+//需要测试：实数乘法，特征值
 public class Test {
     public static void main(String[] args) {
         Num n1 = new Num("2+3i");

@@ -209,19 +209,11 @@ public class Real {
         Real multiplier = new Real(real);
         multiplicand.nCoefficient = multiplicand.nCoefficient.multiply(multiplier.nCoefficient);
         multiplicand.dCoefficient = multiplicand.dCoefficient.multiply(multiplier.dCoefficient);
-/*        if (!multiplicand.nExponent.equals(Fraction.ONE) && multiplicand.nExponent.equals(multiplier.nExponent))
-            multiplicand.nBase = multiplicand.nBase.multiply(multiplier.nBase);
-        multiplicand.dCoefficient = multiplicand.dCoefficient.multiply(multiplier.dCoefficient);
-        if (multiplicand.dExponent.equals(Fraction.ONE) && !multiplier.dExponent.equals(Fraction.ONE)) {
-            multiplicand.dExponent = multiplier.dExponent;
-            multiplicand.dBase = multiplicand.dBase.multiply(multiplier.dBase);
-        } else if (!multiplicand.dExponent.equals(Fraction.ONE) && multiplicand.dExponent.equals(multiplier.dExponent))
-            multiplicand.dBase = multiplicand.dBase.multiply(multiplier.dBase);*/
-        if(multiplicand.nExponent.equals(Fraction.ONE)&&!multiplier.nExponent.equals(Fraction.ONE)){
-            multiplicand.nExponent=multiplier.nExponent;
-            multiplicand.nBase=multiplier.nBase;
+        if (multiplicand.nExponent.equals(Fraction.ONE) && !multiplier.nExponent.equals(Fraction.ONE)) {
+            multiplicand.nExponent = multiplier.nExponent;
+            multiplicand.nBase = multiplier.nBase;
         } else {
-            multiplicand.nBase=multiplicand.nBase.multiply(multiplier.nBase);
+            multiplicand.nBase = multiplicand.nBase.multiply(multiplier.nBase);
         }
         multiplicand.sign = sign == multiplier.sign ? 1 : -1;
         multiplicand.simplify();
@@ -251,6 +243,19 @@ public class Real {
         copy.dExponent = Fraction.HALF;
         copy.simplify();
         return copy;
+    }
+
+    ///幂运算，仅支持非负整数指数
+    public Real exponentiate(int exponent) {
+        Real copy = new Real(this);
+        if (exponent < 0) throw new ArithmeticException("\n仅支持非负整数指数");
+        if (exponent == 0 && copy.equals(ZERO)) throw new ArithmeticException("\n0的0次方未定义");
+        else if (exponent == 0) return ONE;
+        Real result = new Real(copy);
+        for (int i = 1; i < exponent; i++) {
+            result = result.multiply(copy);
+        }
+        return result;
     }
 
     ///变为相反数

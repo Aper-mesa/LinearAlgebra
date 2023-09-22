@@ -1,5 +1,5 @@
 //数域扩展到复数范围，现已支持负数的平方根计算
-public class Num {
+public class Num extends Ele{
     //实部
     public Real real = Real.ZERO;
     //虚部，默认为0

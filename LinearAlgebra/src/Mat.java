@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class Mat {
     private static Real[][] result;
 
     public static void main(String[] args) {
+        ArrayList<Real> eigenvalue = new ArrayList<>();
         while (true) {
             System.out.println("""
                     选择运算
@@ -38,10 +40,11 @@ public class Mat {
                     System.out.println("秩为" + (int) resultArr[0]);
                 }
                 case "8" -> result = inverse();
-                case "9" -> System.out.println("懒鬼，自己算！");
+                case "9" -> eigenvalue = eigenvalue(input(0));
                 case "0" -> System.exit(0);
             }
-            Tool.print(result);
+            //Tool.print(result);
+            System.out.println(eigenvalue);
         }
     }
 
@@ -298,10 +301,34 @@ public class Mat {
     }
 
     ///求特征值
-    public static Real[][] eigenvalue(Real[][] squareMatrix) {
-        if (squareMatrix.length!=squareMatrix[0].length)throw new ArithmeticException("非方阵");
-        int order = squareMatrix.length;
-        Real[][] identity = Tool.getIdentity(squareMatrix.length);
+    public static ArrayList<Real> eigenvalue(Real[][] mat) {
+        if (mat.length != mat[0].length) throw new ArithmeticException("\n非方阵");
+        int order = mat.length;
+        if (order > 4) throw new ArithmeticException("\n最高支持4阶方阵，当前" + order + "阶");
+        ArrayList<Real> result = new ArrayList<>();
+        switch (order) {
+            case 1 -> {
+                result.add(mat[0][0]);
+                return result;
+            }
+            case 2 -> {
+                Real a = Real.ONE;
+                Real b = mat[0][0].negate().subtract(mat[1][1]);
+                Real c = (mat[0][0].multiply(mat[1][1])).subtract(mat[0][1].multiply(mat[1][0]));
+                Real delta = b.exponentiate(2).subtract(new Real("4").multiply(a).multiply(c));
+                Real x1 = (b.negate().add(delta.sqrt())).divide(new Real("2").multiply(a));
+                Real x2 = (b.negate().subtract(delta.sqrt())).divide(new Real("2").multiply(a));
+                result.add(x1);
+                result.add(x2);
+                return result;
+            }
+            case 3 -> {
+                System.out.println("WIP");
+            }
+            case 4 -> {
+                System.out.println("Work In Progress");
+            }
+        }
         return null;
     }
 }
