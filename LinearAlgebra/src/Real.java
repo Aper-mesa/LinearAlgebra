@@ -72,6 +72,11 @@ public class Real {
         dExponent = real.dExponent;
     }
 
+    ///用double的构造方法
+    public Real(double number) {
+        this(number + "");
+    }
+
     ///分别输入每一个值的构造方法
     public Real(int sign, Fraction nCoefficient, Fraction nBase, Fraction nExponent, Fraction dCoefficient, Fraction dBase, Fraction dExponent) {
         this.sign = sign;

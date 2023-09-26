@@ -43,7 +43,7 @@ public class Mat {
                 case "9" -> eigenvalue = eigenvalue(input(0));
                 case "0" -> System.exit(0);
             }
-            //Tool.print(result);
+            Tool.print(result);
             System.out.println(eigenvalue);
         }
     }
@@ -315,15 +315,27 @@ public class Mat {
                 Real a = Real.ONE;
                 Real b = mat[0][0].negate().subtract(mat[1][1]);
                 Real c = (mat[0][0].multiply(mat[1][1])).subtract(mat[0][1].multiply(mat[1][0]));
-                Real delta = b.exponentiate(2).subtract(new Real("4").multiply(a).multiply(c));
-                Real x1 = (b.negate().add(delta.sqrt())).divide(new Real("2").multiply(a));
-                Real x2 = (b.negate().subtract(delta.sqrt())).divide(new Real("2").multiply(a));
+                Real delta = b.exponentiate(2).subtract(new Real(4).multiply(a).multiply(c));
+                Real x1 = (b.negate().add(delta.sqrt())).divide(new Real(2).multiply(a));
+                Real x2 = (b.negate().subtract(delta.sqrt())).divide(new Real(2).multiply(a));
                 result.add(x1);
                 result.add(x2);
                 return result;
             }
             case 3 -> {
                 System.out.println("WIP");
+                //FIXME 没有立方根方法，写个锤子的三阶特征值
+                /*Real a = null;
+                Real b = null;
+                Real c = null;
+                Real d = null;
+                Real p = (new Real("3").multiply(a).multiply(c).subtract(b.exponentiate(2))).divide(new Real("3").multiply(a.exponentiate(2)));
+                Real q = (new Real("27").multiply(a.exponentiate(2)).multiply(d).subtract(new Real("9").multiply(a).multiply(b).multiply(c)).add(new Real("2")).multiply(b.exponentiate(3))).divide(new Real("27").multiply(a.exponentiate(3)));
+                Real w = new Real("-1/2+3^/2i");
+                Real delta = q.exponentiate(2).divide(new Real("4")).add(p.exponentiate(3).divide(new Real("27")));
+                Real x1 = null;
+                Real x2 = null;
+                Real x3 = null;*/
             }
             case 4 -> {
                 System.out.println("Work In Progress");
