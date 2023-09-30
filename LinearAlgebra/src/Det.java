@@ -8,8 +8,6 @@ public class Det {
     private Det() {
     }
 
-    private static ResourceBundle text;
-
     public static Object[] getValue(Real[][] det) {
         Object[] result = new Object[2];
         result[1] = det;
@@ -76,14 +74,14 @@ public class Det {
     public static void main(String[] args) {
         Locale locale = Locale.CHINA;
         Locale locale1 = Locale.US;
-        text = ResourceBundle.getBundle("Languages_zh", locale);
+        ResourceBundle text = ResourceBundle.getBundle("Lang_zh", locale);
         Scanner input = new Scanner(System.in);
         System.out.println("""
                 输入 -1 切换至英语，输入其他值继续
                 Type -1 to switch to English, type other value to continue""");
         String first = input.nextLine();
-        if (first.equals("-1")){
-            text=ResourceBundle.getBundle("Languages_en");
+        if (first.equals("-1")) {
+            text = ResourceBundle.getBundle("Lang_en");
         }
         //行列式的阶数
         int order;

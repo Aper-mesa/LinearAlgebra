@@ -166,9 +166,9 @@ public class Vec {
     // 控制台
     public static void main(Real[] src) {
         Dictionary<String, Vec> var = new Hashtable<>();
-        Console console = new Console();
+        Con console = new Con();
         Scanner scanner = new Scanner(System.in);
-        Console.help();
+        Con.help();
         System.out.print(">>> ");
         while (console.deal(scanner.nextLine().replace(" ", ""), var)) {
             System.out.print(">>> ");
@@ -177,7 +177,7 @@ public class Vec {
 }
 
 // 控制台相关逻辑
-class Console {
+class Con {
     public static void help() {
         System.out.println("""
                 ↓ 优先级 高->低 ↓ 不能嵌套

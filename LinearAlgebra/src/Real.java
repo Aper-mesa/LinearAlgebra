@@ -251,7 +251,7 @@ public class Real {
     }
 
     ///幂运算，仅支持非负整数指数
-    public Real exponentiate(int exponent) {
+    public Real power(int exponent) {
         Real copy = new Real(this);
         if (exponent < 0) throw new ArithmeticException("\n仅支持非负整数指数");
         if (exponent == 0 && copy.equals(ZERO)) throw new ArithmeticException("\n0的0次方未定义");
