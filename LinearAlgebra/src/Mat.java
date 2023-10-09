@@ -2,21 +2,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-//此程序用于进行矩阵的相关运算
+////此程序用于进行矩阵的相关运算
 
 public class Mat {
+
+    private Mat() {
+    }
+
+    private static Real[][] mat1;
+    private static Real[][] mat2;
     private static final Scanner input = new Scanner(System.in);
     //矩阵的行数和列数
     private static int row1;
     private static int col1;
     private static int row2;
     private static int col2;
-    //计算时用到的矩阵
-    private static Real[][] mat1;
-    private static Real[][] mat2;
-    private static Real[][] result;
 
-    public static void main(String[] args) {
+    /*    public static void main(String[] args) {
         ArrayList<Real> eigenvalue = new ArrayList<>();
         while (true) {
             System.out.println("""
@@ -46,7 +48,7 @@ public class Mat {
             Tool.print(result);
             System.out.println(eigenvalue);
         }
-    }
+    }*/
 
     ///传递一个二维数组变量用于存储一个矩阵,参数记录矩阵需要记录的次数，加减乘为1和2，幂运算为0
     public static Real[][] input(int order) {
@@ -69,15 +71,12 @@ public class Mat {
     }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
-    public static Real[][] add(int sign) {
-        mat1 = input(1);
-        mat2 = input(2);
+    public static Real[][] add(int sign, Real[] info) {
+        if (!canAddOrSubtract(info)) return null;
+        mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        mat2 = Tool.input(info[2].toInt(), info[3].toInt());
         Real[][] left = Tool.deepCopy(mat1);
         Real[][] right = Tool.deepCopy(mat2);
-        if (row1 != row2 || col1 != col2) {
-            System.out.println("两个矩阵不同型，无法计算\n");
-            main(null);
-        }
         Real[][] result = new Real[mat1.length][mat1[0].length];
         for (int i = 0; i < result.length; i++)
             for (int j = 0; j < result.length; j++)
@@ -85,15 +84,22 @@ public class Mat {
         return result;
     }
 
+    ///判断矩阵是否可以相加或相减，即是否同型
+    protected static boolean canAddOrSubtract(Real[] info) {
+        return info[0] == info[2] && info[1] == info[3];
+    }
+
     ///乘法框架
-    public static Real[][] multiply() {
-        mat1 = input(1);
-        mat2 = input(2);
-        if (col1 != row2) {
-            System.out.println("左矩阵的列数不等于右矩阵的行数，无法计算\n");
-            main(null);
-        }
+    public static Real[][] multiply(Real[] info) {
+        if (!canMultiply(info)) return null;
+        mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        mat2 = Tool.input(info[2].toInt(), info[3].toInt());
         return multiplicationAlgorithm(mat1, mat2);
+    }
+
+    ///判断矩阵是否可以相乘
+    public static boolean canMultiply(Real[] info) {
+        return info[1].equals(info[2]);
     }
 
     ///乘法算法核心
@@ -116,11 +122,11 @@ public class Mat {
     }
 
     ///方幂
-    public static Real[][] power() {
-        mat1 = input(1);
+    public static Real[][] power(Real[] info) {
+        int exponent = info[0].toInt();
+        int order = info[1].toInt();
+        mat1 = Tool.input(order, order);
         Real[][] result = Tool.deepCopy(mat1);
-        System.out.println("输入指数");
-        int exponent = Integer.parseInt(input.nextLine());
         //指数为0，结果为同阶单位矩阵
         if (exponent == 0) {
             for (Real[] row : mat1) Arrays.fill(row, Real.ZERO);
@@ -132,10 +138,9 @@ public class Mat {
     }
 
     ///数乘
-    public static Real[][] scalarMultiply() {
-        mat1 = input(1);
-        System.out.println("输入标量");
-        Real k = new Real(input.nextLine());
+    public static Real[][] scalarMultiply(Real[] info) {
+        mat1 = Tool.input(info[1].toInt(), info[2].toInt());
+        Real k = new Real(info[0]);
         Real[][] result = Tool.deepCopy(mat1);
         for (int i = 0; i < mat1.length; i++)
             for (int j = 0; j < mat1[0].length; j++) result[i][j] = k.multiply(result[i][j]);
@@ -143,25 +148,29 @@ public class Mat {
     }
 
     ///转置
-    public static Real[][] transpose() {
-        mat1 = input(1);
+    public static Real[][] transpose(Real[] info) {
+        mat1 = Tool.input(info[0].toInt(), info[1].toInt());
         Real[][] result = new Real[mat1[0].length][mat1.length];
         for (int row = 0; row < mat1.length; row++)
             for (int col = 0; col < mat1[0].length; col++) result[col][row] = mat1[row][col];
         return result;
     }
 
-    ///求秩框架，返回一个长度为2的Object数组，第一个放矩阵的秩，第二个放阶梯矩阵
-    public static Object[] getRank(Real[][] matrix) {
-        Object[] resultArr = new Object[2];
-        Real[][] echelonMatrix = Tool.deepCopy(matrix);
-        resultArr[0] = rankAlgorithm(echelonMatrix);
-        resultArr[1] = echelonMatrix;
-        return resultArr;
+    ///求秩框架
+    public static int getRank(Real[] info) {
+        mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        return rankAlgorithm(mat1);
+    }
+
+    ///求阶梯形矩阵
+    public static Real[][] getEchelon(Real[] info) {
+        mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        rankAlgorithm(mat1);
+        return mat1;
     }
 
     ///求秩算法核心
-    private static int rankAlgorithm(Real[][] mat) {
+    protected static int rankAlgorithm(Real[][] mat) {
         int firstNonZeroRow;
         //找到第一个非零行
         outer:
@@ -248,51 +257,46 @@ public class Mat {
     }
 
     ///求逆
-    public static Real[][] inverse() {
-        mat1 = input(1);
-        Real[][] reals = Tool.deepCopy(mat1);
-        if (row1 != col1) {
-            System.out.println("只有方阵才有逆矩阵\n");
-            main(null);
-        }
+    public static Real[][] inverse(Real[] info) {
+        mat1 = Tool.input(info[0].toInt(), info[0].toInt());
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
-        Real[][] test = Tool.deepCopy(reals);
+        Real[][] test = Tool.deepCopy(mat1);
         //调用求秩方法判断方阵是否满秩
-        if (reals.length != rankAlgorithm(test)) {
+        if (mat1.length != rankAlgorithm(test)) {
             System.out.println("方阵不满秩\n");
-            main(null);
+            return null;
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
-        Real[][] identity = Tool.getIdentity(reals.length);
+        Real[][] identity = Tool.getIdentity(mat1.length);
         boolean zero = true;
         //此循环将方阵变为上三角
-        for (int dia = 0; dia < reals.length; dia++) {
+        for (int dia = 0; dia < mat1.length; dia++) {
             Real[] tempRow, tempRow2;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
-            if (reals[dia][dia].equals(Real.ZERO)) {
+            if (mat1[dia][dia].equals(Real.ZERO)) {
                 int i;
-                for (i = dia + 1; i < reals.length; i++) {
-                    if (!reals[i][dia].equals(Real.ZERO)) {
+                for (i = dia + 1; i < mat1.length; i++) {
+                    if (!mat1[i][dia].equals(Real.ZERO)) {
                         zero = false;
                         break;
                     }
                 }
                 if (zero) System.out.println("对角线上有0");
-                tempRow = reals[dia];
-                reals[dia] = reals[i];
-                reals[i] = tempRow;
+                tempRow = mat1[dia];
+                mat1[dia] = mat1[i];
+                mat1[i] = tempRow;
                 tempRow2 = identity[dia];
                 identity[dia] = identity[i];
                 identity[i] = tempRow2;
             }
-            Tool.eliminateUpper(reals, identity);
+            Tool.eliminateUpper(mat1, identity);
         }
         //最后将对角线数都化为1
-        for (int i = 0; i < reals.length; i++) {
-            if (!reals[i][i].equals(Real.ONE)) {
-                Real ratio = Real.ONE.divide(reals[i][i]);
-                for (int j = 0; j < reals.length; j++) {
-                    reals[i][j] = reals[i][j].multiply(ratio);
+        for (int i = 0; i < mat1.length; i++) {
+            if (!mat1[i][i].equals(Real.ONE)) {
+                Real ratio = Real.ONE.divide(mat1[i][i]);
+                for (int j = 0; j < mat1.length; j++) {
+                    mat1[i][j] = mat1[i][j].multiply(ratio);
                     identity[i][j] = identity[i][j].multiply(ratio);
                 }
             }

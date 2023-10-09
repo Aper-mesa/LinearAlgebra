@@ -310,6 +310,11 @@ public class Real {
         return thisCopy.nCoefficient.subtract(realCopy.nCoefficient).equals(Fraction.ZERO);
     }
 
+    ///转换成整数
+    public int toInt(){
+        return Integer.parseInt(toString());
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

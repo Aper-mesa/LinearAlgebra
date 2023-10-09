@@ -1,4 +1,3 @@
-import java.util.*;
 /*默认颜色：
 Reset: "\u001B[0m"
 前景色（文本颜色）：
@@ -26,10 +25,6 @@ Reset: "\u001B[0m"
 //需要测试：实数乘法，特征值
 public class Test {
     public static void main(String[] args) {
-        Fraction f1 = new Fraction("0.5");
-        Fraction f2 = new Fraction("0.3");
-        Real r1 = new Real("8^");
-
-        System.out.println(r1);
+                System.out.println("-m3".split("-m")[1]);
     }
 }

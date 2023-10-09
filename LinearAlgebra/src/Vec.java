@@ -1,6 +1,6 @@
 import java.util.*;
 
-//此程序用于向量的相关计算
+////此程序用于向量的相关计算
 /*
 1. 加减法
 2. 数乘
@@ -201,7 +201,7 @@ class Con {
             System.out.flush();
             var = new Hashtable<>();
         }
-        if (Objects.equals(src, "help")) {
+        if (Objects.equals(src, "帮助")) {
             help();
         }
         return analyze(src, var);
