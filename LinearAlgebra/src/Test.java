@@ -22,9 +22,8 @@ Reset: "\u001B[0m"
 白色："\u001B[47m"
 */
 
-//需要测试：实数乘法，特征值
+//需要测试：所有内容
 public class Test {
     public static void main(String[] args) {
-                System.out.println("-m3".split("-m")[1]);
     }
 }

@@ -22,12 +22,14 @@ public class Console {
             if (inputs.contains("-help")) showHelp();
             //矩阵
             if (inputs.contains("-m")) mat(inputs.split("-m")[1].strip());
-            //线性方程组
-            else if (inputs.contains("-e")) LinearEquation.compute(Integer.parseInt(inputs.split("-e")[1].strip()));
-            //行列式
-            else if (inputs.contains("-d")) System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
-            //向量"
-            else if(inputs.contains("-v")) vec(inputs.split("-v")[1].strip());
+                //线性方程组
+            else if (!inputs.equals("-en") && inputs.contains("-e"))
+                LinearEquation.compute(Integer.parseInt(inputs.split("-e")[1].strip()));
+                //行列式
+            else if (inputs.contains("-d"))
+                System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
+                //向量"
+            else if (inputs.contains("-v")) vec(inputs.split("-v")[1].strip());
         }
     }
 
@@ -58,7 +60,7 @@ public class Console {
     }
 
     ///向量命令处理
-    private static void vec(String input){
+    private static void vec(String input) {
 
     }
 
