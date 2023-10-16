@@ -15,7 +15,7 @@ public class LinearEquation extends Console {
         System.out.println(text.getString("rootWarning"));
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
-            String nextLine = input.nextLine();
+            String nextLine = input.nextLine().strip();
             if (nextLine.equals("0")) break;
             equations.add(nextLine);
             numberOfEquations++;

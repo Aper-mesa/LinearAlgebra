@@ -13,21 +13,15 @@ public class Mat extends Console {
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
     public static Real[][] add(int sign, Real[] info) {
-        if (!canAddOrSubtract(info)) return null;
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
-        mat2 = Tool.input(info[2].toInt(), info[3].toInt());
+        mat2 = Tool.input(info[0].toInt(), info[1].toInt());
         Real[][] left = Tool.deepCopy(mat1);
         Real[][] right = Tool.deepCopy(mat2);
         Real[][] result = new Real[mat1.length][mat1[0].length];
         for (int i = 0; i < result.length; i++)
             for (int j = 0; j < result.length; j++)
-                result[i][j] = left[i][j].add(right[i][j].multiply(new Real(sign + "")));
+                result[i][j] = left[i][j].add(right[i][j].multiply(new Real(sign)));
         return result;
-    }
-
-    ///判断矩阵是否可以相加或相减，即是否同型
-    protected static boolean canAddOrSubtract(Real[] info) {
-        return info[0] == info[2] && info[1] == info[3];
     }
 
     ///乘法框架

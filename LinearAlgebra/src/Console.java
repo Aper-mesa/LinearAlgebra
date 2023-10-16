@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -34,10 +35,10 @@ public class Console {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        System.out.println("\u001B[31m" + "水银线代计算器\nApermesa's Linear Algebra Calculator" + "\u001B[0m");
+        System.out.println("\u001B[31m" + "           水银线代计算器\nApermesa's Linear Algebra Calculator" + "\u001B[0m");
         System.out.println("""
-                输入 “help” 获取帮助      Enter "help" to get help
-                输入 “exit” 退出程序      Enter "exit" to exit the program""");
+                输入 “help” 获取帮助  Enter "help" to get help
+                输入 “exit” 退出程序  Enter "exit" to exit the program""");
         while (true) {
             String inputs = input.nextLine().strip().toLowerCase();
             if (inputs.equals("exit")) {
@@ -101,6 +102,28 @@ public class Console {
 
     ///向量命令处理
     private static void vec(String input) {
-
+        //para即为用户输入的指令，包含运算类型和矩阵的信息
+        String[] para = input.split(" ");
+        //此数组仅存储矩阵信息
+        Real[] info = new Real[para.length - 1];
+        for (int i = 1; i < para.length; i++) {
+            info[i - 1] = new Real(para[i]);
+            Real[] vec = null;
+            Real result = null;
+            switch (para[0]) {
+                case "a" -> vec = Vec.add(1, info);
+                case "s" -> vec = Vec.add(-1, info);
+                case "c" -> vec = Vec.scalarMultiply(info);
+                case "i" -> result = Vec.innerProduct(info);
+                case "o2" -> result = Vec.outerProduct2D();
+                case "o3" -> vec = Vec.outerProduct3D();
+                case "l" -> result = Vec.length(info);
+                case "as" -> result = Vec.angleSin(info);
+                case "ac" -> result = Vec.angleCos(info);
+                case "t" -> result = Vec.mixedProduct();
+            }
+            if (vec == null) System.out.println(result);
+            else System.out.println(Arrays.toString(vec));
+        }
     }
 }

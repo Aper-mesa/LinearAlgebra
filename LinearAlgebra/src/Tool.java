@@ -96,7 +96,7 @@ class Tool extends Console {
         String[] tempRowArr;
         System.out.println(text.getString("inputByRow"));
         for (int i = 0; i < row; i++) {
-            tempRowArr = input.nextLine().split(" ");
+            tempRowArr = input.nextLine().strip().split(" ");
             for (int j = 0; j < column; j++) result[i][j] = new Real(tempRowArr[j]);
         }
         return result;
