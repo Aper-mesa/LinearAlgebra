@@ -6,7 +6,7 @@ public class LinearEquation {
     }
 
     private static final Scanner input = new Scanner(System.in);
-    private static int numberOfVariables;
+//    private static int numberOfVariables;
     private static int numberOfEquations = 0;
 
     ///求解的初始步骤：输入和判断等
@@ -52,7 +52,7 @@ public class LinearEquation {
         coefficientRank = Mat.rankAlgorithm(coefficientMatrix);
         //判断系数矩阵来确定方的程解的数量
         if (coefficientRank == numberOfVariables) uniqueSolution(augmentedEchelon);
-        else infiniteSolution(augmentedEchelon, numberOfVariables - augmentedRank);
+        else infiniteSolution(augmentedEchelon, numberOfVariables - augmentedRank, numberOfVariables);
     }
 
     ///求唯一解
@@ -109,7 +109,7 @@ public class LinearEquation {
     }
 
     ///求基础解系η
-    private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables) {
+    private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables, int numberOfVariables) {
         System.out.println("方程组有无穷解");
         //建一个集合存储所有未知量的索引
         ArrayList<Integer> freeVariables = new ArrayList<>();

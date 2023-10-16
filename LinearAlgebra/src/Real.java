@@ -175,6 +175,8 @@ public class Real {
     ///加法，先判断是否为同类项
     public Real add(Real real) {
         if (real.nCoefficient.equals(Fraction.ZERO) || real.nBase.equals(Fraction.ZERO)) return new Real(this);
+        transfer();
+        real.transfer();
         //若式子里还有根号则比较底数是否相同，一个有根号一个没根号则无法计算
         if (!nExponent.equals(real.nExponent) || (nExponent.equals(real.nExponent) && !nBase.equals(real.nBase)))
             throw new ArithmeticException("\n非同类项");
