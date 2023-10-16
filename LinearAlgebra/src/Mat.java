@@ -31,7 +31,7 @@ public class Mat {
                 case "1" -> result = add(1);
                 case "2" -> result = add(-1);
                 case "3" -> result = multiply();
-                case "4" -> result = exponentiate();
+                case "4" -> result = power();
                 case "5" -> result = scalarMultiply();
                 case "6" -> result = transpose();
                 case "7" -> {
@@ -116,7 +116,7 @@ public class Mat {
     }
 
     ///方幂
-    public static Real[][] exponentiate() {
+    public static Real[][] power() {
         mat1 = input(1);
         Real[][] result = Tool.deepCopy(mat1);
         System.out.println("输入指数");
@@ -315,7 +315,7 @@ public class Mat {
                 Real a = Real.ONE;
                 Real b = mat[0][0].negate().subtract(mat[1][1]);
                 Real c = (mat[0][0].multiply(mat[1][1])).subtract(mat[0][1].multiply(mat[1][0]));
-                Real delta = b.exponentiate(2).subtract(new Real(4).multiply(a).multiply(c));
+                Real delta = b.power(2).subtract(new Real(4).multiply(a).multiply(c));
                 Real x1 = (b.negate().add(delta.sqrt())).divide(new Real(2).multiply(a));
                 Real x2 = (b.negate().subtract(delta.sqrt())).divide(new Real(2).multiply(a));
                 result.add(x1);
