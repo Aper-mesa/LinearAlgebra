@@ -1,20 +1,17 @@
 import java.util.*;
 
-//此类用于解线性方程组
+////此类用于解线性方程组
 public class LinearEquation {
-    private static final Scanner input = new Scanner(System.in);
-    private static int numberOfVariables;
-    private static int numberOfEquations = 0;
-
-    public static void main(String[] args) {
-        compute();
+    private LinearEquation() {
     }
 
+    private static final Scanner input = new Scanner(System.in);
+//    private static int numberOfVariables;
+    private static int numberOfEquations = 0;
+
     ///求解的初始步骤：输入和判断等
-    private static void compute() {
-        System.out.println("输入线性方程组元的个数，输入0退出");
-        numberOfVariables = Integer.parseInt(input.nextLine());
-        if (numberOfVariables == 0) System.exit(0);
+    protected static void compute(int numberOfVariables) {
+        if (numberOfVariables == 0) return;
         System.out.println("按行输入增广矩阵，元素间用一个空格隔开，输入0结束");
         //控制台文字颜色转义符
         String blue = "\u001B[34m";
@@ -36,25 +33,26 @@ public class LinearEquation {
         Real[][] augmentedEchelon;
         //此循环去掉阶梯增广矩阵的0行
         do {
-            augmentedEchelon = (Real[][]) Mat.getRank(augmentedMatrix)[1];
+            Real[][] augmentedMatrixCopy = Tool.deepCopy(augmentedMatrix);
+            Mat.rankAlgorithm(augmentedMatrixCopy);
+            augmentedEchelon = augmentedMatrixCopy;
             if (Tool.hasZeroRowOrColumn(augmentedEchelon)) {
                 augmentedEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon.length - 1, augmentedEchelon[0].length);
                 numberOfEquations--;
             }
         } while (Tool.hasZeroRowOrColumn(augmentedEchelon));
-        int augmentedRank = (int) Mat.getRank(augmentedEchelon)[0];
-        int coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
+        int augmentedRank = Mat.rankAlgorithm(augmentedEchelon);
+        int coefficientRank = Mat.rankAlgorithm(coefficientMatrix);
         if (augmentedRank != coefficientRank) {
             System.out.println("方程组无解\n");
             numberOfEquations = 0;
-            main(null);
             return;
         }
         coefficientMatrix = Tool.deepCopy(augmentedMatrix, numberOfVariables);
-        coefficientRank = (int) Mat.getRank(coefficientMatrix)[0];
+        coefficientRank = Mat.rankAlgorithm(coefficientMatrix);
         //判断系数矩阵来确定方的程解的数量
         if (coefficientRank == numberOfVariables) uniqueSolution(augmentedEchelon);
-        else infiniteSolution(augmentedEchelon, numberOfVariables - augmentedRank);
+        else infiniteSolution(augmentedEchelon, numberOfVariables - augmentedRank, numberOfVariables);
     }
 
     ///求唯一解
@@ -108,11 +106,10 @@ public class LinearEquation {
         //展示结果
         System.out.println(Arrays.toString(constantVector) + "\n");
         numberOfEquations = 0;
-        main(null);
     }
 
     ///求基础解系η
-    private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables) {
+    private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables, int numberOfVariables) {
         System.out.println("方程组有无穷解");
         //建一个集合存储所有未知量的索引
         ArrayList<Integer> freeVariables = new ArrayList<>();
@@ -165,9 +162,9 @@ public class LinearEquation {
                     }
                     if (j > pivotIndex) {
                         if (freeVariables.contains(j + 1))
-                            temp = temp.add(specificFreeVariables[freeVariables.indexOf(j+1)].multiply(coefficientEchelon[k - 1][j]));
+                            temp = temp.add(specificFreeVariables[freeVariables.indexOf(j + 1)].multiply(coefficientEchelon[k - 1][j]));
                         else
-                            temp = temp.add(specificBasicVariables[basicVariables.indexOf(j+1)].multiply(coefficientEchelon[k - 1][j]));
+                            temp = temp.add(specificBasicVariables[basicVariables.indexOf(j + 1)].multiply(coefficientEchelon[k - 1][j]));
                     }
                 }
                 specificBasicVariables[k - 1] = constantVector[k - 1].subtract(temp);
@@ -177,6 +174,5 @@ public class LinearEquation {
         System.out.println("一个基础解系：");
         Tool.print(fundamentalSolution);
         numberOfEquations = 0;
-        main(null);
     }
 }

@@ -1,4 +1,3 @@
-import java.util.*;
 /*默认颜色：
 Reset: "\u001B[0m"
 前景色（文本颜色）：
@@ -23,14 +22,8 @@ Reset: "\u001B[0m"
 白色："\u001B[47m"
 */
 
-//需要测试：实数乘法，特征值
+//需要测试：所有内容
 public class Test {
     public static void main(String[] args) {
-        Num n1 = new Num("2+3i");
-        Num n2 = new Num("6^+7^i");
-        Real r1 = new Real("2^");
-        Real r2 = new Real("3");
-        Num n3 = new Num("2^-5i");
-        System.out.println(n1.multiply(n2));
     }
 }

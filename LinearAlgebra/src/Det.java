@@ -1,25 +1,14 @@
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Scanner;
-
-//此程序用于计算行列式
+////此程序用于计算行列式
 public class Det {
 
     private Det() {
     }
 
-    private static ResourceBundle text;
-
-    public static Object[] getValue(Real[][] det) {
-        Object[] result = new Object[2];
-        result[1] = det;
-        if (Tool.hasZeroRowOrColumn(det)) {
-            result[0] = Real.ZERO;
-            return result;
-        }
-        int order = det.length;
+    public static Real getValue(int order) {
+        Real[][] det = Tool.input(order, order);
+        if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
         //行列式的结果
-        result[0] = Real.ONE;
+        Real result = Real.ONE;
         //记录行列式是否因交换而需要变为原相反数
         boolean switched = false;
         boolean zero = true;
@@ -35,7 +24,7 @@ public class Det {
                     }
                 }
                 if (zero) {
-                    result[0] = Real.ZERO;
+                    result = Real.ZERO;
                     return result;
                 }
                 tempRow = det[dia];
@@ -68,22 +57,22 @@ public class Det {
             }
         }
         //计算正对角线上的所有元素之积
-        for (int i = 0; i < order; i++) result[0] = ((Real) result[0]).multiply(det[i][i]);
-        if (switched) ((Real) result[0]).negate();
+        for (int i = 0; i < order; i++) result = result.multiply(det[i][i]);
+        if (switched) result.negate();
         return result;
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         Locale locale = Locale.CHINA;
         Locale locale1 = Locale.US;
-        text = ResourceBundle.getBundle("Languages_zh", locale);
+        ResourceBundle text = ResourceBundle.getBundle("Lang_zh", locale);
         Scanner input = new Scanner(System.in);
         System.out.println("""
                 输入 -1 切换至英语，输入其他值继续
                 Type -1 to switch to English, type other value to continue""");
         String first = input.nextLine();
-        if (first.equals("-1")){
-            text=ResourceBundle.getBundle("Languages_en");
+        if (first.equals("-1")) {
+            text = ResourceBundle.getBundle("Lang_en");
         }
         //行列式的阶数
         int order;
@@ -94,5 +83,5 @@ public class Det {
         order = Integer.parseInt(input.nextLine());
         det = Tool.input(order, order);
         System.out.println(text.getString("output") + Det.getValue(det)[0]);
-    }
+    }*/
 }
