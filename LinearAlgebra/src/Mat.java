@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 ////此程序用于进行矩阵的相关运算
 
-public class Mat {
+public class Mat extends Console {
 
     private Mat() {
     }
@@ -204,7 +204,7 @@ public class Mat {
         Real[][] test = Tool.deepCopy(mat1);
         //调用求秩方法判断方阵是否满秩
         if (mat1.length != rankAlgorithm(test)) {
-            System.out.println("方阵不满秩\n");
+            System.out.println(text.getString("notFullRank"));
             return null;
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
@@ -216,13 +216,8 @@ public class Mat {
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
             if (mat1[dia][dia].equals(Real.ZERO)) {
                 int i;
-                for (i = dia + 1; i < mat1.length; i++) {
-                    if (!mat1[i][dia].equals(Real.ZERO)) {
-                        zero = false;
-                        break;
-                    }
-                }
-                if (zero) System.out.println("对角线上有0");
+                for (i = dia + 1; i < mat1.length; i++)
+                    if (!mat1[i][dia].equals(Real.ZERO)) break;
                 tempRow = mat1[dia];
                 mat1[dia] = mat1[i];
                 mat1[i] = tempRow;
@@ -247,9 +242,15 @@ public class Mat {
 
     ///求特征值
     public static ArrayList<Real> eigenvalue(Real[][] mat) {
-        if (mat.length != mat[0].length) throw new ArithmeticException("\n非方阵");
+        if (mat.length != mat[0].length) {
+            System.out.println(text.getString("notSquareMatrix"));
+            return null;
+        }
         int order = mat.length;
-        if (order > 4) throw new ArithmeticException("\n最高支持4阶方阵，当前" + order + "阶");
+        if (order > 2) {
+            System.out.println(text.getString("tooLargeMatrix"));
+            return null;
+        }
         ArrayList<Real> result = new ArrayList<>();
         switch (order) {
             case 1 -> {
@@ -267,9 +268,6 @@ public class Mat {
                 result.add(x2);
                 return result;
             }
-            case 3 -> //FIXME 没有立方根方法，写个锤子的三阶特征值
-                    System.out.println("WIP");
-            case 4 -> System.out.println("Work In Progress");
         }
         return null;
     }

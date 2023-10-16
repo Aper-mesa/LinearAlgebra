@@ -1,22 +1,18 @@
 import java.util.*;
 
 ////此类用于解线性方程组
-public class LinearEquation {
+public class LinearEquation extends Console {
     private LinearEquation() {
     }
 
     private static final Scanner input = new Scanner(System.in);
-//    private static int numberOfVariables;
     private static int numberOfEquations = 0;
 
     ///求解的初始步骤：输入和判断等
     protected static void compute(int numberOfVariables) {
         if (numberOfVariables == 0) return;
-        System.out.println("按行输入增广矩阵，元素间用一个空格隔开，输入0结束");
-        //控制台文字颜色转义符
-        String blue = "\u001B[34m";
-        String reset = "\u001B[0m";
-        System.out.println(blue + "注意根式格式：a*b^/c*d^，只写^默认表示二次根式，目前仅支持二次根式！" + reset);
+        System.out.println(text.getString("inputAugmentedRow"));
+        System.out.println(text.getString("rootWarning"));
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
             String nextLine = input.nextLine();
@@ -44,7 +40,7 @@ public class LinearEquation {
         int augmentedRank = Mat.rankAlgorithm(augmentedEchelon);
         int coefficientRank = Mat.rankAlgorithm(coefficientMatrix);
         if (augmentedRank != coefficientRank) {
-            System.out.println("方程组无解\n");
+            System.out.println(text.getString("noSolution"));
             numberOfEquations = 0;
             return;
         }
@@ -57,7 +53,7 @@ public class LinearEquation {
 
     ///求唯一解
     private static void uniqueSolution(Real[][] augmentedEchelon) {
-        System.out.println("方程组有唯一解");
+        System.out.println(text.getString("oneSolution"));
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Real[] constantVector = new Real[augmentedEchelon.length];
         Real[][] coefficientEchelon = Tool.deepCopy(augmentedEchelon, augmentedEchelon[0].length - 1);
@@ -110,7 +106,7 @@ public class LinearEquation {
 
     ///求基础解系η
     private static void infiniteSolution(Real[][] augmentedEchelon, int numberOfFreeVariables, int numberOfVariables) {
-        System.out.println("方程组有无穷解");
+        System.out.println(text.getString("infinitelyManySolutions"));
         //建一个集合存储所有未知量的索引
         ArrayList<Integer> freeVariables = new ArrayList<>();
         for (int i = 0; i < numberOfVariables; i++) freeVariables.add(i + 1);
@@ -171,7 +167,7 @@ public class LinearEquation {
                 fundamentalSolution[i][basicVariables.get(k - 1) - 1] = constantVector[k - 1].subtract(temp);
             }
         }
-        System.out.println("一个基础解系：");
+        System.out.println(text.getString("fundamentalSolution"));
         Tool.print(fundamentalSolution);
         numberOfEquations = 0;
     }

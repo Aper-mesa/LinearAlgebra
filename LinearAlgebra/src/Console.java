@@ -2,35 +2,74 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+/*默认颜色：
+Reset: "\u001B[0m"
+前景色（文本颜色）：
+
+黑色："\u001B[30m"
+红色："\u001B[31m"
+绿色："\u001B[32m"
+黄色："\u001B[33m"
+蓝色："\u001B[34m"
+洋红色（品红）："\u001B[35m"
+青色："\u001B[36m"
+白色："\u001B[37m"
+背景色：
+
+黑色："\u001B[40m"
+红色："\u001B[41m"
+绿色："\u001B[42m"
+黄色："\u001B[43m"
+蓝色："\u001B[44m"
+洋红色（品红）："\u001B[45m"
+青色："\u001B[46m"
+白色："\u001B[47m"
+
+2的11次方是2048
+*/
+
 public class Console {
     ////线性代数计算器的综合启动器，整合所有功能，支持多参数单行输入，极大提升效率
     static ResourceBundle text = ResourceBundle.getBundle("Lang_zh", Locale.CHINA);
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
+        System.out.println("\u001B[31m" + "水银线代计算器\nApermesa's Linear Algebra Calculator" + "\u001B[0m");
         System.out.println("""
-                -zh   中文（默认）  change to Chinese (default)
-                -en   切换至英语    change to English
-                -help 获取帮助      get help
-                -exit 退出程序      exit program
-                """);
+                输入 “help” 获取帮助      Enter "help" to get help
+                输入 “exit” 退出程序      Enter "exit" to exit the program""");
         while (true) {
-            String inputs = input.nextLine().strip();
-            if (inputs.contains("-exit")) System.exit(0);
-            else if (inputs.contains("-en")) text = ResourceBundle.getBundle("Lang_en", Locale.ENGLISH);
-            else if (inputs.contains("-zh")) text = ResourceBundle.getBundle("Lang_zh", Locale.CHINA);
-            if (inputs.contains("-help")) showHelp();
+            String inputs = input.nextLine().strip().toLowerCase();
+            if (inputs.equals("exit")) {
+                System.out.println("\u001B[38;2;245;144;33m" + "HλLF-LIFE 3 CONFIRMED");
+                System.exit(0);
+            } else if (inputs.contains("en") || inputs.contains("zh") || inputs.contains("help")) {
+                if (inputs.contains("en")) {
+                    text = ResourceBundle.getBundle("Lang_en", Locale.ENGLISH);
+                    System.out.println("Language changed to English");
+                } else if (inputs.contains("zh")) {
+                    text = ResourceBundle.getBundle("Lang_zh", Locale.CHINA);
+                    System.out.println("语言切换至中文");
+                }
+                if (inputs.contains("help")) {
+                    System.out.println("\u001B[36m" + text.getString("help") + "\u001B[0m");
+                    System.out.println("\u001B[33m" + text.getString("example") + "\u001B[0m");
+                }
+                continue;
+            }
             //矩阵
-            if (inputs.contains("-m")) mat(inputs.split("-m")[1].strip());
+            if (inputs.startsWith("-m")) mat(inputs.split("-m")[1].strip());
                 //线性方程组
-            else if (!inputs.equals("-en") && inputs.contains("-e"))
+            else if (inputs.startsWith("-e"))
                 LinearEquation.compute(Integer.parseInt(inputs.split("-e")[1].strip()));
                 //行列式
-            else if (inputs.contains("-d"))
+            else if (inputs.startsWith("-d"))
                 System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
-                //向量"
-            else if (inputs.contains("-v")) vec(inputs.split("-v")[1].strip());
-            else System.out.println(text.getString("无效指令"));
+                //向量
+            else if (inputs.startsWith("-v")) vec(inputs.split("-v")[1].strip());
+                //彩蛋，2048游戏
+            else if (inputs.equals("2048")) Game2048.play();
+            else System.out.println(text.getString("invalidCommand"));
         }
     }
 
@@ -42,31 +81,26 @@ public class Console {
         Real[] info = new Real[para.length - 1];
         for (int i = 1; i < para.length; i++) {
             info[i - 1] = new Real(para[i]);
+            Real[][] mat = null;
+            int rank = 0;
+            switch (para[0]) {
+                case "a" -> mat = Mat.add(1, info);
+                case "s" -> mat = Mat.add(-1, info);
+                case "m" -> mat = Mat.multiply(info);
+                case "p" -> mat = Mat.power(info);
+                case "c" -> mat = Mat.scalarMultiply(info);
+                case "t" -> mat = Mat.transpose(info);
+                case "r" -> rank = Mat.getRank(info);
+                case "i" -> mat = Mat.inverse(info);
+                case "e" -> mat = Mat.getEchelon(info);
+            }
+            if (mat == null) System.out.println(rank);
+            else Tool.print(mat);
         }
-        Real[][] mat = null;
-        int rank = 0;
-        switch (para[0]) {
-            case "a" -> mat = Mat.add(1, info);
-            case "s" -> mat = Mat.add(-1, info);
-            case "m" -> mat = Mat.multiply(info);
-            case "p" -> mat = Mat.power(info);
-            case "c" -> mat = Mat.scalarMultiply(info);
-            case "t" -> mat = Mat.transpose(info);
-            case "r" -> rank = Mat.getRank(info);
-            case "i" -> mat = Mat.inverse(info);
-            case "e" -> mat = Mat.getEchelon(info);
-        }
-        if (mat == null) System.out.println(rank);
-        else Tool.print(mat);
     }
 
     ///向量命令处理
     private static void vec(String input) {
 
-    }
-
-    ///展示帮助
-    private static void showHelp() {
-        System.out.println(text.getString("帮助"));
     }
 }

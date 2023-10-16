@@ -2,8 +2,8 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 ////此类提供各种工具和操作供各类使用
-class Tool {
-    private Tool(){
+class Tool extends Console {
+    private Tool() {
     }
 
     private static final Scanner input = new Scanner(System.in);
@@ -94,7 +94,7 @@ class Tool {
     protected static Real[][] input(int row, int column) {
         Real[][] result = new Real[row][column];
         String[] tempRowArr;
-        System.out.println("按行输入，元素之间用一个空格隔开");
+        System.out.println(text.getString("inputByRow"));
         for (int i = 0; i < row; i++) {
             tempRowArr = input.nextLine().split(" ");
             for (int j = 0; j < column; j++) result[i][j] = new Real(tempRowArr[j]);
