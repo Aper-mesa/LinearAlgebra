@@ -107,5 +107,4 @@ public class Vec extends Console {
         cross[0] = outer3(vec1, vec2);
         return inner(cross, vec3);
     }
-
 }
