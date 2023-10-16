@@ -25,5 +25,6 @@ Reset: "\u001B[0m"
 //需要测试：所有内容
 public class Test {
     public static void main(String[] args) {
+        System.out.println("1234".split("23")[1]);
     }
 }

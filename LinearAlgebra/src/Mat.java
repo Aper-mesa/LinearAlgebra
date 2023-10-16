@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 ////此程序用于进行矩阵的相关运算
 
@@ -11,64 +10,6 @@ public class Mat {
 
     private static Real[][] mat1;
     private static Real[][] mat2;
-    private static final Scanner input = new Scanner(System.in);
-    //矩阵的行数和列数
-    private static int row1;
-    private static int col1;
-    private static int row2;
-    private static int col2;
-
-    /*    public static void main(String[] args) {
-        ArrayList<Real> eigenvalue = new ArrayList<>();
-        while (true) {
-            System.out.println("""
-                    选择运算
-                    1. 加法  2. 减法
-                    3. 乘法  4. 方幂
-                    5. 数乘  6. 转置
-                    7. 求秩  8. 求逆
-                    9. 特征值
-                        0. 退出""");
-            switch (input.nextLine()) {
-                case "1" -> result = add(1);
-                case "2" -> result = add(-1);
-                case "3" -> result = multiply();
-                case "4" -> result = power();
-                case "5" -> result = scalarMultiply();
-                case "6" -> result = transpose();
-                case "7" -> {
-                    Object[] resultArr = getRank(input(1));
-                    result = (Real[][]) resultArr[1];
-                    System.out.println("秩为" + (int) resultArr[0]);
-                }
-                case "8" -> result = inverse();
-                case "9" -> eigenvalue = eigenvalue(input(0));
-                case "0" -> System.exit(0);
-            }
-            Tool.print(result);
-            System.out.println(eigenvalue);
-        }
-    }*/
-
-    ///传递一个二维数组变量用于存储一个矩阵,参数记录矩阵需要记录的次数，加减乘为1和2，幂运算为0
-    public static Real[][] input(int order) {
-        System.out.println("输入矩阵的行数和列数，数字之间用一个空格隔开");
-        String[] shape = input.nextLine().split(" ");
-        int actualRow, actualCol;
-        if (order == 1) {
-            row1 = Integer.parseInt(shape[0]);
-            col1 = Integer.parseInt(shape[1]);
-            actualRow = row1;
-            actualCol = col1;
-        } else {
-            row2 = Integer.parseInt(shape[0]);
-            col2 = Integer.parseInt(shape[1]);
-            actualRow = row2;
-            actualCol = col2;
-        }
-        //临时数组存储用户输入的行列式的某一行的所有元素
-        return Tool.input(actualRow, actualCol);
-    }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
     public static Real[][] add(int sign, Real[] info) {
@@ -326,24 +267,9 @@ public class Mat {
                 result.add(x2);
                 return result;
             }
-            case 3 -> {
-                System.out.println("WIP");
-                //FIXME 没有立方根方法，写个锤子的三阶特征值
-                /*Real a = null;
-                Real b = null;
-                Real c = null;
-                Real d = null;
-                Real p = (new Real("3").multiply(a).multiply(c).subtract(b.exponentiate(2))).divide(new Real("3").multiply(a.exponentiate(2)));
-                Real q = (new Real("27").multiply(a.exponentiate(2)).multiply(d).subtract(new Real("9").multiply(a).multiply(b).multiply(c)).add(new Real("2")).multiply(b.exponentiate(3))).divide(new Real("27").multiply(a.exponentiate(3)));
-                Real w = new Real("-1/2+3^/2i");
-                Real delta = q.exponentiate(2).divide(new Real("4")).add(p.exponentiate(3).divide(new Real("27")));
-                Real x1 = null;
-                Real x2 = null;
-                Real x3 = null;*/
-            }
-            case 4 -> {
-                System.out.println("Work In Progress");
-            }
+            case 3 -> //FIXME 没有立方根方法，写个锤子的三阶特征值
+                    System.out.println("WIP");
+            case 4 -> System.out.println("Work In Progress");
         }
         return null;
     }

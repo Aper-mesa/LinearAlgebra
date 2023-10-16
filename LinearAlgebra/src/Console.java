@@ -9,7 +9,7 @@ public class Console {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         System.out.println("""
-                -zh   切换至中文    change to Chinese (default)
+                -zh   中文（默认）  change to Chinese (default)
                 -en   切换至英语    change to English
                 -help 获取帮助      get help
                 -exit 退出程序      exit program
@@ -30,6 +30,7 @@ public class Console {
                 System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
                 //向量"
             else if (inputs.contains("-v")) vec(inputs.split("-v")[1].strip());
+            else System.out.println(text.getString("无效指令"));
         }
     }
 
