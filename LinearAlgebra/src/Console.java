@@ -37,11 +37,15 @@ public class Console {
         Scanner input = new Scanner(System.in);
         System.out.println("\u001B[31m" + "           水银线代计算器\nApermesa's Linear Algebra Calculator" + "\u001B[0m");
         System.out.println("""
-                输入 “help” 获取帮助  Enter "help" to get help
-                输入 “exit” 退出程序  Enter "exit" to exit the program""");
+                输入 “help” 获取帮助
+                    Enter "help" to get help
+                输入 “exit” 退出程序
+                    Enter "exit" to exit the program""");
         while (true) {
+            System.out.print("> ");
             String inputs = input.nextLine().strip().toLowerCase();
-            if (inputs.equals("exit")) {
+            if (inputs.equals("exit") || inputs.equals("shutdown") ||
+                    inputs.contains("stop") || inputs.contains("爬") || inputs.contains("滚")) {
                 System.out.println("\u001B[38;2;245;144;33m" + "HλLF-LIFE 3 CONFIRMED");
                 System.exit(0);
             } else if (inputs.contains("en") || inputs.contains("zh") || inputs.contains("help")) {
@@ -52,7 +56,7 @@ public class Console {
                     text = ResourceBundle.getBundle("Lang_zh", Locale.CHINA);
                     System.out.println("语言切换至中文");
                 }
-                if (inputs.contains("help")) {
+                if (inputs.contains("help") || inputs.contains("?") || inputs.contains("？")) {
                     System.out.println("\u001B[36m" + text.getString("help") + "\u001B[0m");
                     System.out.println("\u001B[33m" + text.getString("example") + "\u001B[0m");
                 }
