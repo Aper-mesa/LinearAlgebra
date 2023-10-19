@@ -214,7 +214,4 @@ public class Console {
         return info.length == 4 && !info[0].notInteger()
                 && !info[1].notInteger() && !info[2].notInteger() && !info[3].notInteger();
     }
-
-    ///输入的数据是否符合规范
-//    protected static boolean validData()
 }
