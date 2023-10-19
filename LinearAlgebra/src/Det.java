@@ -13,6 +13,7 @@ public class Det {
         boolean switched = false;
         boolean zero = true;
         for (int dia = 0; dia < order; dia++) {
+            if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
             Real[] tempRow;
             //判断对角线是否为0，为0则找下面的第一个非0行进行交换
             if (det[dia][dia].equals(Real.ZERO)) {
