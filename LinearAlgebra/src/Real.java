@@ -179,7 +179,7 @@ public class Real {
         real.transfer();
         //若式子里还有根号则比较底数是否相同，一个有根号一个没根号则无法计算
         if (!nExponent.equals(real.nExponent) || (nExponent.equals(real.nExponent) && !nBase.equals(real.nBase)))
-            throw new ArithmeticException("\n非同类项");
+            return null;
         Real addend = new Real(this);
         Real augend = new Real(real);
         addend.commonize(augend);

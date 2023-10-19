@@ -12,11 +12,25 @@ public class LinearEquation extends Console {
     protected static void compute(int numberOfVariables) {
         if (numberOfVariables == 0) return;
         System.out.println(text.getString("inputAugmentedRow"));
-        System.out.println(text.getString("rootWarning"));
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
-            String nextLine = input.nextLine().strip();
+            String nextLine = input.nextLine().strip().replaceAll("\\s+", " ");
             if (nextLine.equals("0")) break;
+            loop:
+            while (true) {
+                String[] tempRowArr = nextLine.split(" ");
+                if (tempRowArr.length != numberOfVariables) {
+                    System.out.println(text.getString("invalidCommand"));
+                    continue;
+                }
+                for (String s : tempRowArr) {
+                    if (notNumber(s)) {
+                        System.out.println(text.getString("invalidCommand"));
+                        continue loop;
+                    }
+                }
+                break;
+            }
             equations.add(nextLine);
             numberOfEquations++;
         }
