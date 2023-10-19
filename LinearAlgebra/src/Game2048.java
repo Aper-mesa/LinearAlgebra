@@ -72,7 +72,7 @@ public class Game2048 extends Console {
         print();
         if (over()) {
             System.out.println(text.getString("gameOver") + score + text.getString("finalStep") + step);
-            System.exit(0);
+            Console.main(null);
         }
     }
 
