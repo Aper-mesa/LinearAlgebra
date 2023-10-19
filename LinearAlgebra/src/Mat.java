@@ -203,7 +203,6 @@ public class Mat extends Console {
         }
         //与方阵一起参与运算的单位矩阵，操作结束后即为结果
         Real[][] identity = Tool.getIdentity(mat1.length);
-        boolean zero = true;
         //此循环将方阵变为上三角
         for (int dia = 0; dia < mat1.length; dia++) {
             Real[] tempRow, tempRow2;
@@ -221,6 +220,8 @@ public class Mat extends Console {
             }
             Tool.eliminateUpper(mat1, identity);
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        Tool.print(mat1);
         //最后将对角线数都化为1
         for (int i = 0; i < mat1.length; i++) {
             if (!mat1[i][i].equals(Real.ONE)) {
