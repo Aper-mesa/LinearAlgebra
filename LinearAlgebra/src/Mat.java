@@ -315,7 +315,8 @@ public class Mat extends Console {
     }
 
     ///求特征值
-    public static ArrayList<Real> eigenvalue(Real[][] mat) {
+    public static ArrayList<Real> eigenvalue(Real[] info) {
+        Real[][] mat = Tool.input(info[0].toInt(),info[0].toInt());
         if (mat.length != mat[0].length) {
             System.out.println(text.getString("notSquareMatrix"));
             return null;

@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 /*默认颜色：
 Reset: "\u001B[0m"
@@ -88,6 +85,7 @@ public class Console {
             info[i - 1] = new Real(para[i]);
         Real[][] mat = null;
         int rank = 0;
+        ArrayList<Real> eigenValue = null;
         switch (para[0]) {
             case "a" -> mat = Mat.add(1, info);
             case "s" -> mat = Mat.add(-1, info);
@@ -98,8 +96,10 @@ public class Console {
             case "r" -> rank = Mat.getRank(info);
             case "i" -> mat = Mat.inverse(info);
             case "e" -> mat = Mat.getEchelon(info);
+            case "g" -> eigenValue = Mat.eigenvalue(info);
         }
-        if (mat == null) System.out.println(rank);
+        if (mat == null && eigenValue == null) System.out.println(rank);
+        else if (mat == null) System.out.println(eigenValue);
         else Tool.print(mat);
     }
 
