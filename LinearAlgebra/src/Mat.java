@@ -218,17 +218,96 @@ public class Mat extends Console {
                 identity[dia] = identity[i];
                 identity[i] = tempRow2;
             }
-            Tool.eliminateUpper(mat1, identity);
         }
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        Tool.print(mat1);
+        while (true) {
+            int firstNonZeroRow;
+            //找到第一个非零行
+            outer:
+            for (firstNonZeroRow = 0; firstNonZeroRow < mat1.length; firstNonZeroRow++)
+                for (Real e : mat1[firstNonZeroRow]) if (!e.equals(Real.ZERO)) break outer;
+            int row;
+            //找到第一个非零行的第一个非零元素下面的第一个非零行并执行行变换
+            //先将左边的所有第一个数字为0的非零行进行交换。先找到第一个非零列
+            for (int l = 0; l < Math.min(mat1.length, mat1[0].length); l++) {
+                if (mat1[l][l].equals(Real.ZERO)) {
+                    for (int i = l; i < mat1.length - 1; i++) {
+                        if (!mat1[i + 1][l].equals(Real.ZERO)) {
+                            Real[] temp = mat1[i + 1];
+                            mat1[i + 1] = mat1[l];
+                            mat1[l] = temp;
+                            Real[] temp2 = identity[i + 1];
+                            identity[i + 1] = identity[l];
+                            identity[l] = temp2;
+                            break;
+                        }
+                    }
+                }
+            }
+            //记录矩阵是否为阶梯型
+            boolean echelon = false;
+            int firstNonZeroElement;
+            flag:
+            for (row = firstNonZeroRow; row < mat1.length; row++) {
+                //先判断此矩阵是否已经为阶梯矩阵：找到每一行的第一个非零元素
+                for (firstNonZeroElement = 0; firstNonZeroElement < mat1[row].length; firstNonZeroElement++)
+                    if (!mat1[row][firstNonZeroElement].equals(Real.ZERO)) break;
+                //找到第一个非零元素之后，检查它左边的每一列是否全部非零
+                for (int i = 0; i < firstNonZeroElement; i++)
+                    for (Real[] fractions : mat1) if (!fractions[i].equals(Real.ZERO)) break flag;
+                //接着检查每一行的第一个非零元素下面是否有非零元素
+                for (int col = 0; col < mat1[0].length; col++) {
+                    inner:
+                    for (int firstNonZero = 0; firstNonZero < mat1.length; firstNonZero++) {
+                        for (int i = 0; i < col; i++) if (!mat1[firstNonZero][i].equals(Real.ZERO)) continue inner;
+                        if (!mat1[firstNonZero][col].equals(Real.ZERO))
+                            for (int bottom = firstNonZero + 1; bottom < mat1.length; bottom++)
+                                if (!mat1[bottom][col].equals(Real.ZERO)) break flag;
+                    }
+                }
+                echelon = true;
+            }
+            if (echelon) break;
+            //以下为加K倍操作
+            int changer = 0;
+            int col, firstNonZero = 0, bottom;
+            outer:
+            for (col = 0; col < mat1[0].length; col++) {
+                inner:
+                for (firstNonZero = 0; firstNonZero < mat1.length; firstNonZero++) {
+                    for (int i = 0; i < col; i++) if (!mat1[firstNonZero][i].equals(Real.ZERO)) continue inner;
+                    if (!mat1[firstNonZero][col].equals(Real.ZERO)) {
+                        for (bottom = firstNonZero + 1; bottom < mat1.length; bottom++) {
+                            if (!mat1[bottom][col].equals(Real.ZERO)) {
+                                changer = bottom;
+                                break outer;
+                            }
+                        }
+                    }
+                }
+            }
+            //计算两行之间的比例
+            Real ratio = (mat1[changer][col].negate().divide(mat1[firstNonZero][col]));
+            //用临时数组存储乘以比例之后的行
+            Real[] temp = new Real[mat1[0].length];
+            for (int j = 0; j < mat1[0].length; j++) temp[j] = ratio.multiply(mat1[firstNonZero][j]);
+            //将临时数组中的数据依次加到要变成0的那一行中
+            for (int j = 0; j < mat1[0].length; j++) mat1[changer][j] = mat1[changer][j].add(temp[j]);
+            Real[] temp2 = new Real[temp.length];
+            for (int i = 0; i < identity.length; i++) {
+                temp2[i] = ratio.multiply(identity[firstNonZero][i]);
+            }
+            for (int i = 0; i < identity.length; i++) {
+                identity[changer][i] = identity[changer][i].add(temp2[i]);
+            }
+        }
+        Tool.eliminateUpper(mat1, identity);
         //最后将对角线数都化为1
         for (int i = 0; i < mat1.length; i++) {
             if (!mat1[i][i].equals(Real.ONE)) {
-                Real ratio = Real.ONE.divide(mat1[i][i]);
+                Real ratio2 = Real.ONE.divide(mat1[i][i]);
                 for (int j = 0; j < mat1.length; j++) {
-                    mat1[i][j] = mat1[i][j].multiply(ratio);
-                    identity[i][j] = identity[i][j].multiply(ratio);
+                    mat1[i][j] = mat1[i][j].multiply(ratio2);
+                    identity[i][j] = identity[i][j].multiply(ratio2);
                 }
             }
         }
