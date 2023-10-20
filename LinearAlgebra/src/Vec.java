@@ -8,7 +8,7 @@ public class Vec extends Console {
         Real[][] vec1 = Tool.input(1, info[0].toInt());
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         Real[] result = new Real[vec1[0].length];
-        for (int i = 0; i < vec1.length; i++) result[i] = vec1[0][i].add(vec2[0][i].multiply(new Real(sign)));
+        for (int i = 0; i < vec1[0].length; i++) result[i] = vec1[0][i].add(vec2[0][i].multiply(new Real(sign)));
         return result;
     }
 

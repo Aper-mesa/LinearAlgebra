@@ -38,17 +38,17 @@ public class Console {
                     Enter "exit" to exit the program""");
         while (true) {
             System.out.print("\u001B[34m" + "> " + "\u001B[0m");
-            String inputs = input.nextLine().strip().toLowerCase().replaceAll("\\s+"," ");
+            String inputs = input.nextLine().strip().toLowerCase().replaceAll("\\s+", " ");
             if (inputs.equals("exit") || inputs.equals("shutdown") ||
                     inputs.equals("stop") || inputs.equals("爬") || inputs.equals("滚")) {
                 System.out.println("\u001B[38;2;245;144;33m" + "HλLF-LIFE 3 CONFIRMED");
                 System.exit(0);
             } else if (inputs.equals("en") || inputs.equals("zh") || inputs.equals("help")
-                    || inputs.equals("?") || inputs.equals("？")) {
+                    || inputs.equals("?") || inputs.equals("？") || inputs.equals("cn")) {
                 if (inputs.equals("en")) {
                     text = ResourceBundle.getBundle("Lang_en", Locale.ENGLISH);
                     System.out.println("Language changed to English");
-                } else if (inputs.equals("zh")) {
+                } else if (inputs.equals("zh") || inputs.equals("cn")) {
                     text = ResourceBundle.getBundle("Lang_zh", Locale.CHINA);
                     System.out.println("语言切换至中文");
                 }
@@ -63,7 +63,7 @@ public class Console {
                 //线性方程组
             else if (inputs.startsWith("-e")) {
                 //判断参数格式，不对直接返回
-                if (notNumber(inputs.split("-e")[1])) {
+                if (notNumber(inputs.split("-e")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
                     return;
                 }
@@ -72,7 +72,7 @@ public class Console {
             //行列式
             else if (inputs.startsWith("-d")) {
                 //判断参数格式，不对直接返回
-                if (notNumber(inputs.split("-e")[1])) {
+                if (notNumber(inputs.split("-e")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
                     return;
                 }
