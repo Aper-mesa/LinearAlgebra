@@ -10,7 +10,10 @@ public class Vec extends Console {
         if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         Real[] result = new Real[vec1[0].length];
-        for (int i = 0; i < vec1[0].length; i++) result[i] = vec1[0][i].add(vec2[0][i].multiply(new Real(sign)));
+        for (int i = 0; i < vec1[0].length; i++) {
+            assert vec2 != null;
+            result[i] = vec1[0][i].add(vec2[0][i].multiply(new Real(sign)));
+        }
         return result;
     }
 
@@ -37,7 +40,7 @@ public class Vec extends Console {
     ///内积算法核心
     private static Real inner(Real[][] vec1, Real[][] vec2) {
         Real result = Real.ZERO;
-        for (int i = 0; i < vec1.length; i++) result = result.add(vec1[0][i].multiply(vec2[0][i]));
+        for (int i = 0; i < vec1[0].length; i++) result = result.add(vec1[0][i].multiply(vec2[0][i]));
         return result;
     }
 
@@ -46,7 +49,8 @@ public class Vec extends Console {
         Real[][] vec = Tool.input(1, info[0].toInt());
         //用户输入return返回时会是null
         if (vec == null) return null;
-        return lengthAlgo(vec);
+        Real result = lengthAlgo(vec);
+        return result;
     }
 
     ///模长算法核心
@@ -102,6 +106,7 @@ public class Vec extends Console {
         //用户输入return返回时会是null
         if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, 3);
+        assert vec2 != null;
         return outer3(vec1, vec2);
     }
 

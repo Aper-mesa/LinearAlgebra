@@ -13,25 +13,22 @@ public class LinearEquation extends Console {
         if (numberOfVariables == 0) return;
         System.out.println(text.getString("inputAugmentedRow"));
         ArrayList<String> equations = new ArrayList<>();
+        loop:
         while (true) {
             String line = input.nextLine().strip().toLowerCase();
-            if(line.equals("return")) return;
+            if (line.equals("return")) return;
             String nextLine = line.strip().replaceAll("\\s+", " ");
             if (nextLine.equals("0")) break;
-            loop:
-            while (true) {
-                String[] tempRowArr = nextLine.split(" ");
-                if (tempRowArr.length != numberOfVariables) {
+            String[] tempRowArr = nextLine.split(" ");
+            if (tempRowArr.length != numberOfVariables + 1) {
+                System.out.println(text.getString("invalidCommand"));
+                continue;
+            }
+            for (String s : tempRowArr) {
+                if (notNumber(s)) {
                     System.out.println(text.getString("invalidCommand"));
-                    continue;
+                    continue loop;
                 }
-                for (String s : tempRowArr) {
-                    if (notNumber(s)) {
-                        System.out.println(text.getString("invalidCommand"));
-                        continue loop;
-                    }
-                }
-                break;
             }
             equations.add(nextLine);
             numberOfEquations++;

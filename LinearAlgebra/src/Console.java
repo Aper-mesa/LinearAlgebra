@@ -76,7 +76,6 @@ public class Console {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
-                System.out.println("good");
                 System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
             }
             //向量
@@ -156,7 +155,7 @@ public class Console {
         Real result = null;
         //判断用户输入的参数是否符合格式；不符合直接返回
         if ((para[0].equals("a") || para[0].equals("s") || para[0].equals("i") ||
-                para[0].equals("l") || para[0].equals("as") || para[0].equals("ac")) && badOneArg(info)) {
+                para[0].equals("e") || para[0].equals("as") || para[0].equals("ac")) && badOneArg(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
         } else if (para[0].equals("c") && !realAndInt(info)) {
@@ -173,7 +172,7 @@ public class Console {
             case "i" -> result = Vec.innerProduct(info);
             case "o2" -> result = Vec.outerProduct2D();
             case "o3" -> vec = Vec.outerProduct3D();
-            case "l" -> result = Vec.length(info);
+            case "e" -> result = Vec.length(info);
             case "as" -> result = Vec.angleSin(info);
             case "ac" -> result = Vec.angleCos(info);
             case "t" -> result = Vec.mixedProduct();
