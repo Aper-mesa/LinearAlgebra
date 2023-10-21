@@ -63,19 +63,20 @@ public class Console {
                 //线性方程组
             else if (inputs.startsWith("-e")) {
                 //判断参数格式，不对直接返回
-                if (notNumber(inputs.split("-e")[1].strip())) {
+                if (inputs.strip().equals("-e")||notNumber(inputs.split("-e")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
-                    return;
+                    continue;
                 }
                 LinearEquation.compute(Integer.parseInt(inputs.split("-e")[1].strip()));
             }
             //行列式
             else if (inputs.startsWith("-d")) {
                 //判断参数格式，不对直接返回
-                if (notNumber(inputs.split("-e")[1].strip())) {
+                if (inputs.strip().equals("-d")||notNumber(inputs.split("-d")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
-                    return;
+                    continue;
                 }
+                System.out.println("good");
                 System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
             }
             //向量
@@ -89,7 +90,7 @@ public class Console {
     ///矩阵命令处理
     private static void mat(String input) {
         //para即为用户输入的指令，包含运算类型和矩阵的信息
-        String[] para = input.split(" ");
+        String[] para = input.strip().replaceAll("\\s+", " ").split(" ");
         //判断用户输入的参数有没有非数字；有的话直接返回
         for (int i = 1; i < para.length; i++)
             if (notNumber(para[i])) {
@@ -101,7 +102,7 @@ public class Console {
         for (int i = 1; i < para.length; i++)
             info[i - 1] = new Real(para[i]);
         Real[][] mat = null;
-        int rank = 0;
+        int rank = -1;
         ArrayList<Real> eigenValue = null;
         //判断用户输入的参数是否符合格式；不符合直接返回
         if ((para[0].equals("i") || para[0].equals("g")) && badOneArg(info)) {
@@ -130,9 +131,11 @@ public class Console {
             case "e" -> mat = Mat.getEchelon(info);
             case "g" -> eigenValue = Mat.eigenvalue(info);
         }
-        if (mat == null && eigenValue == null) System.out.println(rank);
-        else if (mat == null) System.out.println(eigenValue);
-        else Tool.print(mat);
+        if (mat != null && eigenValue != null && rank != -1) {
+            if (mat == null && eigenValue == null) System.out.println(rank);
+            else if (mat == null) System.out.println(eigenValue);
+            else Tool.print(mat);
+        }
     }
 
     ///向量命令处理
@@ -194,12 +197,12 @@ public class Console {
         return info.length != 1 || info[0].notInteger();
     }
 
-    ///双参数识别：两个int
+    ///双参数识别：两个整数
     private static boolean twoInt(Real[] info) {
         return info.length == 2 && !info[0].notInteger() && !info[1].notInteger();
     }
 
-    ///双参数识别：两个int
+    ///双参数识别：一个实数一个整数
     private static boolean realAndInt(Real[] info) {
         return info.length == 2 && !info[1].notInteger();
     }

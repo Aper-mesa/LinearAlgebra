@@ -14,7 +14,9 @@ public class LinearEquation extends Console {
         System.out.println(text.getString("inputAugmentedRow"));
         ArrayList<String> equations = new ArrayList<>();
         while (true) {
-            String nextLine = input.nextLine().strip().replaceAll("\\s+", " ");
+            String line = input.nextLine().strip().toLowerCase();
+            if(line.equals("return")) return;
+            String nextLine = line.strip().replaceAll("\\s+", " ");
             if (nextLine.equals("0")) break;
             loop:
             while (true) {

@@ -98,7 +98,9 @@ class Tool extends Console {
         for (int i = 0; i < row; i++) {
             outer:
             while (true) {
-                tempRowArr = input.nextLine().strip().replaceAll("\\s+", " ").split(" ");
+                String line = input.nextLine().strip().toLowerCase();
+                if (line.equals("return")) return null;
+                tempRowArr = line.replaceAll("\\s+", " ").split(" ");
                 if (tempRowArr.length != column) {
                     System.out.println(text.getString("invalidCommand"));
                     continue;

@@ -14,6 +14,8 @@ public class Mat extends Console {
     ///矩阵加减法，参数决定加减，1为加，-1为减
     public static Real[][] add(int sign, Real[] info) {
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         mat2 = Tool.input(info[0].toInt(), info[1].toInt());
         Real[][] left = Tool.deepCopy(mat1);
         Real[][] right = Tool.deepCopy(mat2);
@@ -28,6 +30,8 @@ public class Mat extends Console {
     public static Real[][] multiply(Real[] info) {
         if (!canMultiply(info)) return null;
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         mat2 = Tool.input(info[2].toInt(), info[3].toInt());
         return multiplicationAlgorithm(mat1, mat2);
     }
@@ -61,6 +65,8 @@ public class Mat extends Console {
         int exponent = info[0].toInt();
         int order = info[1].toInt();
         mat1 = Tool.input(order, order);
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         Real[][] result = Tool.deepCopy(mat1);
         //指数为0，结果为同阶单位矩阵
         if (exponent == 0) {
@@ -75,6 +81,8 @@ public class Mat extends Console {
     ///数乘
     public static Real[][] scalarMultiply(Real[] info) {
         mat1 = Tool.input(info[1].toInt(), info[2].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         Real k = new Real(info[0]);
         Real[][] result = Tool.deepCopy(mat1);
         for (int i = 0; i < mat1.length; i++)
@@ -85,6 +93,8 @@ public class Mat extends Console {
     ///转置
     public static Real[][] transpose(Real[] info) {
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         Real[][] result = new Real[mat1[0].length][mat1.length];
         for (int row = 0; row < mat1.length; row++)
             for (int col = 0; col < mat1[0].length; col++) result[col][row] = mat1[row][col];
@@ -94,12 +104,16 @@ public class Mat extends Console {
     ///求秩框架
     public static int getRank(Real[] info) {
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return -1;
         return rankAlgorithm(mat1);
     }
 
     ///求阶梯形矩阵
     public static Real[][] getEchelon(Real[] info) {
         mat1 = Tool.input(info[0].toInt(), info[1].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         rankAlgorithm(mat1);
         return mat1;
     }
@@ -194,6 +208,8 @@ public class Mat extends Console {
     ///求逆
     public static Real[][] inverse(Real[] info) {
         mat1 = Tool.input(info[0].toInt(), info[0].toInt());
+        //用户输入return返回时会是null
+        if (mat1 == null) return null;
         //不能使用原矩阵判断是否满秩，因为不能让原矩阵发生变化。因此先进行深复制
         Real[][] test = Tool.deepCopy(mat1);
         //调用求秩方法判断方阵是否满秩
@@ -316,7 +332,9 @@ public class Mat extends Console {
 
     ///求特征值
     public static ArrayList<Real> eigenvalue(Real[] info) {
-        Real[][] mat = Tool.input(info[0].toInt(),info[0].toInt());
+        Real[][] mat = Tool.input(info[0].toInt(), info[0].toInt());
+        //用户输入return返回时会是null
+        if (mat == null) return null;
         if (mat.length != mat[0].length) {
             System.out.println(text.getString("notSquareMatrix"));
             return null;

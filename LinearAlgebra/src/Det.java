@@ -6,6 +6,8 @@ public class Det {
 
     public static Real getValue(int order) {
         Real[][] det = Tool.input(order, order);
+        //用户输入return返回时会是null
+        if (det == null) return null;
         if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
         //行列式的结果
         Real result = Real.ONE;

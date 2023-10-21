@@ -6,6 +6,8 @@ public class Vec extends Console {
     ///加减法
     protected static Real[] add(int sign, Real[] info) {
         Real[][] vec1 = Tool.input(1, info[0].toInt());
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         Real[] result = new Real[vec1[0].length];
         for (int i = 0; i < vec1[0].length; i++) result[i] = vec1[0][i].add(vec2[0][i].multiply(new Real(sign)));
@@ -15,6 +17,8 @@ public class Vec extends Console {
     ///数乘
     protected static Real[] scalarMultiply(Real[] info) {
         Real[][] vec = Tool.input(1, info[1].toInt());
+        //用户输入return返回时会是null
+        if (vec == null) return null;
         Real k = info[0];
         Real[] result = new Real[vec[0].length];
         for (int i = 0; i < vec.length; i++) result[i] = vec[0][i].multiply(k);
@@ -24,6 +28,8 @@ public class Vec extends Console {
     ///内积
     protected static Real innerProduct(Real[] info) {
         Real[][] vec1 = Tool.input(1, info[0].toInt());
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         return inner(vec1, vec2);
     }
@@ -38,6 +44,8 @@ public class Vec extends Console {
     ///模长
     protected static Real length(Real[] info) {
         Real[][] vec = Tool.input(1, info[0].toInt());
+        //用户输入return返回时会是null
+        if (vec == null) return null;
         return lengthAlgo(vec);
     }
 
@@ -49,6 +57,8 @@ public class Vec extends Console {
     ///夹角余弦值
     protected static Real angleCos(Real[] info) {
         Real[][] vec1 = Tool.input(1, info[0].toInt());
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         return cos(vec1, vec2);
     }
@@ -61,6 +71,8 @@ public class Vec extends Console {
     ///夹角正弦值
     protected static Real angleSin(Real[] info) {
         Real[][] vec1 = Tool.input(1, info[0].toInt());
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, info[0].toInt());
         return sin(vec1, vec2);
     }
@@ -73,6 +85,8 @@ public class Vec extends Console {
     ///二维外积
     protected static Real outerProduct2D() {
         Real[][] vec1 = Tool.input(1, 2);
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, 2);
         return outer2(vec1, vec2);
     }
@@ -85,6 +99,8 @@ public class Vec extends Console {
     ///三维外积
     protected static Real[] outerProduct3D() {
         Real[][] vec1 = Tool.input(1, 3);
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, 3);
         return outer3(vec1, vec2);
     }
@@ -101,9 +117,12 @@ public class Vec extends Console {
     ///混合积
     protected static Real mixedProduct() {
         Real[][] vec1 = Tool.input(1, 3);
+        //用户输入return返回时会是null
+        if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, 3);
         Real[][] vec3 = Tool.input(1, 3);
         Real[][] cross = new Real[1][];
+        assert vec2 != null;
         cross[0] = outer3(vec1, vec2);
         return inner(cross, vec3);
     }
