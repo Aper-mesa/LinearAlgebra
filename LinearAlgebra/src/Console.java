@@ -129,6 +129,7 @@ public class Console {
             case "i" -> mat = Mat.inverse(info);
             case "e" -> mat = Mat.getEchelon(info);
             case "g" -> eigenValue = Mat.eigenvalue(info);
+            default -> System.out.println(text.getString("invalidCommand"));
         }
         if (mat != null && eigenValue != null && rank != -1) {
             if (mat == null && eigenValue == null) System.out.println(rank);
