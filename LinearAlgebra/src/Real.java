@@ -313,7 +313,7 @@ public class Real {
     }
 
     ///转换成整数
-    public int toInt(){
+    public int toInt() {
         return Integer.parseInt(toString());
     }
 
