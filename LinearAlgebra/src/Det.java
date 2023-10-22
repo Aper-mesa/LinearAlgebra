@@ -6,6 +6,7 @@ public class Det {
 
     public static Real getValue(int order) {
         Real[][] det = Tool.input(order, order);
+        long before = System.currentTimeMillis();
         //用户输入return返回时会是null
         if (det == null) return null;
         if (Tool.hasZeroRowOrColumn(det)) return Real.ZERO;
@@ -62,6 +63,8 @@ public class Det {
         //计算正对角线上的所有元素之积
         for (int i = 0; i < order; i++) result = result.multiply(det[i][i]);
         if (switched) result.negate();
+        long after = System.currentTimeMillis();
+        System.out.println("用时" + (after - before) + "毫秒");
         return result;
     }
 }
