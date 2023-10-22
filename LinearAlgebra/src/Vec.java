@@ -49,8 +49,7 @@ public class Vec extends Console {
         Real[][] vec = Tool.input(1, info[0].toInt());
         //用户输入return返回时会是null
         if (vec == null) return null;
-        Real result = lengthAlgo(vec);
-        return result;
+        return lengthAlgo(vec);
     }
 
     ///模长算法核心

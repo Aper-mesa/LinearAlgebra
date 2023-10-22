@@ -131,7 +131,7 @@ public class Console {
             case "g" -> eigenValue = Mat.eigenvalue(info);
             default -> System.out.println(text.getString("invalidCommand"));
         }
-        if (mat != null && eigenValue != null && rank != -1) {
+        if (mat != null || eigenValue != null || rank != -1) {
             if (mat == null && eigenValue == null) System.out.println(rank);
             else if (mat == null) System.out.println(eigenValue);
             else Tool.print(mat);
