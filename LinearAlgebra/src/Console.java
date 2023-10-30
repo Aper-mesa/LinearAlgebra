@@ -59,27 +59,27 @@ public class Console {
                 continue;
             }
             //矩阵
-            if (inputs.startsWith("-m")) mat(inputs.split("-m")[1].strip());
+            if (inputs.startsWith("m")) mat(inputs.split("m")[1].strip());
                 //线性方程组
-            else if (inputs.startsWith("-e")) {
+            else if (inputs.startsWith("e")) {
                 //判断参数格式，不对直接返回
-                if (inputs.strip().equals("-e")||notNumber(inputs.split("-e")[1].strip())) {
+                if (inputs.strip().equals("e") || notNumber(inputs.split("e")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
-                LinearEquation.compute(Integer.parseInt(inputs.split("-e")[1].strip()));
+                LinearEquation.compute(Integer.parseInt(inputs.split("e")[1].strip()));
             }
             //行列式
-            else if (inputs.startsWith("-d")) {
+            else if (inputs.startsWith("d")) {
                 //判断参数格式，不对直接返回
-                if (inputs.strip().equals("-d")||notNumber(inputs.split("-d")[1].strip())) {
+                if (inputs.strip().equals("d") || notNumber(inputs.split("d")[1].strip())) {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
-                System.out.println(Det.getValue(Integer.parseInt(inputs.split("-d")[1].strip())));
+                System.out.println(Det.getValue(Integer.parseInt(inputs.split("d")[1].strip())));
             }
             //向量
-            else if (inputs.startsWith("-v")) vec(inputs.split("-v")[1].strip());
+            else if (inputs.startsWith("v")) vec(inputs.split("v")[1].strip());
                 //彩蛋，2048游戏
             else if (inputs.equals("2048")) Game2048.play();
             else System.out.println(text.getString("invalidCommand"));
