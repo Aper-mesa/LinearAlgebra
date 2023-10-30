@@ -35,8 +35,6 @@ public class Det {
                 det[dia] = det[i];
                 det[i] = tempRow;
                 switched = !switched;
-                ////////////////////////////////////////////////////////////////////////////////
-                System.out.println(switched);
             }
             int i;
             //将对角线数以下的数字变为0

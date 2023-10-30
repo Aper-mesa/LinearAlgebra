@@ -1,5 +1,6 @@
 public class Test {
     public static void main(String[] args) {
-        Game2048.play();
+        Real real = new Real(-57);
+        System.out.println(real.negate());
     }
 }
