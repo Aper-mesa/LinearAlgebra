@@ -35,6 +35,8 @@ public class Det {
                 det[dia] = det[i];
                 det[i] = tempRow;
                 switched = !switched;
+                ////////////////////////////////////////////////////////////////////////////////
+                System.out.println(switched);
             }
             int i;
             //将对角线数以下的数字变为0
@@ -62,7 +64,7 @@ public class Det {
         }
         //计算正对角线上的所有元素之积
         for (int i = 0; i < order; i++) result = result.multiply(det[i][i]);
-        if (switched) result.negate();
+        if (switched) result = result.negate();
         long after = System.currentTimeMillis();
         System.out.println("用时" + (after - before) + "毫秒");
         return result;
