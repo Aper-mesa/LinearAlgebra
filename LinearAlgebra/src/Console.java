@@ -76,7 +76,8 @@ public class Console {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
-                System.out.println(Det.getValue(Integer.parseInt(inputs.split("d")[1].strip())));
+                Real result = Det.getValue(Integer.parseInt(inputs.split("d")[1].strip()));
+                if (result != null) System.out.println(result);
             }
             //向量
             else if (inputs.startsWith("v")) vec(inputs.split("v")[1].strip());
@@ -90,9 +91,11 @@ public class Console {
     private static void mat(String input) {
         //para即为用户输入的指令，包含运算类型和矩阵的信息
         String[] para = input.strip().replaceAll("\\s+", " ").split(" ");
+        System.out.println(Arrays.toString(para));
         //判断用户输入的参数有没有非数字；有的话直接返回
         for (int i = 1; i < para.length; i++)
             if (notNumber(para[i])) {
+                System.out.println("?");
                 System.out.println(text.getString("invalidCommand"));
                 return;
             }
@@ -114,14 +117,14 @@ public class Console {
         } else if (para[0].equals("c") && !threeArg(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
-        } else if (para[0].equals("m") && !fourArg(info)) {
+        } else if (para[0].equals("u") && !fourArg(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
         }
         switch (para[0]) {
             case "a" -> mat = Mat.add(1, info);
             case "s" -> mat = Mat.add(-1, info);
-            case "m" -> mat = Mat.multiply(info);
+            case "u" -> mat = Mat.multiply(info);
             case "p" -> mat = Mat.power(info);
             case "c" -> mat = Mat.scalarMultiply(info);
             case "t" -> mat = Mat.transpose(info);
@@ -178,8 +181,10 @@ public class Console {
             case "ac" -> result = Vec.angleCos(info);
             case "t" -> result = Vec.mixedProduct();
         }
-        if (vec == null) System.out.println(result);
-        else System.out.println(Arrays.toString(vec));
+        if (vec != null || result != null) {
+            if (vec == null) System.out.println(result);
+            else System.out.println(Arrays.toString(vec));
+        }
     }
 
     ///判断输入的字符串是否符合实数格式
