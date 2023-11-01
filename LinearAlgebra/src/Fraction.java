@@ -94,9 +94,8 @@ public class Fraction {
 
     ///找最大公因数
     private static BigDecimal findGCD(BigDecimal numerator, BigDecimal denominator) {
-        if (numerator.remainder(denominator).compareTo(BigDecimal.ZERO) == 0) {
-            return denominator;
-        } else return findGCD(denominator, numerator.remainder(denominator));
+        if (numerator.remainder(denominator).compareTo(BigDecimal.ZERO) == 0) return denominator;
+        else return findGCD(denominator, numerator.remainder(denominator));
     }
 
     ///通分
