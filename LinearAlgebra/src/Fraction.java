@@ -1,7 +1,5 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 /*分数类，支持用户输入整数、小数以及指定格式的分数
         支持整数、小数以及分数之间的四则运算和幂运算
@@ -88,50 +86,17 @@ public class Fraction {
 
     ///约分
     protected static void simplify(Fraction fraction) {
-        BigDecimal numerator = fraction.numerator;
-        BigDecimal denominator = fraction.denominator;
-        //两个集合分别存储分子和分母的除1以外的所有因数
-        if (numerator.compareTo(BigDecimal.ZERO) == 0) {
-            fraction.denominator = BigDecimal.ONE;
-            return;
-        } else if (numerator.compareTo(denominator) == 0) {
-            fraction.numerator = BigDecimal.ONE;
-            fraction.denominator = BigDecimal.ONE;
-            return;
-        }
-        boolean loop = true;
-        while (loop) {
-            ArrayList<BigDecimal> nuArr = new ArrayList<>();
-            ArrayList<BigDecimal> deArr = new ArrayList<>();
-            findFactor(numerator, nuArr);
-            findFactor(denominator, deArr);
-            //用第三个集合存储公因数
-            HashSet<BigDecimal> common = new HashSet<>();
-            for (BigDecimal nu : nuArr) for (BigDecimal de : deArr) if (nu.compareTo(de) == 0) common.add(de);
-            if (common.isEmpty()) {
-                loop = false;
-                continue;
-            }
-            //接着找到最大的公因数
-            BigDecimal max = common.iterator().next();
-            for (BigDecimal divisor : common) if (divisor.compareTo(max) > 0) max = divisor;
-            //分子分母同时除以最大公因数
-            numerator = numerator.divide(max, RoundingMode.HALF_DOWN);
-            denominator = denominator.divide(max, RoundingMode.HALF_DOWN);
-        }
-        fraction.numerator = new BigDecimal(numerator.stripTrailingZeros().toPlainString());
-        fraction.denominator = new BigDecimal(denominator.stripTrailingZeros().toPlainString());
+        Fraction copy = new Fraction(fraction);
+        BigDecimal gcd = findGCD(copy.numerator, copy.denominator);
+        fraction.numerator = new BigDecimal(fraction.numerator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
+        fraction.denominator = new BigDecimal(fraction.denominator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
     }
 
-    ///获取一个数字的除1以外的所有因数
-    private static void findFactor(BigDecimal num, ArrayList<BigDecimal> arr) {
-        for (int i = 1; i <= Math.sqrt(num.doubleValue()); i++) {
-            if (num.remainder(new BigDecimal(i)).compareTo(BigDecimal.ZERO) == 0) {
-                arr.add(new BigDecimal(i));
-                arr.add(num.divide(new BigDecimal(i), RoundingMode.HALF_DOWN));
-            }
-        }
-        if (!arr.isEmpty()) arr.remove(0);
+    ///找最大公因数
+    private static BigDecimal findGCD(BigDecimal numerator, BigDecimal denominator) {
+        if (numerator.remainder(denominator).compareTo(BigDecimal.ZERO) == 0) {
+            return denominator;
+        } else return findGCD(denominator, numerator.remainder(denominator));
     }
 
     ///通分
@@ -223,7 +188,6 @@ public class Fraction {
             }
             return new Fraction(1, dividend.numerator.remainder(divisor.numerator), BigDecimal.ONE);
         }
-
     }
 
     ///输出分数形式的字符串
