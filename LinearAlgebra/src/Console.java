@@ -91,11 +91,9 @@ public class Console {
     private static void mat(String input) {
         //para即为用户输入的指令，包含运算类型和矩阵的信息
         String[] para = input.strip().replaceAll("\\s+", " ").split(" ");
-        System.out.println(Arrays.toString(para));
         //判断用户输入的参数有没有非数字；有的话直接返回
         for (int i = 1; i < para.length; i++)
             if (notNumber(para[i])) {
-                System.out.println("?");
                 System.out.println(text.getString("invalidCommand"));
                 return;
             }
