@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class LinearEquation extends Console {
     private static final Scanner input = new Scanner(System.in);
     private static int numberOfEquations = 0;
+
     private LinearEquation() {
     }
 
