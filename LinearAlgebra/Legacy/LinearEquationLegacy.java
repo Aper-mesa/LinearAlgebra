@@ -38,7 +38,7 @@ public class LinearEquation {
         for (int i = 0; i < equations.size(); i++) {
             terms = equations.get(i).split("=")[0].split("(?<=\\d)(?=[+-])");
             for (String term : terms) {
-                if(term.matches("-(?i)x.+"))
+                if (term.matches("-(?i)x.+"))
                     augmentedMatrix[i][Integer.parseInt(term.split("(?i)x")[1]) - 1] = Fraction.ONE.negate();
                 else if (term.matches("[+-]?(\\d+([./]\\d+)*)(?i)x.+")) {
                     augmentedMatrix[i][Integer.parseInt(term.split("(?i)x")[1]) - 1] = new Fraction(term.split("(?i)x")[0]);
@@ -47,7 +47,8 @@ public class LinearEquation {
             augmentedMatrix[i][numberOfUnknowns] = new Fraction(equations.get(i).split("=")[1]);
         }
         Fraction[][] coefficientMatrix = new Fraction[numberOfEquations][numberOfUnknowns];
-        for (int i = 0; i < coefficientMatrix.length; i++) coefficientMatrix[i] = Arrays.copyOf(augmentedMatrix[i], numberOfUnknowns);
+        for (int i = 0; i < coefficientMatrix.length; i++)
+            coefficientMatrix[i] = Arrays.copyOf(augmentedMatrix[i], numberOfUnknowns);
         System.out.println("系数矩阵：");
         for (Fraction[] row : coefficientMatrix) {
             System.out.println(Arrays.toString(row));

@@ -5,11 +5,11 @@ import java.util.Arrays;
 
 public class Mat extends Console {
 
-    private Mat() {
-    }
-
     private static Real[][] mat1;
     private static Real[][] mat2;
+
+    private Mat() {
+    }
 
     ///矩阵加减法，参数决定加减，1为加，-1为减
     public static Real[][] add(int sign, Real[] info) {
@@ -332,6 +332,10 @@ public class Mat extends Console {
 
     ///求特征值
     public static ArrayList<Real> eigenvalue(Real[] info) {
+        if (!info[0].subtract(new Real(3)).isNegative()) {
+            System.out.println(text.getString("tooLargeMatrix"));
+            return null;
+        }
         Real[][] mat = Tool.input(info[0].toInt(), info[0].toInt());
         //用户输入return返回时会是null
         if (mat == null) return null;
@@ -340,10 +344,6 @@ public class Mat extends Console {
             return null;
         }
         int order = mat.length;
-        if (order > 2) {
-            System.out.println(text.getString("tooLargeMatrix"));
-            return null;
-        }
         ArrayList<Real> result = new ArrayList<>();
         switch (order) {
             case 1 -> {

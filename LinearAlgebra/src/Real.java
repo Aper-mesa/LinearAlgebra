@@ -1,13 +1,11 @@
-/*  实数类-封装分数类
-    1. 以根号的形式展示所有指数不是1的数字
-    2. 支持分母有理化和最简根式
-    3. 支持根式之间的四则运算
-    4. 支持数据的无损保存、传递和输出*/
-
 import java.math.BigDecimal;
 
 //FIXME 暂时先只写二次根式，够用
 public class Real {
+    //静态0
+    public static final Real ZERO = new Real("0");
+    //静态1
+    public static final Real ONE = new Real("1");
     //符号
     private int sign = 1;
     //分子的指数
@@ -22,10 +20,6 @@ public class Real {
     private Fraction dBase = Fraction.ONE;
     //分母的指数
     private Fraction dExponent = Fraction.ONE;
-    //静态0
-    public static final Real ZERO = new Real("0");
-    //静态1
-    public static final Real ONE = new Real("1");
 
     ///字符串全参构造，格式：a*b^/c*d^，只写^默认表示二次根式，目前仅支持二次根式！
     public Real(String inputStr) {
@@ -296,6 +290,11 @@ public class Real {
     ///判断是否为负数
     public boolean isNegative() {
         return sign < 0;
+    }
+
+    ///判断是否为正数
+    public boolean isPositive() {
+        return sign > 0 && !equals(ZERO);
     }
 
     ///判断两个实数是否在数值上相同

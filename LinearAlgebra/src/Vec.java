@@ -85,35 +85,21 @@ public class Vec extends Console {
         return Real.ONE.subtract(cos(vec1, vec2)).sqrt();
     }
 
-    ///二维外积
-    protected static Real outerProduct2D() {
-        Real[][] vec1 = Tool.input(1, 2);
-        //用户输入return返回时会是null
-        if (vec1 == null) return null;
-        Real[][] vec2 = Tool.input(1, 2);
-        return outer2(vec1, vec2);
-    }
-
-    ///二维外积算法核心
-    private static Real outer2(Real[][] vec1, Real[][] vec2) {
-        return vec1[0][0].multiply(vec2[0][1]).subtract(vec1[0][1].multiply(vec2[0][0]));
-    }
-
     ///三维外积
-    protected static Real[] outerProduct3D() {
+    protected static Real[] outerProduct() {
         Real[][] vec1 = Tool.input(1, 3);
         //用户输入return返回时会是null
         if (vec1 == null) return null;
         Real[][] vec2 = Tool.input(1, 3);
         assert vec2 != null;
-        return outer3(vec1, vec2);
+        return outer(vec1, vec2);
     }
 
     ///三维外积算法核心
-    private static Real[] outer3(Real[][] vec1, Real[][] vec2) {
+    private static Real[] outer(Real[][] vec1, Real[][] vec2) {
         Real[] result = new Real[3];
         result[0] = vec1[0][1].multiply(vec2[0][2]).subtract(vec1[0][2].multiply(vec2[0][1]));
-        result[1] = vec1[0][2].multiply(vec2[0][1]).subtract(vec1[0][0].multiply(vec2[0][2]));
+        result[1] = vec1[0][2].multiply(vec2[0][0]).subtract(vec1[0][0].multiply(vec2[0][2]));
         result[2] = vec1[0][0].multiply(vec2[0][1]).subtract(vec1[0][1].multiply(vec2[0][0]));
         return result;
     }
@@ -127,7 +113,7 @@ public class Vec extends Console {
         Real[][] vec3 = Tool.input(1, 3);
         Real[][] cross = new Real[1][];
         assert vec2 != null;
-        cross[0] = outer3(vec1, vec2);
+        cross[0] = outer(vec1, vec2);
         return inner(cross, vec3);
     }
 }

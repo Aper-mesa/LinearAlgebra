@@ -6,27 +6,18 @@ import java.math.RoundingMode;
         支持数据无损无精度问题，支持小数以分数或小数形式输出。*/
 
 public class Fraction {
-    //分子
-    private BigDecimal numerator;
-    //分母
-    private BigDecimal denominator;
-    //符号
-    int sign;
     //静态的数值为0的分数
     public static final Fraction ZERO = new Fraction("0");
-
     //静态的数值为1的分数
     public static final Fraction ONE = new Fraction("1");
     //静态的数值为0.5的分数
     public static final Fraction HALF = new Fraction("0.5");
-
-    protected BigDecimal getNumerator() {
-        return numerator;
-    }
-
-    protected BigDecimal getDenominator() {
-        return denominator;
-    }
+    //符号
+    int sign;
+    //分子
+    private BigDecimal numerator;
+    //分母
+    private BigDecimal denominator;
 
     ///全参构造
     public Fraction(int sign, BigDecimal numerator, BigDecimal denominator) {
@@ -66,6 +57,28 @@ public class Fraction {
         integerize(this);
     }
 
+    ///约分
+    protected static void simplify(Fraction fraction) {
+        Fraction copy = new Fraction(fraction);
+        BigDecimal gcd = findGCD(copy.numerator, copy.denominator);
+        fraction.numerator = new BigDecimal(fraction.numerator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
+        fraction.denominator = new BigDecimal(fraction.denominator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
+    }
+
+    ///找最大公因数
+    private static BigDecimal findGCD(BigDecimal numerator, BigDecimal denominator) {
+        if (numerator.remainder(denominator).compareTo(BigDecimal.ZERO) == 0) return denominator;
+        else return findGCD(denominator, numerator.remainder(denominator));
+    }
+
+    protected BigDecimal getNumerator() {
+        return numerator;
+    }
+
+    protected BigDecimal getDenominator() {
+        return denominator;
+    }
+
     ///整数化
     private void integerize(Fraction fraction) {
         //nu和de分别表示分子和分母的小数位数
@@ -82,20 +95,6 @@ public class Fraction {
         fraction.numerator = new BigDecimal(fraction.numerator.multiply(multiple).toPlainString());
         fraction.denominator = new BigDecimal(fraction.denominator.multiply(multiple).toPlainString());
         simplify(fraction);
-    }
-
-    ///约分
-    protected static void simplify(Fraction fraction) {
-        Fraction copy = new Fraction(fraction);
-        BigDecimal gcd = findGCD(copy.numerator, copy.denominator);
-        fraction.numerator = new BigDecimal(fraction.numerator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
-        fraction.denominator = new BigDecimal(fraction.denominator.divide(gcd, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString());
-    }
-
-    ///找最大公因数
-    private static BigDecimal findGCD(BigDecimal numerator, BigDecimal denominator) {
-        if (numerator.remainder(denominator).compareTo(BigDecimal.ZERO) == 0) return denominator;
-        else return findGCD(denominator, numerator.remainder(denominator));
     }
 
     ///通分
@@ -192,6 +191,7 @@ public class Fraction {
     ///输出分数形式的字符串
     @Override
     public String toString() {
+        //请原谅我使用了三元运算符嵌套……
         return (numerator.compareTo(BigDecimal.ZERO) == 0 ? "" : (sign > 0 ? "" : "-")) + numerator.stripTrailingZeros().toPlainString() + (denominator.equals(BigDecimal.ONE) ? "" : "/") + (denominator.equals(BigDecimal.ONE) ? "" : denominator.stripTrailingZeros().toPlainString());
     }
 

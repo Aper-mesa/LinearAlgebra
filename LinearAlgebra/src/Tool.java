@@ -3,10 +3,10 @@ import java.util.Scanner;
 
 ////此类提供各种工具和操作供各类使用
 class Tool extends Console {
+    private static final Scanner input = new Scanner(System.in);
+
     private Tool() {
     }
-
-    private static final Scanner input = new Scanner(System.in);
 
     ///二维数组深复制，仅需提供起点，自动新建相同大小的终点
     protected static Real[][] deepCopy(Real[][] origin) {

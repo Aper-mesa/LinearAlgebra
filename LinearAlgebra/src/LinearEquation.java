@@ -1,12 +1,13 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 ////此类用于解线性方程组
 public class LinearEquation extends Console {
-    private LinearEquation() {
-    }
-
     private static final Scanner input = new Scanner(System.in);
     private static int numberOfEquations = 0;
+    private LinearEquation() {
+    }
 
     ///求解的初始步骤：输入和判断等
     protected static void compute(int numberOfVariables) {

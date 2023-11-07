@@ -63,7 +63,13 @@ public class Console {
                 //线性方程组
             else if (inputs.startsWith("e")) {
                 //判断参数格式，不对直接返回
-                if (inputs.strip().equals("e") || notNumber(inputs.split("e")[1].strip())) {
+                if (inputs.equals("e") || notNumber(inputs.split("e")[1].strip())) {
+                    System.out.println(text.getString("invalidCommand"));
+                    continue;
+                }
+                Real[] info = new Real[1];
+                info[0] = new Real(inputs.split("e")[1].strip());
+                if (badOneArg(info)) {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
@@ -73,6 +79,12 @@ public class Console {
             else if (inputs.startsWith("d")) {
                 //判断参数格式，不对直接返回
                 if (inputs.strip().equals("d") || notNumber(inputs.split("d")[1].strip())) {
+                    System.out.println(text.getString("invalidCommand"));
+                    continue;
+                }
+                Real[] info = new Real[1];
+                info[0] = new Real(inputs.split("d")[1].strip());
+                if (badOneArg(info)) {
                     System.out.println(text.getString("invalidCommand"));
                     continue;
                 }
@@ -163,7 +175,7 @@ public class Console {
         } else if (para[0].equals("c") && !realAndInt(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
-        } else if ((para[0].equals("o2") || para[0].equals("o3") || para[0].equals("t")) && !noArg(info)) {
+        } else if ((para[0].equals("o") || para[0].equals("t")) && !noArg(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
         }
@@ -172,8 +184,7 @@ public class Console {
             case "s" -> vec = Vec.add(-1, info);
             case "c" -> vec = Vec.scalarMultiply(info);
             case "i" -> result = Vec.innerProduct(info);
-            case "o2" -> result = Vec.outerProduct2D();
-            case "o3" -> vec = Vec.outerProduct3D();
+            case "o" -> vec = Vec.outerProduct();
             case "e" -> result = Vec.length(info);
             case "as" -> result = Vec.angleSin(info);
             case "ac" -> result = Vec.angleCos(info);
@@ -190,34 +201,37 @@ public class Console {
         return !input.matches("-?\\d+(.\\d+)?\\^?(/-?\\d+(.\\d+)?\\^?)?");
     }
 
-    ///无参数识别
+    ///0参数识别
     private static boolean noArg(Real[] info) {
         return info.length == 0;
     }
 
     ///单参数识别
     private static boolean badOneArg(Real[] info) {
-        return info.length != 1 || info[0].notInteger();
+        return info.length != 1 || info[0].notInteger() || !info[0].isPositive();
     }
 
     ///双参数识别：两个整数
     private static boolean twoInt(Real[] info) {
-        return info.length == 2 && !info[0].notInteger() && !info[1].notInteger();
+        return info.length == 2 && !info[0].notInteger() && !info[1].notInteger()
+                && info[0].isPositive() && info[1].isPositive();
     }
 
     ///双参数识别：一个实数一个整数
     private static boolean realAndInt(Real[] info) {
-        return info.length == 2 && !info[1].notInteger();
+        return info.length == 2 && !info[1].notInteger() && info[1].isPositive();
     }
 
     ///三参数识别
     private static boolean threeArg(Real[] info) {
-        return info.length == 3 && !info[1].notInteger() && !info[2].notInteger();
+        return info.length == 3 && !info[1].notInteger() && !info[2].notInteger()
+                && info[1].isPositive() && info[2].isPositive();
     }
 
     ///四参数识别
     private static boolean fourArg(Real[] info) {
-        return info.length == 4 && !info[0].notInteger()
-                && !info[1].notInteger() && !info[2].notInteger() && !info[3].notInteger();
+        return info.length == 4 && !info[0].notInteger() && !info[1].notInteger()
+                && !info[2].notInteger() && !info[3].notInteger() && info[0].isPositive()
+                && info[1].isPositive() && info[2].isPositive() && info[3].isPositive();
     }
 }
