@@ -45,15 +45,15 @@ public class Vec extends Console {
     }
 
     ///模长
-    protected static Real length(Real[] info) {
+    protected static Real norm(Real[] info) {
         Real[][] vec = Tool.input(1, info[0].toInt());
         //用户输入return返回时会是null
         if (vec == null) return null;
-        return lengthAlgo(vec);
+        return normAlgo(vec);
     }
 
     ///模长算法核心
-    private static Real lengthAlgo(Real[][] vec) {
+    private static Real normAlgo(Real[][] vec) {
         return inner(vec, vec).sqrt();
     }
 
@@ -68,7 +68,7 @@ public class Vec extends Console {
 
     ///夹角余弦值算法核心
     private static Real cos(Real[][] vec1, Real[][] vec2) {
-        return inner(vec1, vec2).divide(lengthAlgo(vec1).multiply(lengthAlgo(vec2)));
+        return inner(vec1, vec2).divide(normAlgo(vec1).multiply(normAlgo(vec2)));
     }
 
     ///夹角正弦值

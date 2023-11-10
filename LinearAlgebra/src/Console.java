@@ -185,7 +185,7 @@ public class Console {
             case "c" -> vec = Vec.scalarMultiply(info);
             case "i" -> result = Vec.innerProduct(info);
             case "o" -> vec = Vec.outerProduct();
-            case "e" -> result = Vec.length(info);
+            case "e" -> result = Vec.norm(info);
             case "as" -> result = Vec.angleSin(info);
             case "ac" -> result = Vec.angleCos(info);
             case "t" -> result = Vec.mixedProduct();
