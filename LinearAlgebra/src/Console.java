@@ -102,7 +102,7 @@ public class Console {
     ///矩阵命令处理
     private static void mat(String input) {
         //para即为用户输入的指令，包含运算类型和矩阵的信息
-        String[] para = input.strip().replaceAll("\\s+", " ").split(" ");
+        String[] para = input.split(" ");
         //判断用户输入的参数有没有非数字；有的话直接返回
         for (int i = 1; i < para.length; i++)
             if (notNumber(para[i])) {
@@ -121,7 +121,7 @@ public class Console {
             System.out.println(text.getString("invalidCommand"));
             return;
         } else if ((para[0].equals("a") || para[0].equals("s") || para[0].equals("p") || para[0].equals("t") ||
-                para[0].equals("r") | para[0].equals("e")) && !twoInt(info)) {
+                para[0].equals("r") || para[0].equals("e")) && !twoInt(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
         } else if (para[0].equals("c") && !threeArg(info)) {
@@ -169,7 +169,7 @@ public class Console {
         Real result = null;
         //判断用户输入的参数是否符合格式；不符合直接返回
         if ((para[0].equals("a") || para[0].equals("s") || para[0].equals("i") ||
-                para[0].equals("e") || para[0].equals("as") || para[0].equals("ac")) && badOneArg(info)) {
+                para[0].equals("n") || para[0].equals("as") || para[0].equals("ac")) && badOneArg(info)) {
             System.out.println(text.getString("invalidCommand"));
             return;
         } else if (para[0].equals("c") && !realAndInt(info)) {
@@ -185,7 +185,7 @@ public class Console {
             case "c" -> vec = Vec.scalarMultiply(info);
             case "i" -> result = Vec.innerProduct(info);
             case "o" -> vec = Vec.outerProduct();
-            case "e" -> result = Vec.norm(info);
+            case "n" -> result = Vec.norm(info);
             case "as" -> result = Vec.angleSin(info);
             case "ac" -> result = Vec.angleCos(info);
             case "t" -> result = Vec.mixedProduct();
@@ -193,7 +193,7 @@ public class Console {
         if (vec != null || result != null) {
             if (vec == null) System.out.println(result);
             else System.out.println(Arrays.toString(vec));
-        }
+        } else System.out.println(text.getString("invalidCommand"));
     }
 
     ///判断输入的字符串是否符合实数格式
