@@ -22,4 +22,8 @@ Zou Shanghao 1235425
 ---
 ## Determinant.class
 
+![Det Process.png](Det%20Process.png)
+
+---
+## Matrix.class
 
