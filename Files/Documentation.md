@@ -30,7 +30,17 @@ Zou Shanghao 1235425
 ---
 ## Det.class
 
+
+## Console.class
+
+![Console Process.png](Console%20Process.png)
+
+---
+## Determinant.class
+
 ![Det Process.png](Det%20Process.png)
+
+Implement Gaussian Elimination to make echelon form and then multiply the diagonal.
 
 ---
 ## Mat.class & Vec.class
