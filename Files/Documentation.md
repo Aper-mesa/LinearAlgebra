@@ -28,9 +28,6 @@ Zou Shanghao 1235425
 - A utility class providing some useful methods
 
 ---
-## Det.class
-
-
 ## Console.class
 
 ![Console Process.png](Console%20Process.png)
